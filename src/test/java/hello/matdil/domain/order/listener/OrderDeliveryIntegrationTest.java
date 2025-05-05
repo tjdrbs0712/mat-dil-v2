@@ -10,7 +10,7 @@ import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.order.service.OrderService;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.user.entity.repository.UserRepository;
+import hello.matdil.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

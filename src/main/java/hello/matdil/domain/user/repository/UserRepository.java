@@ -1,4 +1,4 @@
-package hello.matdil.domain.user.entity.repository;
+package hello.matdil.domain.user.repository;
 
 import hello.matdil.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
