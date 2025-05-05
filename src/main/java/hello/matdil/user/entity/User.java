@@ -1,0 +1,64 @@
+package hello.matdil.user.entity;
+
+import hello.matdil.address.Address;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    @Column(nullable = false, unique = true,length = 100)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
+    @Embedded
+    @Column(nullable = false)
+    private Address address;
+
+    @Column(nullable = false, unique = true)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private boolean isActive;
+
+    @Column
+    private LocalDateTime lastLoginAt;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Builder
+    public User(String name, String email, String password,
+                UserRole role, Address address, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.lastLoginAt = null;
+    }
+}
