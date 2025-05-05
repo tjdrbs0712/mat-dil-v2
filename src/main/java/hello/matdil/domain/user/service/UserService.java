@@ -1,4 +1,4 @@
-package hello.matdil.domain.user.entity.service;
+package hello.matdil.domain.user.service;
 
 import org.springframework.stereotype.Service;
 

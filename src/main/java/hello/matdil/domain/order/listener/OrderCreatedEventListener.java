@@ -3,7 +3,7 @@ package hello.matdil.domain.order.listener;
 import hello.matdil.domain.delivery.service.DeliveryService;
 import hello.matdil.domain.order.event.OrderCreateEvent;
 import hello.matdil.domain.user.entity.User;
-import hello.matdil.domain.user.entity.repository.UserRepository;
+import hello.matdil.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
