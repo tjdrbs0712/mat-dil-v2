@@ -10,6 +10,7 @@ import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.event.GenericEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final GenericEventPublisher genericEventPublisher;
 
+    @Transactional
     public void createOrder(OrderCreateDto orderCreateDto) {
         Order order = Order.builder()
                 .userId(orderCreateDto.userId())
