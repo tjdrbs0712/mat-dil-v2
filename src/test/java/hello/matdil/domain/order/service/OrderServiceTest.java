@@ -1,11 +1,11 @@
 package hello.matdil.domain.order.service;
 
-import hello.matdil.domain.delivery.entity.Delivery;
-import hello.matdil.domain.delivery.repository.DeliveryRepository;
 import hello.matdil.domain.order.dto.OrderCreateDto;
 import hello.matdil.domain.order.dto.OrderItemCreateDto;
 import hello.matdil.domain.order.entity.Order;
+import hello.matdil.domain.order.event.OrderCreateEvent;
 import hello.matdil.domain.order.repository.OrderRepository;
+import hello.matdil.event.GenericEventPublisher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -30,7 +29,7 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private DeliveryRepository deliveryRepository;
+    private GenericEventPublisher eventPublisher;
 
     @Test
     @DisplayName("정상 주문 생성 시 Order와 Delivery가 함께 생성된다")
@@ -49,7 +48,7 @@ class OrderServiceTest {
 
         // then
         verify(orderRepository).save(any(Order.class));
-        verify(deliveryRepository).save(any(Delivery.class));
+        verify(eventPublisher).publish(any(OrderCreateEvent.class));
     }
 
 }
