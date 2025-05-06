@@ -6,5 +6,4 @@ import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 public interface UserService {
 
     UserRegisterResponseDto register(UserRegisterRequestDto requestDto);
-
 }

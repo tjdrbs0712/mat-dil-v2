@@ -43,5 +43,4 @@ public class UserServiceImpl implements UserService{
             throw new UserException(UserErrorCode.PHONE_DUPLICATION);
         }
     }
-
 }
