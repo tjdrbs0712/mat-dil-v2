@@ -1,8 +1,8 @@
 package hello.matdil.global.exception.translator;
 
-import hello.matdil.global.exception.business.UserException;
-import hello.matdil.global.exception.errorcode.CommonErrorCode;
-import hello.matdil.global.exception.errorcode.UserErrorCode;
+import hello.matdil.domain.user.exception.UserException;
+import hello.matdil.global.exception.CommonErrorCode;
+import hello.matdil.domain.user.exception.UserErrorCode;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +12,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import static hello.matdil.global.exception.translator.DataIntegrityExceptionTranslator.UK_USER_EMAIL;
 import static hello.matdil.global.exception.translator.DataIntegrityExceptionTranslator.UK_USER_PHONE_NUMBER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
