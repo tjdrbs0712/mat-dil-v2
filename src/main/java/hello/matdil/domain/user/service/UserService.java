@@ -1,7 +1,10 @@
 package hello.matdil.domain.user.service;
 
-import org.springframework.stereotype.Service;
+import hello.matdil.domain.user.dto.UserCreateRequestDto;
+import hello.matdil.domain.user.dto.UserCreateResponseDto;
 
-@Service
-public class UserService {
+public interface UserService {
+
+    UserCreateResponseDto createUser(UserCreateRequestDto requestDto);
+
 }

@@ -55,7 +55,7 @@ class OrderDeliveryIntegrationTest {
     }
 
     @Test
-    void 주문생성_후_배달이_생성된다() throws Exception {
+    void 주문생성_후_배달이_생성() throws Exception {
         // given
         OrderCreateDto dto = new OrderCreateDto(
                 1L,

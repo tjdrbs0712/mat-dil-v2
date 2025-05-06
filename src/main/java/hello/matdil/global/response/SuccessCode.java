@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ApiCode {
+public enum SuccessCode {
     SUCCESS("SUCCESS", "요청이 성공했습니다.");
 
     private final String code;

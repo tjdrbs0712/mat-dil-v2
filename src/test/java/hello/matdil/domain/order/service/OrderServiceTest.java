@@ -32,8 +32,7 @@ class OrderServiceTest {
     private GenericEventPublisher eventPublisher;
 
     @Test
-    @DisplayName("정상 주문 생성 시 Order와 Delivery가 함께 생성된다")
-    void createOrder_success() {
+    void 주문_생성() {
         // given
         OrderCreateDto orderCreateDto = new OrderCreateDto(
                 1L, // userId

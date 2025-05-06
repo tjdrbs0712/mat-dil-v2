@@ -19,7 +19,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true,length = 100)
@@ -39,8 +39,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean isActive;
+    private UserStatus userStatus;
+
+    @Column
+    private LocalDateTime withdrawnAt;
 
     @Column
     private LocalDateTime lastLoginAt;
@@ -57,7 +61,7 @@ public class User {
         this.role = role;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.isActive = true;
+        this.userStatus = UserStatus.INACTIVE;
         this.createdAt = LocalDateTime.now();
         this.lastLoginAt = null;
     }

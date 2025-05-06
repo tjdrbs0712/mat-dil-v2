@@ -1,4 +1,4 @@
-package hello.matdil.global.exception.errocode;
+package hello.matdil.global.exception.errorcode;
 
 public interface ErrorCode {
     int getHttpStatusCode();
