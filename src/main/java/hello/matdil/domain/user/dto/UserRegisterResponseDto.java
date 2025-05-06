@@ -4,16 +4,16 @@ import hello.matdil.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter
-public class UserCreateResponseDto {
+public class UserRegisterResponseDto {
     private final String email;
     private final String name;
 
-    private UserCreateResponseDto(String email, String name) {
+    private UserRegisterResponseDto(String email, String name) {
         this.email = email;
         this.name = name;
     }
 
-    public static UserCreateResponseDto from(User user) {
-        return new UserCreateResponseDto(user.getEmail(), user.getName());
+    public static UserRegisterResponseDto from(User user) {
+        return new UserRegisterResponseDto(user.getEmail(), user.getName());
     }
 }

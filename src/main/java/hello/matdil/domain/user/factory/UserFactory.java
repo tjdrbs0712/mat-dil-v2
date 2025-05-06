@@ -1,7 +1,7 @@
 package hello.matdil.domain.user.factory;
 
 import hello.matdil.domain.address.Address;
-import hello.matdil.domain.user.dto.UserCreateRequestDto;
+import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class UserFactory {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User create(UserCreateRequestDto dto) {
+    public User create(UserRegisterRequestDto dto) {
         return User.builder()
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))

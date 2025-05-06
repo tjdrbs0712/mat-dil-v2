@@ -1,8 +1,8 @@
 package hello.matdil.domain.user.service;
 
 import hello.matdil.domain.address.Address;
-import hello.matdil.domain.user.dto.UserCreateRequestDto;
-import hello.matdil.domain.user.dto.UserCreateResponseDto;
+import hello.matdil.domain.user.dto.UserRegisterRequestDto;
+import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.domain.user.factory.UserFactory;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -42,7 +41,7 @@ class UserServiceImplTest {
     @Test
     void 회원가입_성공() {
         // given
-        UserCreateRequestDto dto = new UserCreateRequestDto(
+        UserRegisterRequestDto dto = new UserRegisterRequestDto(
                 "test@example.com",
                 "password123",
                 "홍길동",
@@ -68,7 +67,7 @@ class UserServiceImplTest {
         given(userRepository.save(user)).willReturn(user);
 
         // when
-        UserCreateResponseDto result = userService.createUser(dto);
+        UserRegisterResponseDto result = userService.register(dto);
 
         // then
         assertThat(result.getEmail()).isEqualTo(dto.email());

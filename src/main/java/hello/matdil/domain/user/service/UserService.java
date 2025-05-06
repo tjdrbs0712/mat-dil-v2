@@ -1,10 +1,10 @@
 package hello.matdil.domain.user.service;
 
-import hello.matdil.domain.user.dto.UserCreateRequestDto;
-import hello.matdil.domain.user.dto.UserCreateResponseDto;
+import hello.matdil.domain.user.dto.UserRegisterRequestDto;
+import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 
 public interface UserService {
 
-    UserCreateResponseDto createUser(UserCreateRequestDto requestDto);
+    UserRegisterResponseDto register(UserRegisterRequestDto requestDto);
 
 }
