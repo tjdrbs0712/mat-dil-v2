@@ -1,6 +1,5 @@
-package hello.matdil.global.exception.business;
+package hello.matdil.global.exception;
 
-import hello.matdil.global.exception.errorcode.ErrorCode;
 import lombok.Getter;
 
 @Getter

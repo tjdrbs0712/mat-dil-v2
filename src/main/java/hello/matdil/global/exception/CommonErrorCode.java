@@ -1,4 +1,4 @@
-package hello.matdil.global.exception.errorcode;
+package hello.matdil.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

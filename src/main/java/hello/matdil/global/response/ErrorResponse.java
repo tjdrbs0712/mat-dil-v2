@@ -1,6 +1,6 @@
 package hello.matdil.global.response;
 
-import hello.matdil.global.exception.errorcode.ErrorCode;
+import hello.matdil.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

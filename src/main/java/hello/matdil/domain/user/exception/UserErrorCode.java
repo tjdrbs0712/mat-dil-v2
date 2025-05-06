@@ -1,11 +1,12 @@
-package hello.matdil.global.exception.errorcode;
+package hello.matdil.domain.user.exception;
 
+import hello.matdil.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserErrorCode implements ErrorCode{
+public enum UserErrorCode implements ErrorCode {
     EMAIL_DUPLICATION(404, "EMAIL_DUPLICATION", "중복된 이메일 입니다."),
     PHONE_DUPLICATION(404, "PHONE_DUPLICATION", "중복된 전화번호 입니다.")
 

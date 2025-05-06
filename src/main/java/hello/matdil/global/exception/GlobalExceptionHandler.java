@@ -1,8 +1,5 @@
-package hello.matdil.global.exception.handler;
+package hello.matdil.global.exception;
 
-import hello.matdil.global.exception.business.BusinessException;
-import hello.matdil.global.exception.errorcode.CommonErrorCode;
-import hello.matdil.global.exception.errorcode.ErrorCode;
 import hello.matdil.global.response.ErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
