@@ -1,5 +1,6 @@
 package hello.matdil.domain.user.service;
 
+import hello.matdil.domain.user.dto.UserInfoResponseDto;
 import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 import hello.matdil.domain.user.entity.User;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
         validateDuplicateUser(requestDto);
-        User user = userFactory.create(requestDto);
+        User user = userFactory.from(requestDto);
 
         try {
             return UserRegisterResponseDto.from(userRepository.save(user));
@@ -43,4 +44,14 @@ public class UserServiceImpl implements UserService{
             throw new UserException(UserErrorCode.PHONE_DUPLICATION);
         }
     }
+
+    //쿼리dsl로 유저가 ACTIVE인지 확인해야됨
+    @Override
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getMyInfo(Long userId) {
+        return userRepository.findById(userId)
+                .map(UserInfoResponseDto::from)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+    }
+
 }

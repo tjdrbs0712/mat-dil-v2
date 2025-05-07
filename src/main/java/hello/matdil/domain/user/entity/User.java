@@ -71,5 +71,4 @@ public class User {
         return encoder.matches(rawPassword, this.password);
     }
 
-
 }

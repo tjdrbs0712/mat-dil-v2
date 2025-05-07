@@ -48,9 +48,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/users/register",
-                                "/users/login",
-                                "/users/refresh"
+                                "/api/users/register",
+                                "/api/users/login",
+                                "/api/users/refresh"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

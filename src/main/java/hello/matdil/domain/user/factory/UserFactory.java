@@ -14,7 +14,7 @@ public class UserFactory {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User create(UserRegisterRequestDto dto) {
+    public User from(UserRegisterRequestDto dto) {
         return User.builder()
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))

@@ -7,7 +7,7 @@ public class BusinessException extends RuntimeException{
     private final ErrorCode errorCode;
 
     public BusinessException(ErrorCode errorCode) {
-//        super(errorCode.getErrorMessage()); // 기본 메시지
+        super(errorCode.getErrorMessage());
         this.errorCode = errorCode;
     }
 }

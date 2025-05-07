@@ -36,6 +36,7 @@ public class AuthService {
         return new UserLoginResponseDto(accessToken, refreshToken);
     }
 
+    //리프레시 토큰으로 어세스토큰 재발급
     @Transactional
     public RefreshTokenResponseDto refreshAccessToken(String refreshToken) {
         String newAccessToken = tokenService.refreshAccessToken(refreshToken);

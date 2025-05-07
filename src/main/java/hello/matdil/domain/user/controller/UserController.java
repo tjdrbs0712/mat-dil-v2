@@ -2,21 +2,20 @@ package hello.matdil.domain.user.controller;
 
 import hello.matdil.auth.dto.RefreshTokenRequestDto;
 import hello.matdil.auth.dto.RefreshTokenResponseDto;
+import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.auth.service.AuthService;
-import hello.matdil.domain.user.dto.UserLoginRequestDto;
-import hello.matdil.domain.user.dto.UserLoginResponseDto;
-import hello.matdil.domain.user.dto.UserRegisterRequestDto;
-import hello.matdil.domain.user.dto.UserRegisterResponseDto;
+import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.service.UserService;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -49,6 +48,14 @@ public class UserController {
     public ResponseEntity<SuccessResponse<Void>> logout(@RequestHeader("Authorization") String bearerToken) {
         authService.logout(bearerToken);
         return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+    //회원정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<SuccessResponse<UserInfoResponseDto>> getMyInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserInfoResponseDto responseDto = userService.getMyInfo(userDetails.getUserId());
+        return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
 
