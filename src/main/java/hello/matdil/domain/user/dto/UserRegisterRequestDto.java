@@ -23,8 +23,14 @@ public record UserRegisterRequestDto(
                 message = "전화번호는 010으로 시작하고 숫자 11자리여야 합니다."
         )
         String phoneNumber,
+
+        @NotBlank(message = "주소는 필수입니다.")
         String city,
+
+        @NotBlank(message = "주소는 필수입니다.")
         String street,
+
+        @NotBlank(message = "주소는 필수입니다.")
         String detailAddress
 ) {
 }

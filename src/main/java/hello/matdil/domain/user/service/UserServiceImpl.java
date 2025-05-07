@@ -3,6 +3,7 @@ package hello.matdil.domain.user.service;
 import hello.matdil.domain.user.dto.UserInfoResponseDto;
 import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.dto.UserRegisterResponseDto;
+import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
@@ -54,4 +55,16 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
+    //회원정보 수정
+    @Override
+    @Transactional
+    public UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        user.update(requestDto);
+
+        return UserInfoResponseDto.from(user);
+    }
 }

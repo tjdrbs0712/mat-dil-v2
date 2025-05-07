@@ -58,5 +58,16 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
+    //회원정보 수정
+    @PutMapping("/me")
+    public ResponseEntity<SuccessResponse<UserInfoResponseDto>> updateMyInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserInfoChangeRequestDto requestDto) {
+
+        UserInfoResponseDto responseDto = userService.updateMyInfo(userDetails.getUserId(), requestDto);
+        return ResponseEntity.ok(SuccessResponse.success(responseDto));
+    }
+
+
 
 }

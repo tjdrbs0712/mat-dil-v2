@@ -1,6 +1,7 @@
 package hello.matdil.domain.user.entity;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -70,5 +71,13 @@ public class User {
     public boolean isPasswordMatch(String rawPassword, PasswordEncoder encoder) {
         return encoder.matches(rawPassword, this.password);
     }
+
+    public void update(UserInfoChangeRequestDto dto) {
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getCity() != null && dto.getStreet() != null && dto.getDetailAddress() != null) {
+            this.address = new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
+        }
+    }
+
 
 }
