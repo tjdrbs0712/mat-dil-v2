@@ -5,6 +5,8 @@ import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.domain.user.exception.UserErrorCode;
+import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.factory.UserFactory;
 import hello.matdil.domain.user.repository.UserRepository;
 import hello.matdil.global.exception.translator.DataIntegrityExceptionTranslator;
@@ -15,7 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -63,7 +69,7 @@ class UserServiceImplTest {
                 .role(UserRole.USER)
                 .build();
 
-        given(userFactory.create(dto)).willReturn(user);
+        given(userFactory.from(dto)).willReturn(user);
         given(userRepository.save(user)).willReturn(user);
 
         // when
@@ -75,7 +81,20 @@ class UserServiceImplTest {
 
         verify(userRepository).existsByEmail(dto.email());
         verify(userRepository).existsByPhoneNumber(dto.phoneNumber());
-        verify(userFactory).create(dto);
+        verify(userFactory).from(dto);
         verify(userRepository).save(user);
     }
+
+    @Test
+    void 회원정보_조회_실패() {
+        // given
+        Long userId = 1L;
+        given(userRepository.findById(userId)).willReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> userService.getMyInfo(userId))
+                .isInstanceOf(UserException.class)
+                .hasMessageContaining(UserErrorCode.USER_NOT_FOUND.getErrorMessage());
+    }
+
 }
