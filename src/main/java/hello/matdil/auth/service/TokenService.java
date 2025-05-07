@@ -20,7 +20,7 @@ public class TokenService {
 
     //토큰 발급
     public String generateAccessToken(User user) {
-        return jwtTokenProvider.generateToken(user.getId(), user.getRole());
+        return jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole());
     }
 
     //리프레시 토큰 발급

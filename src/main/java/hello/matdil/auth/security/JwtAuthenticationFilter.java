@@ -30,17 +30,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtTokenProvider.validateToken(token)) {
                 Long userId = jwtTokenProvider.getUserId(token);
+                String email = jwtTokenProvider.getEmail(token); // 이메일도 토큰에서 추출한다고 가정
                 String role = jwtTokenProvider.getRole(token);
 
-                // principal: userId, credentials: null, authorities: ROLE_USER 등
+                // ✅ CustomUserPrincipal 생성
+                UserDetailsImpl principal = new UserDetailsImpl(userId, email, role);
+
+                // ✅ principal 기반 Authentication 객체 생성
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,
+                                principal,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                                principal.getAuthorities()
                         );
 
-                // SecurityContext에 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
@@ -48,3 +51,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+

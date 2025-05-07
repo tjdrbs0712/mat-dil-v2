@@ -29,13 +29,14 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String generateToken(Long userId, UserRole role) {
+    public String generateToken(Long userId, String email, UserRole role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMillis);
 
         return Jwts.builder()
                 .subject(userId.toString())
-                .claim(CLAIM_ROLE, role.name())
+                .claim("email", email)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key, Jwts.SIG.HS256)
@@ -59,6 +60,12 @@ public class JwtTokenProvider implements TokenProvider {
     public Long getUserId(String token) {
         return Long.parseLong(getClaims(token).getSubject());
     }
+
+    @Override
+    public String getEmail(String token) {
+        return getClaims(token).get("email", String.class);
+    }
+
 
     @Override
     public String getRole(String token) {
