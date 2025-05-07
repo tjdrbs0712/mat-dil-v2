@@ -1,8 +1,10 @@
 package hello.matdil.config;
 
-import hello.matdil.auth.security.*;
+import hello.matdil.auth.security.CustomAccessDeniedHandler;
+import hello.matdil.auth.security.CustomAuthenticationEntryPoint;
+import hello.matdil.auth.security.JwtAuthenticationFilter;
+import hello.matdil.auth.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
