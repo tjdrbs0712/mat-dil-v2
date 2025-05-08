@@ -3,6 +3,8 @@ package hello.matdil.global.exception.translator;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.translator.UserExceptionTranslator;
+import hello.matdil.global.exception.BusinessException;
+import hello.matdil.global.exception.CommonErrorCode;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,19 +54,19 @@ class UserExceptionTranslatorTest {
         assertThat(((UserException) result).getErrorCode()).isEqualTo(UserErrorCode.PHONE_DUPLICATION);
     }
 
-//    @Test
-//    void 알수없는_제약조건이면_INTERNAL_SERVER_ERROR_반환() {
-//        // given
-//        ConstraintViolationException cve = mock(ConstraintViolationException.class);
-//        when(cve.getConstraintName()).thenReturn("UNKNOWN_CONSTRAINT");
-//
-//        DataIntegrityViolationException exception = new DataIntegrityViolationException("error", cve);
-//
-//        // when
-//        RuntimeException result = translator.translate(exception);
-//
-//        // then
-//        assertThat(result).isInstanceOf(UserException.class);
-//        assertThat(((UserException) result).getErrorCode()).isEqualTo(CommonErrorCode.INTERNAL_SERVER_ERROR);
-//    }
+    @Test
+    void 알수없는_제약조건이면_INTERNAL_SERVER_ERROR_반환() {
+        // given
+        ConstraintViolationException cve = mock(ConstraintViolationException.class);
+        when(cve.getConstraintName()).thenReturn("UNKNOWN_CONSTRAINT");
+
+        DataIntegrityViolationException exception = new DataIntegrityViolationException("error", cve);
+
+        // when
+        RuntimeException result = translator.translate(exception);
+
+        // then
+        assertThat(result).isInstanceOf(BusinessException.class);
+        assertThat(((BusinessException) result).getErrorCode()).isEqualTo(CommonErrorCode.INTERNAL_SERVER_ERROR);
+    }
 }
