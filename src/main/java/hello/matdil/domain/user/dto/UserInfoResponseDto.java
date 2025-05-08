@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserInfoResponseDto {
-    private String email;
-    private String name;
-    private String phoneNumber;
-    private Address address;
-    private UserRole role;
-    private LocalDateTime createAt;
+    private final String email;
+    private final String name;
+    private final String phoneNumber;
+    private final Address address;
+    private final UserRole role;
+    private final LocalDateTime createAt;
 
     public static UserInfoResponseDto from(User user){
         return UserInfoResponseDto.builder()
