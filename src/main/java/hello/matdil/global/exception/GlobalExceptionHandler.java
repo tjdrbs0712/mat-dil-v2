@@ -1,6 +1,7 @@
 package hello.matdil.global.exception;
 
 import hello.matdil.global.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
@@ -39,6 +41,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
+//        log.info("exception 에러 발생 {}", e);
+        log.error("🔥 [GlobalException] 예기치 않은 에러 발생", e);
         CommonErrorCode code = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return ResponseEntity
                 .status(code.getHttpStatusCode())

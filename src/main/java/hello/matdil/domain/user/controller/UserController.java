@@ -6,20 +6,28 @@ import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.auth.service.AuthService;
 import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.service.UserService;
+import hello.matdil.global.response.SuccessCode;
 import hello.matdil.global.response.SuccessResponse;
+import hello.matdil.mail.entity.EmailToken;
+import hello.matdil.mail.service.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
+@Slf4j
 public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final EmailVerificationService emailVerificationService;
 
     /**
      * 회원가입 api
@@ -85,6 +93,14 @@ public class UserController {
         userService.withdraw(userDetails.getUserId());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
+
+    //이메일 인증 확인
+    @GetMapping("/verify-email")
+    public ResponseEntity<SuccessResponse<Void>> verifyEmail(@RequestParam String token) {
+        emailVerificationService.verify(token);
+        return ResponseEntity.ok(SuccessResponse.success(SuccessCode.EMAIL_VERIFICATION_SUCCESS, null));
+    }
+
 
 
 }

@@ -1,8 +1,9 @@
-package hello.matdil.domain.order.listener;
+package hello.matdil.domain.order.event;
 
 import hello.matdil.domain.delivery.service.DeliveryService;
-import hello.matdil.domain.order.event.OrderCreateEvent;
 import hello.matdil.domain.user.entity.User;
+import hello.matdil.domain.user.exception.UserErrorCode;
+import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class OrderCreatedEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(OrderCreateEvent event) {
         User user = userRepository.findById(event.userId())
-                .orElseThrow(() -> new EntityNotFoundException("사용자 없음"));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         deliveryService.createDelivery(event.orderId(), user.getAddress());
     }

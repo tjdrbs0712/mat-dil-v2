@@ -99,4 +99,8 @@ public class User {
             throw new UserException(UserErrorCode.BANNED_USER);
         }
     }
+
+    public void verifyEmail(){
+        this.userStatus = UserStatus.ACTIVE;
+    }
 }

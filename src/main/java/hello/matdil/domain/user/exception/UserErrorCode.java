@@ -17,7 +17,8 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_CURRENT_PASSWORD(401, "INVALID_CURRENT_PASSWORD", "비밀번호가 올바르지 않습니다."),
     SAME_AS_OLD_PASSWORD(400, "SAME_AS_OLD_PASSWORD", "이전과 동일한 비밀번호 입니다."),
     WITHDRAWN_USER(403, "WITHDRAWN_USER", "회원탈퇴 계정입니다."),
-    BANNED_USER(403, "BANNED_USER", "차단당한 계정입니다.")
+    BANNED_USER(403, "BANNED_USER", "차단당한 계정입니다."),
+    INVALID_EMAIL_TOKEN(401, "INVALID_ACCESS_TOKEN", "유호하지 않은 이메일 토큰 입니다.")
 
 
     ;

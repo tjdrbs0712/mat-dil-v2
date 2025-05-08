@@ -13,4 +13,8 @@ public class SuccessResponse<T> {
     public static <T> SuccessResponse<T> success(T data) {
         return new SuccessResponse<>(SuccessCode.SUCCESS.getCode(), SuccessCode.SUCCESS.getMessage(), data);
     }
+
+    public static <T> SuccessResponse<T> success(SuccessCode successCode, T data) {
+        return new SuccessResponse<>(successCode.getCode(), successCode.getMessage(), data);
+    }
 }

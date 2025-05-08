@@ -16,6 +16,17 @@ spring:
     user:
       name: none
       password: none
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GOOGLE_ID}
+    password: ${GOOGLE_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000
