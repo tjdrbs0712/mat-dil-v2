@@ -87,6 +87,7 @@ public class User {
 
     public void userStatusWithdraw(){
         userStatus = UserStatus.WITHDRAWN;
+        this.withdrawnAt = LocalDateTime.now();
     }
 
     public void validateLoginPossible() {
