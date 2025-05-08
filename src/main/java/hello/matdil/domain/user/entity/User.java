@@ -2,6 +2,8 @@ package hello.matdil.domain.user.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
+import hello.matdil.domain.user.exception.UserErrorCode;
+import hello.matdil.domain.user.exception.UserException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -81,5 +83,19 @@ public class User {
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void userStatusWithdraw(){
+        userStatus = UserStatus.WITHDRAWN;
+    }
+
+    public void validateLoginPossible() {
+        if (this.userStatus == UserStatus.WITHDRAWN) {
+            throw new UserException(UserErrorCode.WITHDRAWN_USER);
+        }
+
+        if (this.userStatus == UserStatus.BANNED) {
+            throw new UserException(UserErrorCode.BANNED_USER);
+        }
     }
 }

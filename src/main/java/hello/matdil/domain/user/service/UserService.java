@@ -11,4 +11,6 @@ public interface UserService {
     UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto);
 
     void changePassword(Long userId, PasswordChangeRequestDto requestDto);
+
+    void withdraw(Long userId);
 }

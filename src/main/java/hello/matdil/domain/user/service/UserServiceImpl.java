@@ -54,12 +54,20 @@ public class UserServiceImpl implements UserService{
         return UserInfoResponseDto.from(user);
     }
 
+    @Override
     @Transactional
     public void changePassword(Long userId, PasswordChangeRequestDto dto) {
         User user = getUser(userId);
         userValidator.validatePasswordChange(user, dto);
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
         user.changePassword(newPassword);
+    }
+
+    @Override
+    @Transactional
+    public void withdraw(Long userId) {
+        User user = getUser(userId);
+        user.userStatusWithdraw();
     }
 
     private User getUser(Long userId){

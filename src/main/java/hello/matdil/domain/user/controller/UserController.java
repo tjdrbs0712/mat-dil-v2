@@ -77,5 +77,14 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
+    //회원탈퇴
+    @PatchMapping("/me")
+    public ResponseEntity<SuccessResponse<Void>> withdraw(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        userService.withdraw(userDetails.getUserId());
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
 
 }
