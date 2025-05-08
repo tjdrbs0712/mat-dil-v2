@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,25 +43,28 @@ class OrderDeliveryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
-        Address address = new Address("서울", "101동", "010101");
-        User user = User.builder()
-                .role(UserRole.USER)
-                .email("sdfsdf@sd1f")
-                .password("sada1s")
-                .name("테스트 유저")
-                .address(address)
-                .phoneNumber("as1kdk")
-                .build();
-        userRepository.save(user);
-    }
-
     @Test
     void 주문생성_후_배달이_생성() throws Exception {
         // given
+        String uuid = UUID.randomUUID().toString();
+        String email = uuid + "@test.com";
+        String phoneNumber = "010" + uuid.substring(0, 8); // 길이 제한 고려
+
+        Address address = new Address("서울", "101동", "010101");
+        User user = User.builder()
+                .role(UserRole.USER)
+                .email(email)
+                .password("password")
+                .name("테스트 유저")
+                .address(address)
+                .phoneNumber(phoneNumber)
+                .build();
+        user.verifyEmail(); // 인증된 유저
+        userRepository.save(user);
+
+
         OrderCreateDto dto = new OrderCreateDto(
-                1L,
+                user.getId(),
                 1L,
                 List.of(new OrderItemCreateDto(1L, 1, 5000)),
                 "부재시 연락주세요",
