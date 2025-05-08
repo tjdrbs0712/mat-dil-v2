@@ -2,7 +2,6 @@ package hello.matdil.auth.service;
 
 import hello.matdil.auth.security.JwtTokenProvider;
 import hello.matdil.domain.user.entity.User;
-import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.repository.UserRepository;

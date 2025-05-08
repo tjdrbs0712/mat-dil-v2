@@ -4,7 +4,6 @@ import hello.matdil.auth.dto.RefreshTokenResponseDto;
 import hello.matdil.auth.security.JwtUtils;
 import hello.matdil.domain.user.dto.UserLoginResponseDto;
 import hello.matdil.domain.user.entity.User;
-import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.repository.UserRepository;

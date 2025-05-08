@@ -1,9 +1,5 @@
 package hello.matdil.domain.user.event;
 
-import hello.matdil.domain.user.entity.User;
-import hello.matdil.domain.user.exception.UserErrorCode;
-import hello.matdil.domain.user.exception.UserException;
-import hello.matdil.domain.user.repository.UserRepository;
 import hello.matdil.mail.entity.EmailToken;
 import hello.matdil.mail.repository.EmailTokenRepository;
 import hello.matdil.mail.service.MailService;

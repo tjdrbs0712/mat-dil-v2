@@ -8,7 +8,6 @@ import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.service.UserService;
 import hello.matdil.global.response.SuccessCode;
 import hello.matdil.global.response.SuccessResponse;
-import hello.matdil.mail.entity.EmailToken;
 import hello.matdil.mail.service.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
