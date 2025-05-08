@@ -5,23 +5,23 @@ import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.domain.user.event.UserMailSendEvent;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.factory.UserFactory;
 import hello.matdil.domain.user.repository.UserRepository;
-import hello.matdil.domain.user.translator.UserExceptionTranslator;
+import hello.matdil.domain.user.validator.UserValidator;
+import hello.matdil.event.GenericEventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -29,40 +29,37 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @InjectMocks
-    private UserServiceImpl userService;
-
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @Mock
     private UserFactory userFactory;
 
     @Mock
-    private UserExceptionTranslator userExceptionTranslator;
+    private GenericEventPublisher genericEventPublisher;
+
+    @Mock
+    private UserValidator userValidator;
+
+    @InjectMocks
+    private UserServiceImpl userService;
 
     @Test
-    void 회원가입_성공() {
+    void 회원가입_정상_흐름() {
         // given
-        UserRegisterRequestDto dto = new UserRegisterRequestDto(
-                "test@example.com",
-                "password123",
-                "홍길동",
-                "01012345678",
-                "서울",
-                "강남",
-                "101동"
-        );
-
-        given(userRepository.existsByEmail(dto.email())).willReturn(false);
-        given(userRepository.existsByPhoneNumber(dto.phoneNumber())).willReturn(false);
+        UserRegisterRequestDto dto = UserRegisterRequestDto.builder()
+                .email("user@example.com")
+                .password("pass1234")
+                .name("박성균")
+                .phoneNumber("01011112222")
+                .city("서울")
+                .street("강남")
+                .detailAddress("101호")
+                .build();
 
         User user = User.builder()
                 .email(dto.email())
-                .password("encodedPassword")
+                .password("encoded")
                 .name(dto.name())
                 .phoneNumber(dto.phoneNumber())
                 .address(new Address(dto.city(), dto.street(), dto.detailAddress()))
@@ -73,16 +70,14 @@ class UserServiceImplTest {
         given(userRepository.save(user)).willReturn(user);
 
         // when
-        UserRegisterResponseDto result = userService.register(dto);
+        UserRegisterResponseDto response = userService.register(dto);
 
         // then
-        assertThat(result.getEmail()).isEqualTo(dto.email());
-        assertThat(result.getName()).isEqualTo(dto.name());
-
-        verify(userRepository).existsByEmail(dto.email());
-        verify(userRepository).existsByPhoneNumber(dto.phoneNumber());
+        assertThat(response.getEmail()).isEqualTo(dto.email());
+        verify(userValidator).validate(dto);
         verify(userFactory).from(dto);
         verify(userRepository).save(user);
+        verify(genericEventPublisher).publish(any(UserMailSendEvent.class));
     }
 
     @Test
