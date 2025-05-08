@@ -1,9 +1,8 @@
 package hello.matdil.auth.service;
 
-import hello.matdil.auth.entity.RefreshToken;
-import hello.matdil.auth.repository.RefreshTokenRepository;
 import hello.matdil.auth.security.JwtTokenProvider;
 import hello.matdil.domain.user.entity.User;
+import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.repository.UserRepository;
@@ -14,49 +13,42 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TokenService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenIssuer issuer;
+    private final RefreshTokenManager refreshTokenManager;
+    private final JwtTokenProvider jwt;
     private final UserRepository userRepository;
 
-    //토큰 발급
     public String generateAccessToken(User user) {
-        return jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole());
+        return issuer.issueAccessToken(user);
     }
 
-    //리프레시 토큰 발급
     public String generateRefreshToken(User user) {
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
-        refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken));
-        return refreshToken;
+        String token = issuer.issueRefreshToken(user);
+        refreshTokenManager.save(user.getId(), token);
+        return token;
     }
 
-    // 리프레시 토큰으로 새 토큰 발급
     public String refreshAccessToken(String refreshToken) {
-        Long userId = validateAndExtractUserId(refreshToken);
-
-        RefreshToken saved = refreshTokenRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.REFRESH_TOKEN_NOT_FOUND));
-
-        if (!saved.getToken().equals(refreshToken)) {
-            throw new UserException(UserErrorCode.INVALID_REFRESH_TOKEN);
-        }
+        Long userId = validate(refreshToken);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+                .filter(u -> u.getUserStatus() == UserStatus.ACTIVE)
+                .orElseThrow(() -> new UserException(UserErrorCode.WITHDRAWN_USER));
+
+        refreshTokenManager.validate(userId, refreshToken);
 
         return generateAccessToken(user);
     }
 
-    //리프레시 토큰 삭제
     public void deleteRefreshToken(String accessToken) {
-        Long userId = validateAndExtractUserId(accessToken);
-        refreshTokenRepository.deleteById(userId);
+        Long userId = validate(accessToken);
+        refreshTokenManager.delete(userId);
     }
 
-    private Long validateAndExtractUserId(String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
+    private Long validate(String token) {
+        if (!jwt.validateToken(token)) {
             throw new UserException(UserErrorCode.INVALID_REFRESH_TOKEN);
         }
-        return jwtTokenProvider.getUserId(token);
+        return jwt.getUserId(token);
     }
 }

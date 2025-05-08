@@ -4,6 +4,7 @@ import hello.matdil.auth.dto.RefreshTokenResponseDto;
 import hello.matdil.auth.security.JwtUtils;
 import hello.matdil.domain.user.dto.UserLoginResponseDto;
 import hello.matdil.domain.user.entity.User;
+import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.repository.UserRepository;
@@ -20,9 +21,47 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    //로그인
+    /**
+     * 로그인
+     */
     @Transactional
     public UserLoginResponseDto login(String email, String password) {
+        User user = authenticate(email, password);
+
+        // 탈퇴한 회원은 로그인 불가
+        if (user.getUserStatus() == UserStatus.WITHDRAWN) {
+            throw new UserException(UserErrorCode.WITHDRAWN_USER);
+        }
+
+        // 토큰 발급은 TokenService에게 위임
+        String accessToken = tokenService.generateAccessToken(user);
+        String refreshToken = tokenService.generateRefreshToken(user);
+
+        return new UserLoginResponseDto(accessToken, refreshToken);
+    }
+
+    /**
+     * 리프레시 토큰으로 액세스 토큰 재발급
+     */
+    @Transactional
+    public RefreshTokenResponseDto refreshAccessToken(String refreshToken) {
+        String newAccessToken = tokenService.refreshAccessToken(refreshToken);
+        return new RefreshTokenResponseDto(newAccessToken);
+    }
+
+    /**
+     * 로그아웃 (리프레시 토큰 삭제)
+     */
+    @Transactional
+    public void logout(String bearerToken) {
+        String token = JwtUtils.extractBearerToken(bearerToken); // "Bearer ~" 제거
+        tokenService.deleteRefreshToken(token);
+    }
+
+    /**
+     * 이메일,비밀번호 인증
+     */
+    private User authenticate(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserException(UserErrorCode.AUTHENTICATION_FAILED));
 
@@ -30,24 +69,6 @@ public class AuthService {
             throw new UserException(UserErrorCode.AUTHENTICATION_FAILED);
         }
 
-        String accessToken = tokenService.generateAccessToken(user);
-        String refreshToken = tokenService.generateRefreshToken(user);
-
-        return new UserLoginResponseDto(accessToken, refreshToken);
-    }
-
-    //리프레시 토큰으로 어세스토큰 재발급
-    @Transactional
-    public RefreshTokenResponseDto refreshAccessToken(String refreshToken) {
-        String newAccessToken = tokenService.refreshAccessToken(refreshToken);
-        return new RefreshTokenResponseDto(newAccessToken);
-    }
-
-    //로그아웃
-    @Transactional
-    public void logout(String bearerToken) {
-        String token = JwtUtils.extractBearerToken(bearerToken);
-        tokenService.deleteRefreshToken(token);
+        return user;
     }
 }
-
