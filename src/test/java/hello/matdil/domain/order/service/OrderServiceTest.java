@@ -6,7 +6,6 @@ import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.event.OrderCreateEvent;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.event.GenericEventPublisher;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class OrderServiceTest {
+class
+OrderServiceTest {
 
     @InjectMocks
     private OrderService orderService;
