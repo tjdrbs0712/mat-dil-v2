@@ -29,9 +29,7 @@ public class AuthService {
         User user = authenticate(email, password);
 
         // 탈퇴한 회원은 로그인 불가
-        if (user.getUserStatus() == UserStatus.WITHDRAWN) {
-            throw new UserException(UserErrorCode.WITHDRAWN_USER);
-        }
+        user.validateLoginPossible();
 
         // 토큰 발급은 TokenService에게 위임
         String accessToken = tokenService.generateAccessToken(user);

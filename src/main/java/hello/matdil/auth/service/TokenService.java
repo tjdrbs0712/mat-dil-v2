@@ -32,8 +32,9 @@ public class TokenService {
         Long userId = validate(refreshToken);
 
         User user = userRepository.findById(userId)
-                .filter(u -> u.getUserStatus() == UserStatus.ACTIVE)
                 .orElseThrow(() -> new UserException(UserErrorCode.WITHDRAWN_USER));
+
+        user.validateLoginPossible();
 
         refreshTokenManager.validate(userId, refreshToken);
 
