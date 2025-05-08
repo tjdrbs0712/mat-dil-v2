@@ -93,7 +93,7 @@ public class User {
     public void validateLoginPossible() {
 
         if (this.userStatus == UserStatus.INACTIVE) {
-            throw new UserException(UserErrorCode.WITHDRAWN_USER);
+            throw new UserException(UserErrorCode.INACTIVE_USER);
         }
 
         if (this.userStatus == UserStatus.WITHDRAWN) {
