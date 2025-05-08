@@ -1,17 +1,16 @@
 package hello.matdil.domain.user.service;
 
-import hello.matdil.domain.user.dto.UserInfoResponseDto;
-import hello.matdil.domain.user.dto.UserRegisterRequestDto;
-import hello.matdil.domain.user.dto.UserRegisterResponseDto;
-import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
+import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.factory.UserFactory;
 import hello.matdil.domain.user.repository.UserRepository;
-import hello.matdil.global.exception.translator.DataIntegrityExceptionTranslator;
+import hello.matdil.domain.user.validator.UserValidator;
+import hello.matdil.domain.user.translator.UserExceptionTranslator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,28 +20,19 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserFactory userFactory;
-    private final DataIntegrityExceptionTranslator dataIntegrityExceptionTranslator;
+    private final UserExceptionTranslator userExceptionTranslator;
+    private final PasswordEncoder passwordEncoder;
+    private final UserValidator userValidator;
 
     @Override
     @Transactional
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
-        validateDuplicateUser(requestDto);
+        userValidator.validate(requestDto);
         User user = userFactory.from(requestDto);
-
         try {
             return UserRegisterResponseDto.from(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {
-            throw dataIntegrityExceptionTranslator.translate(e);
-        }
-    }
-
-    private void validateDuplicateUser(UserRegisterRequestDto dto) {
-        if (userRepository.existsByEmail(dto.email())) {
-            throw new UserException(UserErrorCode.EMAIL_DUPLICATION);
-        }
-
-        if (userRepository.existsByPhoneNumber(dto.phoneNumber())) {
-            throw new UserException(UserErrorCode.PHONE_DUPLICATION);
+            throw userExceptionTranslator.translate(e);
         }
     }
 
@@ -59,12 +49,21 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-
+        User user = getUser(userId);
         user.update(requestDto);
-
         return UserInfoResponseDto.from(user);
+    }
+
+    @Transactional
+    public void changePassword(Long userId, PasswordChangeRequestDto dto) {
+        User user = getUser(userId);
+        userValidator.validatePasswordChange(user, dto);
+        String newPassword = passwordEncoder.encode(dto.getNewPassword());
+        user.changePassword(newPassword);
+    }
+
+    private User getUser(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 }

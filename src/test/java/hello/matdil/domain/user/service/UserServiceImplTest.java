@@ -9,7 +9,7 @@ import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.factory.UserFactory;
 import hello.matdil.domain.user.repository.UserRepository;
-import hello.matdil.global.exception.translator.DataIntegrityExceptionTranslator;
+import hello.matdil.domain.user.translator.UserExceptionTranslator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,7 +42,7 @@ class UserServiceImplTest {
     private UserFactory userFactory;
 
     @Mock
-    private DataIntegrityExceptionTranslator dataIntegrityExceptionTranslator;
+    private UserExceptionTranslator userExceptionTranslator;
 
     @Test
     void 회원가입_성공() {

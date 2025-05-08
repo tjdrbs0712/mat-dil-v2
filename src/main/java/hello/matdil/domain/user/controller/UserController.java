@@ -68,6 +68,14 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponse<Void>> changePassword(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody PasswordChangeRequestDto requestDto) {
+
+        userService.changePassword(userDetails.getUserId(), requestDto);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
 
 
 }

@@ -1,9 +1,6 @@
 package hello.matdil.domain.user.service;
 
-import hello.matdil.domain.user.dto.UserInfoResponseDto;
-import hello.matdil.domain.user.dto.UserRegisterRequestDto;
-import hello.matdil.domain.user.dto.UserRegisterResponseDto;
-import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
+import hello.matdil.domain.user.dto.*;
 
 public interface UserService {
 
@@ -12,4 +9,6 @@ public interface UserService {
     UserInfoResponseDto getMyInfo(Long userId);
 
     UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto);
+
+    void changePassword(Long userId, PasswordChangeRequestDto requestDto);
 }
