@@ -27,14 +27,14 @@ public class AuthService {
     public UserLoginResponseDto login(String email, String password) {
         User user = authenticate(email, password);
 
-        // 탈퇴한 회원은 로그인 불가
+        // 회원 상태에 따라
         user.validateLoginPossible();
 
         // 토큰 발급은 TokenService에게 위임
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
 
-        return new UserLoginResponseDto(accessToken, refreshToken);
+        return UserLoginResponseDto.of(accessToken, refreshToken);
     }
 
     /**
