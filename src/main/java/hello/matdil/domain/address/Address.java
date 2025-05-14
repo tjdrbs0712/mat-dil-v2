@@ -26,4 +26,9 @@ public class Address {
         this.street = street;
         this.detailAddress = detailAddress;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %s", city, street, detailAddress);
+    }
 }

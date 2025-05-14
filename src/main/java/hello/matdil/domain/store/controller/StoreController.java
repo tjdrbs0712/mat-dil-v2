@@ -4,6 +4,7 @@ import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
 import hello.matdil.global.response.SuccessResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class StoreController {
     @PostMapping
     public ResponseEntity<SuccessResponse<StoreResponseDto>> createStore(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody StoreCreateRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.createStore(userDetails.getUserId(), userDetails.getRole(), requestDto);
+            @RequestBody @Valid StoreCreateRequestDto requestDto) {
+        StoreResponseDto responseDto = storeService.createStore(userDetails.getUserId(), userDetails.getUserRole(), requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.success(responseDto));
     }
 
@@ -58,14 +59,14 @@ public class StoreController {
     }
 
     // 가게 상태 변경
-    @PatchMapping("/{storeId}/status")
-    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long storeId,
-            @RequestBody StoreStatusChangeRequestDto requestDto) {
-        storeService.changeStoreStatus(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto.getStatus());
-        return ResponseEntity.ok(SuccessResponse.success(null));
-    }
+//    @PatchMapping("/{storeId}/status")
+//    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @PathVariable Long storeId,
+//            @RequestBody StoreStatusChangeRequestDto requestDto) {
+//        storeService.changeStoreStatus(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto.getStatus());
+//        return ResponseEntity.ok(SuccessResponse.success(null));
+//    }
 
     // 가게 삭제 (soft-delete)
     @DeleteMapping("/{storeId}")

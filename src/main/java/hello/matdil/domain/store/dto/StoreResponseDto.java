@@ -1,7 +1,43 @@
 package hello.matdil.domain.store.dto;
 
+import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.entity.StoreStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalTime;
+
 @Getter
+@Builder
+@AllArgsConstructor
 public class StoreResponseDto {
+
+    private Long id;
+    private String name;
+    private String phoneNumber;
+    private String address; // "시 도 도로명 상세" 식으로 조합
+    private LocalTime openTime;
+    private LocalTime closeTime;
+    private int minOrderPrice;
+    private int deliveryTimeEstimate;
+    private double rating;
+    private int reviewCount;
+    private StoreStatus status;
+
+    public static StoreResponseDto from(Store store) {
+        return StoreResponseDto.builder()
+                .id(store.getId())
+                .name(store.getName())
+                .phoneNumber(store.getPhoneNumber())
+                .address(store.getAddress().toString())
+                .openTime(store.getOpenTime())
+                .closeTime(store.getCloseTime())
+                .minOrderPrice(store.getMinOrderPrice())
+                .deliveryTimeEstimate(store.getDeliveryTimeEstimate())
+                .rating(store.getRating())
+                .reviewCount(store.getReviewCount())
+                .status(store.getStatus())
+                .build();
+    }
 }
