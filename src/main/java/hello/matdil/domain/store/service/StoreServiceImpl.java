@@ -25,7 +25,7 @@ public class StoreServiceImpl implements StoreService{
     @Transactional
     public StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto) {
 
-        PermissionValidator.validateOwnerOrAdmin(role); // 본인이 owner이므로 둘 다 userId
+        PermissionValidator.validateOwnerOrAdmin(role);
 
         // 2. 주소 객체 생성
         Address address = new Address(
