@@ -66,7 +66,7 @@ class UserServiceImplTest {
                 .role(UserRole.USER)
                 .build();
 
-        given(userFactory.from(dto)).willReturn(user);
+        given(userFactory.createUser(dto)).willReturn(user);
         given(userRepository.save(user)).willReturn(user);
 
         // when
@@ -75,7 +75,7 @@ class UserServiceImplTest {
         // then
         assertThat(response.getEmail()).isEqualTo(dto.email());
         verify(userValidator).validate(dto);
-        verify(userFactory).from(dto);
+        verify(userFactory).createUser(dto);
         verify(userRepository).save(user);
         verify(genericEventPublisher).publish(any(UserMailSendEvent.class));
     }
