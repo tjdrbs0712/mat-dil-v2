@@ -20,7 +20,7 @@ public enum UserErrorCode implements ErrorCode {
     BANNED_USER(403, "BANNED_USER", "차단당한 계정입니다."),
     INVALID_EMAIL_TOKEN(401, "INVALID_EMAIL_TOKEN", "유호하지 않은 이메일 토큰 입니다."),
     INACTIVE_USER(403, "INACTIVE_USER", "이메일 인증을 해주세요."),
-
+    NO_PERMISSION(403, "NO_PERMISSION", "해당 요청에 대한 권한이 없습니다."),
 
     ;
 
