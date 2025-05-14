@@ -11,6 +11,7 @@ import hello.matdil.domain.user.service.UserService;
 import hello.matdil.global.response.SuccessCode;
 import hello.matdil.global.response.SuccessResponse;
 import hello.matdil.mail.service.EmailVerificationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<SuccessResponse<UserRegisterResponseDto>> register(
-            @RequestBody UserRegisterRequestDto requestDto) {
+            @RequestBody @Valid UserRegisterRequestDto requestDto) {
         UserRegisterResponseDto responseDto = userService.register(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.success(responseDto));
     }
@@ -54,8 +55,8 @@ public class AuthController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<UserLoginResponseDto>> login(@RequestBody UserLoginRequestDto requestDto) {
-        UserLoginResponseDto responseDto = authService.login(requestDto.email(), requestDto.password());
+    public ResponseEntity<SuccessResponse<UserLoginResponseDto>> login(@RequestBody @Valid UserLoginRequestDto requestDto) {
+        UserLoginResponseDto responseDto = authService.login(requestDto.getEmail(), requestDto.getPassword());
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
