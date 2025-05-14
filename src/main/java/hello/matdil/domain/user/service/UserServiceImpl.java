@@ -7,6 +7,7 @@ import hello.matdil.domain.user.event.UserMailSendEvent;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
 import hello.matdil.domain.user.factory.UserFactory;
+import hello.matdil.domain.user.reader.UserReader;
 import hello.matdil.domain.user.repository.UserRepository;
 import hello.matdil.domain.user.translator.UserExceptionTranslator;
 import hello.matdil.domain.user.validator.UserValidator;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
     private final UserValidator userValidator;
     private final GenericEventPublisher genericEventPublisher;
+    private final UserReader userReader;
 
     @Override
     @Transactional
@@ -68,7 +70,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto) {
-        User user = getUser(userId);
+        User user = userReader.getActiveUser(userId);
         user.update(requestDto);
         return UserInfoResponseDto.from(user);
     }
@@ -76,7 +78,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void changePassword(Long userId, PasswordChangeRequestDto dto) {
-        User user = getUser(userId);
+        User user = userReader.getActiveUser(userId);
         userValidator.validatePasswordChange(user, dto);
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
         user.changePassword(newPassword);
@@ -85,12 +87,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void withdrawUser(Long userId) {
-        User user = getUser(userId);
+        User user = userReader.getActiveUser(userId);
         user.userStatusWithdraw();
-    }
-
-    private User getUser(Long userId){
-        return userRepository.findByIdAndUserStatus(userId, UserStatus.ACTIVE)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 }

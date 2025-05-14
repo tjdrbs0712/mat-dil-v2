@@ -5,6 +5,7 @@ import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.dto.UserRegisterResponseDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.event.UserMailSendEvent;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
@@ -83,7 +84,7 @@ class UserServiceImplTest {
     void 회원정보_조회_실패() {
         // given
         Long userId = 1L;
-        given(userRepository.findById(userId)).willReturn(Optional.empty());
+        given(userRepository.findByIdAndUserStatus(userId, UserStatus.ACTIVE)).willReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> userService.getMyInfo(userId))
