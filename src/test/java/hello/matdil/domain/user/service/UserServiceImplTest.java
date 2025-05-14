@@ -59,11 +59,11 @@ class UserServiceImplTest {
                 .build();
 
         User user = User.builder()
-                .email(dto.email())
+                .email(dto.getEmail())
                 .password("encoded")
-                .name(dto.name())
-                .phoneNumber(dto.phoneNumber())
-                .address(new Address(dto.city(), dto.street(), dto.detailAddress()))
+                .name(dto.getName())
+                .phoneNumber(dto.getPhoneNumber())
+                .address(new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress()))
                 .role(UserRole.USER)
                 .build();
 
@@ -74,7 +74,7 @@ class UserServiceImplTest {
         UserRegisterResponseDto response = userService.register(dto);
 
         // then
-        assertThat(response.getEmail()).isEqualTo(dto.email());
+        assertThat(response.getEmail()).isEqualTo(dto.getEmail());
         verify(userFactory).createUser(dto);
         verify(userRepository).save(user);
         verify(genericEventPublisher).publish(any(UserMailSendEvent.class));
