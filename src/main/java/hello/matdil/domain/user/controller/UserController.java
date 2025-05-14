@@ -23,39 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final AuthService authService;
-    private final EmailVerificationService emailVerificationService;
 
     /**
-     * 회원가입 api
+     * 내 정보 조회
      */
-    @PostMapping("/register")
-    public ResponseEntity<SuccessResponse<UserRegisterResponseDto>> register(
-            @RequestBody UserRegisterRequestDto requestDto) {
-
-        UserRegisterResponseDto responseDto = userService.register(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.success(responseDto));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<UserLoginResponseDto>> login(@RequestBody UserLoginRequestDto requestDto) {
-        UserLoginResponseDto responseDto = authService.login(requestDto.email(), requestDto.password());
-        return ResponseEntity.ok(SuccessResponse.success(responseDto));
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<SuccessResponse<RefreshTokenResponseDto>> refresh(@RequestBody RefreshTokenRequestDto requestDto) {
-        RefreshTokenResponseDto responseDto = authService.refreshAccessToken(requestDto.refreshToken());
-        return ResponseEntity.ok(SuccessResponse.success(responseDto));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<SuccessResponse<Void>> logout(@RequestHeader("Authorization") String bearerToken) {
-        authService.logout(bearerToken);
-        return ResponseEntity.ok(SuccessResponse.success(null));
-    }
-
-    //회원정보 조회
     @GetMapping("/me")
     public ResponseEntity<SuccessResponse<UserInfoResponseDto>> getMyInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -63,41 +34,35 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
-    //회원정보 수정
+    /**
+     * 내 정보 수정
+     */
     @PutMapping("/me")
     public ResponseEntity<SuccessResponse<UserInfoResponseDto>> updateMyInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserInfoChangeRequestDto requestDto) {
-
         UserInfoResponseDto responseDto = userService.updateMyInfo(userDetails.getUserId(), requestDto);
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
+    /**
+     * 비밀번호 변경
+     */
     @PatchMapping("/password")
     public ResponseEntity<SuccessResponse<Void>> changePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody PasswordChangeRequestDto requestDto) {
-
         userService.changePassword(userDetails.getUserId(), requestDto);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
-    //회원탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @PatchMapping("/me")
     public ResponseEntity<SuccessResponse<Void>> withdraw(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         userService.withdraw(userDetails.getUserId());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
-
-    //이메일 인증 확인
-    @GetMapping("/verify-email")
-    public ResponseEntity<SuccessResponse<Void>> verifyEmail(@RequestParam String token) {
-        emailVerificationService.verify(token);
-        return ResponseEntity.ok(SuccessResponse.success(SuccessCode.EMAIL_VERIFICATION_SUCCESS, null));
-    }
-
-
-
 }
