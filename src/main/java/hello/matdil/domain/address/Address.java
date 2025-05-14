@@ -13,17 +13,17 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class Address {
     @Column(nullable = false)
-    private String street;
-
-    @Column(nullable = false)
     private String city;
 
     @Column(nullable = false)
-    private String zipcode;
+    private String street;
 
-    public Address(String street, String city, String zipcode) {
-        this.street = street;
+    @Column(nullable = false)
+    private String detailAddress;
+
+    public Address(String city, String street, String detailAddress) {
         this.city = city;
-        this.zipcode = zipcode;
+        this.street = street;
+        this.detailAddress = detailAddress;
     }
 }

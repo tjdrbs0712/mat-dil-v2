@@ -1,7 +1,20 @@
 package hello.matdil.domain.user.service;
 
-import org.springframework.stereotype.Service;
+import hello.matdil.domain.user.dto.*;
 
-@Service
-public class UserService {
+public interface UserService {
+
+    UserRegisterResponseDto register(UserRegisterRequestDto requestDto);
+
+    UserInfoResponseDto getMyInfo(Long userId);
+
+    UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto);
+
+    void changePassword(Long userId, PasswordChangeRequestDto requestDto);
+
+    void withdrawUser(Long userId);
+
+    void checkEmailDuplicate(String email);
+
+    void checkPhoneDuplicate(String phone);
 }

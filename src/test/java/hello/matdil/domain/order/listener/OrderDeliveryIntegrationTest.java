@@ -16,16 +16,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Rollback
 class OrderDeliveryIntegrationTest {
 
     @Autowired
@@ -40,25 +43,28 @@ class OrderDeliveryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
+    @Test
+    void 주문생성_후_배달이_생성() throws Exception {
+        // given
+        String uuid = UUID.randomUUID().toString();
+        String email = uuid + "@test.com";
+        String phoneNumber = "010" + uuid.substring(0, 8); // 길이 제한 고려
+
         Address address = new Address("서울", "101동", "010101");
         User user = User.builder()
                 .role(UserRole.USER)
-                .email("sdfsdf@sd1f")
-                .password("sada1s")
+                .email(email)
+                .password("password")
                 .name("테스트 유저")
                 .address(address)
-                .phoneNumber("as1kdk")
+                .phoneNumber(phoneNumber)
                 .build();
+        user.verifyEmail(); // 인증된 유저
         userRepository.save(user);
-    }
 
-    @Test
-    void 주문생성_후_배달이_생성된다() throws Exception {
-        // given
+
         OrderCreateDto dto = new OrderCreateDto(
-                1L,
+                user.getId(),
                 1L,
                 List.of(new OrderItemCreateDto(1L, 1, 5000)),
                 "부재시 연락주세요",

@@ -3,6 +3,7 @@ package hello.matdil.domain.order.listener;
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.delivery.service.DeliveryService;
 import hello.matdil.domain.order.event.OrderCreateEvent;
+import hello.matdil.domain.order.event.OrderCreatedEventListener;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class OrderCreatedEventListenerTest {
 
     @Test
     @DisplayName("OrderCreatedEvent를 수신하면 유저 주소를 기반으로 배달을 생성한다")
-    void handle_createsDelivery_fromEvent() {
+    void 배달_생성() {
         // given
         Long userId = 1L;
         Long orderId = 10L;
