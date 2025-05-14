@@ -48,10 +48,10 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/users/register",
-                                "/api/users/login",
-                                "/api/users/refresh",
-                                "/api/users/verify-email"
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/refresh",
+                                "/api/auth/verify-email"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

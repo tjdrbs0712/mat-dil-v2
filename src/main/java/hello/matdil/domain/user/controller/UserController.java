@@ -1,17 +1,13 @@
 package hello.matdil.domain.user.controller;
 
-import hello.matdil.auth.dto.RefreshTokenRequestDto;
-import hello.matdil.auth.dto.RefreshTokenResponseDto;
 import hello.matdil.auth.security.UserDetailsImpl;
-import hello.matdil.auth.service.AuthService;
-import hello.matdil.domain.user.dto.*;
+import hello.matdil.domain.user.dto.PasswordChangeRequestDto;
+import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
+import hello.matdil.domain.user.dto.UserInfoResponseDto;
 import hello.matdil.domain.user.service.UserService;
-import hello.matdil.global.response.SuccessCode;
 import hello.matdil.global.response.SuccessResponse;
-import hello.matdil.mail.service.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

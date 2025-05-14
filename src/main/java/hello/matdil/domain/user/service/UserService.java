@@ -13,4 +13,8 @@ public interface UserService {
     void changePassword(Long userId, PasswordChangeRequestDto requestDto);
 
     void withdraw(Long userId);
+
+    void checkEmailDuplicate(String email);
+
+    void checkPhoneDuplicate(String phone);
 }
