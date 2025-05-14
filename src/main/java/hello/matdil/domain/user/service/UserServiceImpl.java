@@ -2,6 +2,7 @@ package hello.matdil.domain.user.service;
 
 import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.entity.User;
+import hello.matdil.domain.user.entity.UserStatus;
 import hello.matdil.domain.user.event.UserMailSendEvent;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
@@ -54,14 +55,14 @@ public class UserServiceImpl implements UserService{
         userValidator.validatePhoneNumber(phoneNumber);
     }
 
-    //쿼리dsl로 유저가 ACTIVE인지 확인해야됨
     @Override
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo(Long userId) {
-        return userRepository.findById(userId)
+        return userRepository.findByIdAndUserStatus(userId, UserStatus.ACTIVE)
                 .map(UserInfoResponseDto::from)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
+
 
     //회원정보 수정
     @Override
@@ -83,13 +84,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public void withdraw(Long userId) {
+    public void withdrawUser(Long userId) {
         User user = getUser(userId);
         user.userStatusWithdraw();
     }
 
     private User getUser(Long userId){
-        return userRepository.findById(userId)
+        return userRepository.findByIdAndUserStatus(userId, UserStatus.ACTIVE)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 }

@@ -12,7 +12,7 @@ public interface UserService {
 
     void changePassword(Long userId, PasswordChangeRequestDto requestDto);
 
-    void withdraw(Long userId);
+    void withdrawUser(Long userId);
 
     void checkEmailDuplicate(String email);
 

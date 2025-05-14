@@ -58,7 +58,7 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<SuccessResponse<Void>> withdraw(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.withdraw(userDetails.getUserId());
+        userService.withdrawUser(userDetails.getUserId());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 }
