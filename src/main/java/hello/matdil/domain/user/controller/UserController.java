@@ -55,7 +55,7 @@ public class UserController {
     /**
      * 회원 탈퇴
      */
-    @PatchMapping("/me")
+    @DeleteMapping("/me")
     public ResponseEntity<SuccessResponse<Void>> withdraw(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.withdrawUser(userDetails.getUserId());
