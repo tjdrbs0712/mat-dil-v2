@@ -24,8 +24,8 @@ public class StoreServiceImpl implements StoreService{
     @Override
     @Transactional
     public StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto) {
-        // 1. 권한 검사: 사장님 또는 관리자만 가능
-        PermissionValidator.validateOwnerOrAdmin(userId, userId, role); // 본인이 owner이므로 둘 다 userId
+
+        PermissionValidator.validateOwnerOrAdmin(role); // 본인이 owner이므로 둘 다 userId
 
         // 2. 주소 객체 생성
         Address address = new Address(
