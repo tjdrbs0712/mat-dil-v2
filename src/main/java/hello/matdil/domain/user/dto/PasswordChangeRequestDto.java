@@ -3,8 +3,10 @@ package hello.matdil.domain.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class PasswordChangeRequestDto {
 
     @NotBlank(message = "현재 비밀번호는 필수입니다.")

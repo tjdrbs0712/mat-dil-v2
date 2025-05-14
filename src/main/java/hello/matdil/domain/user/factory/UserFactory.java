@@ -16,11 +16,11 @@ public class UserFactory {
 
     public User createUser(UserRegisterRequestDto dto) {
         return User.builder()
-                .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
-                .name(dto.name())
-                .phoneNumber(dto.phoneNumber())
-                .address(new Address(dto.city(), dto.street(), dto.detailAddress()))
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .name(dto.getName())
+                .phoneNumber(dto.getPhoneNumber())
+                .address(new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress()))
                 .role(UserRole.USER)
                 .build();
     }

@@ -6,6 +6,7 @@ import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
 import hello.matdil.domain.user.dto.UserInfoResponseDto;
 import hello.matdil.domain.user.service.UserService;
 import hello.matdil.global.response.SuccessResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class UserController {
     @PutMapping("/me")
     public ResponseEntity<SuccessResponse<UserInfoResponseDto>> updateMyInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody UserInfoChangeRequestDto requestDto) {
+            @RequestBody @Valid UserInfoChangeRequestDto requestDto) {
         UserInfoResponseDto responseDto = userService.updateMyInfo(userDetails.getUserId(), requestDto);
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
@@ -47,7 +48,7 @@ public class UserController {
     @PatchMapping("/password")
     public ResponseEntity<SuccessResponse<Void>> changePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody PasswordChangeRequestDto requestDto) {
+            @RequestBody @Valid PasswordChangeRequestDto requestDto) {
         userService.changePassword(userDetails.getUserId(), requestDto);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }

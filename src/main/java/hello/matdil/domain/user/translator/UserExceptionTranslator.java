@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserExceptionTranslator extends AbstractDataIntegrityExceptionTranslator {
 
-    public static final String UK_USER_EMAIL = "UK_user_email";
-    public static final String UK_USER_PHONE = "UK_user_phone_number";
+    public static final String UK_USER_EMAIL = "users.UK_user_email";
+    public static final String UK_USER_PHONE = "users.UK_user_phone_number";
 
     @Override
     protected RuntimeException resolveException(String constraintName) {
