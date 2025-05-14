@@ -1,7 +1,6 @@
 package hello.matdil.domain.user.validator;
 
 import hello.matdil.domain.user.dto.PasswordChangeRequestDto;
-import hello.matdil.domain.user.dto.UserRegisterRequestDto;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
@@ -27,11 +26,6 @@ public class UserValidator {
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new UserException(UserErrorCode.PHONE_DUPLICATION);
         }
-    }
-
-    public void validate(UserRegisterRequestDto dto) {
-        validateEmail(dto.email());
-        validatePhoneNumber(dto.phoneNumber());
     }
 
     public void validatePasswordChange(User user, PasswordChangeRequestDto dto) {

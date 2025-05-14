@@ -74,7 +74,6 @@ class UserServiceImplTest {
 
         // then
         assertThat(response.getEmail()).isEqualTo(dto.email());
-        verify(userValidator).validate(dto);
         verify(userFactory).createUser(dto);
         verify(userRepository).save(user);
         verify(genericEventPublisher).publish(any(UserMailSendEvent.class));

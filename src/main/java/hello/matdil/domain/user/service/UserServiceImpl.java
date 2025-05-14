@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
-        userValidator.validate(requestDto);
+
         User user = userFactory.createUser(requestDto);
         UserRegisterResponseDto responseDto;
 
@@ -42,6 +42,16 @@ public class UserServiceImpl implements UserService{
 
         genericEventPublisher.publish(new UserMailSendEvent(user.getEmail()));
         return responseDto;
+    }
+
+    @Override
+    public void checkEmailDuplicate(String email) {
+        userValidator.validateEmail(email);
+    }
+
+    @Override
+    public void checkPhoneDuplicate(String phoneNumber) {
+        userValidator.validatePhoneNumber(phoneNumber);
     }
 
     //쿼리dsl로 유저가 ACTIVE인지 확인해야됨

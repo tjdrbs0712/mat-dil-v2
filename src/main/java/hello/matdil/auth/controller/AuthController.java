@@ -37,6 +37,19 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.success(responseDto));
     }
 
+    // 중복 확인 API
+    @GetMapping("/check-email")
+    public ResponseEntity<SuccessResponse<Void>> checkEmail(@RequestParam String email) {
+        userService.checkEmailDuplicate(email);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+    @GetMapping("/check-phone")
+    public ResponseEntity<SuccessResponse<Void>> checkPhone(@RequestParam String phone) {
+        userService.checkPhoneDuplicate(phone);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
     /**
      * 로그인
      */
