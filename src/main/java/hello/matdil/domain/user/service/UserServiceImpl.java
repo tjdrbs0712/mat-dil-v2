@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
         userValidator.validate(requestDto);
-        User user = userFactory.from(requestDto);
+        User user = userFactory.createUser(requestDto);
         UserRegisterResponseDto responseDto;
 
         try {
