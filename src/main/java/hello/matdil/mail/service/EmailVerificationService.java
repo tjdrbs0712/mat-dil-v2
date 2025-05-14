@@ -27,7 +27,7 @@ public class EmailVerificationService {
                 .orElseThrow(() -> new UserException(UserErrorCode.INVALID_EMAIL_TOKEN));
 
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("토큰이 만료되었습니다.");
+            throw new UserException(UserErrorCode.INVALID_EMAIL_TOKEN);
         }
 
         User user = userRepository.findByEmail(tokenEntity.getEmail())
