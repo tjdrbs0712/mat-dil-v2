@@ -1,14 +1,10 @@
 package hello.matdil.domain.store.controller;
 
 import hello.matdil.auth.security.UserDetailsImpl;
-import hello.matdil.domain.store.dto.StoreCreateRequestDto;
-import hello.matdil.domain.store.dto.StoreResponseDto;
-import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
-import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
+import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
-import hello.matdil.global.util.CursorParamParser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,23 +33,11 @@ public class StoreController {
     // 가게 목록 조회 (필터/정렬)
     @GetMapping
     public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto>>> getStores(
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "rating") String sort,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam Map<String, String> rawCursorParams
+            @ModelAttribute StoreSearchRequestDto request
     ) {
-        Map<String, Object> cursorParams = CursorParamParser.parse(rawCursorParams);
-
-        SliceResponse<StoreSummaryResponseDto> response = storeService.getStores(
-                address, name, sort, size, cursorParams
-        );
-
+        SliceResponse<StoreSummaryResponseDto> response = storeService.getStores(request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
-
-
-
 
     // 가게 단건 조회
     @GetMapping("/{storeId}")

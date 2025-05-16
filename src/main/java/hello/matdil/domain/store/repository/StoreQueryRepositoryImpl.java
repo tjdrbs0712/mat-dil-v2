@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.entity.QStore;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
@@ -26,16 +27,16 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
     private final Map<StoreSortType, SortStrategy> sortStrategyMap;
 
     @Override
-    public Slice<Store> findStoresByCondition(String address, String name, String sort, int size, Map<String, Object> cursorParams) {
+    public Slice<Store> findStoresByCondition(StoreSearchRequestDto request) {
         QStore store = QStore.store;
 
-        BooleanBuilder builder = buildWhere(address, name, store);
+        BooleanBuilder builder = buildWhere(request.getAddress(), request.getName(), store);
 
-        StoreSortType sortType = StoreSortType.from(sort);
+        StoreSortType sortType = StoreSortType.from(request.getSort());
         SortStrategy strategy = sortStrategyMap.get(sortType);
 
         OrderSpecifier<?> sortCondition = strategy.getOrderSpecifier(store);
-        BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, cursorParams);
+        BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
         if (cursorPredicate != null) {
             builder.and(cursorPredicate);
         }
@@ -44,13 +45,13 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 .selectFrom(store)
                 .where(builder)
                 .orderBy(sortCondition)
-                .limit(size + 1)
+                .limit(request.getSize() + 1)
                 .fetch();
 
-        boolean hasNext = result.size() > size;
-        if (hasNext) result.remove(size);
+        boolean hasNext = result.size() > request.getSize();
+        if (hasNext) result.remove(request.getSize());
 
-        return new SliceImpl<>(result, PageRequest.of(0, size), hasNext);
+        return new SliceImpl<>(result, PageRequest.of(0, request.getSize()), hasNext);
     }
 
     private BooleanBuilder buildWhere(String address, String name, QStore store) {
@@ -68,4 +69,5 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         return builder;
     }
 }
+
 

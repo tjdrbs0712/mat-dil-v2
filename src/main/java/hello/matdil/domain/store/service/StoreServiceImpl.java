@@ -1,9 +1,6 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.store.dto.StoreCreateRequestDto;
-import hello.matdil.domain.store.dto.StoreResponseDto;
-import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
-import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
+import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,16 +31,15 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<StoreSummaryResponseDto> getStores(
-            String address, String name, String sort, int size, Map<String, Object> cursorParams) {
+    public SliceResponse<StoreSummaryResponseDto> getStores(StoreSearchRequestDto request) {
 
-        Slice<Store> slice = storeRepository.findStoresByCondition(address, name, sort, size, cursorParams);
+        Slice<Store> slice = storeRepository.findStoresByCondition(request);
 
         List<StoreSummaryResponseDto> content = slice.getContent().stream()
                 .map(StoreSummaryResponseDto::from)
                 .toList();
 
-        Object nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), sort);
+        Object nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
 
         return SliceResponse.of(
                 content,
@@ -59,11 +54,10 @@ public class StoreServiceImpl implements StoreService{
             case "name" -> lastDto.getName();
             case "review" -> lastDto.getReviewCount();
             case "deliverytime" -> lastDto.getDeliveryTimeEstimate();
+            case "id" -> lastDto.getId();
             default -> lastDto.getId();
         };
     }
-
-
 
     @Override
     public StoreResponseDto getStore(Long userId, String role, Long storeId) {
