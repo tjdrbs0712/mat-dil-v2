@@ -1,4 +1,4 @@
-package hello.matdil.domain.common.validator;
+package hello.matdil.global.validator;
 
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
