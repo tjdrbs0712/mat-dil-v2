@@ -1,21 +1,25 @@
 package hello.matdil.domain.store.controller;
 
 import hello.matdil.auth.security.UserDetailsImpl;
-import hello.matdil.domain.store.dto.*;
+import hello.matdil.domain.store.dto.StoreCreateRequestDto;
+import hello.matdil.domain.store.dto.StoreResponseDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
+import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.service.StoreService;
+import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
+@Slf4j
 public class StoreController {
 
     private final StoreService storeService;
@@ -31,13 +35,21 @@ public class StoreController {
 
     // 가게 목록 조회 (필터/정렬)
     @GetMapping
-    public ResponseEntity<SuccessResponse<List<StoreSummaryDto>>> getStores(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto>>> getStores(
             @RequestParam(required = false) String address,
-            @RequestParam(defaultValue = "rating") String sort) {
-        List<StoreSummaryDto> stores = storeService.getStores(userDetails.getRole(), address, sort);
-        return ResponseEntity.ok(SuccessResponse.success(stores));
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "rating") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        log.error("!@!@#");
+        SliceResponse<StoreSummaryResponseDto> response = storeService.getStores(
+                address, name, sort, page, size
+        );
+
+        return ResponseEntity.ok(SuccessResponse.success(response));
     }
+
 
     // 가게 단건 조회
     @GetMapping("/{storeId}")

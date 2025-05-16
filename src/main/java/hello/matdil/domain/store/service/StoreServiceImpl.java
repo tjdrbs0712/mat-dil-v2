@@ -1,17 +1,17 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.address.Address;
-import hello.matdil.domain.common.validator.PermissionValidator;
 import hello.matdil.domain.store.dto.StoreCreateRequestDto;
 import hello.matdil.domain.store.dto.StoreResponseDto;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.SliceResponse;
+import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +32,25 @@ public class StoreServiceImpl implements StoreService{
         return StoreResponseDto.from(storeRepository.save(store));
     }
 
-
     @Override
-    public List<StoreSummaryDto> getStores(String role, String address, String sort) {
-        return List.of();
+    @Transactional(readOnly = true)
+    public SliceResponse<StoreSummaryResponseDto> getStores(
+            String address, String name, String sort, int page, int size) {
+
+        Slice<Store> slice = storeRepository.findStoresByCondition(address, name, sort, page, size);
+
+        List<StoreSummaryResponseDto> content = slice.getContent().stream()
+                .map(StoreSummaryResponseDto::from)
+                .toList();
+
+        return SliceResponse.of(
+                content,
+                slice.hasNext(),
+                page,
+                size
+        );
     }
+
 
     @Override
     public StoreResponseDto getStore(Long userId, String role, Long storeId) {

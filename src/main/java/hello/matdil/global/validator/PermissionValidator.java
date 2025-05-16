@@ -3,8 +3,6 @@ package hello.matdil.global.validator;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.user.exception.UserErrorCode;
-import hello.matdil.domain.user.exception.UserException;
 
 public class PermissionValidator {
 
