@@ -8,6 +8,7 @@ import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.service.StoreService;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
+import hello.matdil.global.util.CursorParamParser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,16 +42,19 @@ public class StoreController {
             @RequestParam(required = false) String address,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "rating") String sort,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam Map<String, String> rawCursorParams
+    ) {
+        Map<String, Object> cursorParams = CursorParamParser.parse(rawCursorParams);
 
-        log.error("!@!@#");
         SliceResponse<StoreSummaryResponseDto> response = storeService.getStores(
-                address, name, sort, page, size
+                address, name, sort, size, cursorParams
         );
 
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
+
+
 
 
     // 가게 단건 조회

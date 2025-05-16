@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,21 +36,33 @@ public class StoreServiceImpl implements StoreService{
     @Override
     @Transactional(readOnly = true)
     public SliceResponse<StoreSummaryResponseDto> getStores(
-            String address, String name, String sort, int page, int size) {
+            String address, String name, String sort, int size, Map<String, Object> cursorParams) {
 
-        Slice<Store> slice = storeRepository.findStoresByCondition(address, name, sort, page, size);
+        Slice<Store> slice = storeRepository.findStoresByCondition(address, name, sort, size, cursorParams);
 
         List<StoreSummaryResponseDto> content = slice.getContent().stream()
                 .map(StoreSummaryResponseDto::from)
                 .toList();
 
+        Object nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), sort);
+
         return SliceResponse.of(
                 content,
                 slice.hasNext(),
-                page,
-                size
+                nextCursor
         );
     }
+
+    private Object extractCursor(StoreSummaryResponseDto lastDto, String sort) {
+        return switch (sort.toLowerCase()) {
+            case "rating" -> lastDto.getRating();
+            case "name" -> lastDto.getName();
+            case "review" -> lastDto.getReviewCount();
+            case "deliverytime" -> lastDto.getDeliveryTimeEstimate();
+            default -> lastDto.getId();
+        };
+    }
+
 
 
     @Override

@@ -7,11 +7,13 @@ import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 
+import java.util.Map;
+
 public interface StoreService {
     StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto);
 
     SliceResponse<StoreSummaryResponseDto> getStores(
-            String address, String name, String sort, int page, int size);
+            String address, String name, String sort, int size, Map<String, Object> cursorParams);
 
     StoreResponseDto getStore(Long userId, String role, Long storeId);
 
