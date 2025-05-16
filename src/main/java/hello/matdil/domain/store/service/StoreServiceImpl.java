@@ -5,6 +5,7 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<StoreSummaryResponseDto> getStores(StoreSearchRequestDto request) {
+    public SliceResponse<StoreSummaryResponseDto, Cursor> getStores(StoreSearchRequestDto request) {
 
         Slice<Store> slice = storeRepository.findStoresByCondition(request);
 
@@ -39,7 +40,7 @@ public class StoreServiceImpl implements StoreService{
                 .map(StoreSummaryResponseDto::from)
                 .toList();
 
-        Object nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
+        Cursor nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
 
         return SliceResponse.of(
                 content,
@@ -48,16 +49,16 @@ public class StoreServiceImpl implements StoreService{
         );
     }
 
-    private Object extractCursor(StoreSummaryResponseDto lastDto, String sort) {
+    private Cursor extractCursor(StoreSummaryResponseDto lastDto, String sort) {
         return switch (sort.toLowerCase()) {
-            case "rating" -> lastDto.getRating();
-            case "name" -> lastDto.getName();
-            case "review" -> lastDto.getReviewCount();
-            case "deliverytime" -> lastDto.getDeliveryTimeEstimate();
-            case "id" -> lastDto.getId();
-            default -> lastDto.getId();
+            case "rating" -> Cursor.of(lastDto.getRating(), lastDto.getId());
+            case "name" -> Cursor.of(lastDto.getName(), lastDto.getId());
+            case "review" -> Cursor.of(lastDto.getReviewCount(), lastDto.getId());
+            case "deliverytime" -> Cursor.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
+            default -> Cursor.of(lastDto.getId(), lastDto.getId());
         };
     }
+
 
     @Override
     public StoreResponseDto getStore(Long userId, String role, Long storeId) {

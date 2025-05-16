@@ -3,6 +3,7 @@ package hello.matdil.domain.store.controller;
 import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
+import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
@@ -32,10 +33,10 @@ public class StoreController {
 
     // 가게 목록 조회 (필터/정렬)
     @GetMapping
-    public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto>>> getStores(
+    public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto, Cursor>>> getStores(
             @ModelAttribute StoreSearchRequestDto request
     ) {
-        SliceResponse<StoreSummaryResponseDto> response = storeService.getStores(request);
+        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 

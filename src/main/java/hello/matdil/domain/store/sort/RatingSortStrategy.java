@@ -9,15 +9,17 @@ import java.util.Map;
 
 @Component
 public class RatingSortStrategy implements SortStrategy {
-
     @Override
-    public OrderSpecifier<?> getOrderSpecifier(QStore store) {
-        return store.rating.desc();
+    public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
+        return new OrderSpecifier[]{store.rating.desc(), store.id.desc()};
     }
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
         Double lastRating = (Double) cursorParams.get("lastRating");
-        return lastRating != null ? store.rating.lt(lastRating) : null;
+        Long lastId = (Long) cursorParams.get("lastStoreId");
+        if (lastRating == null || lastId == null) return null;
+        return store.rating.lt(lastRating)
+                .or(store.rating.eq(lastRating).and(store.id.lt(lastId)));
     }
 }

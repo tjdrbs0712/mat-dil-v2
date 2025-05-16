@@ -8,15 +8,18 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class ReviewSortStrategy implements SortStrategy{
+public class ReviewSortStrategy implements SortStrategy {
     @Override
-    public OrderSpecifier<?> getOrderSpecifier(QStore store) {
-        return store.reviewCount.desc();
+    public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
+        return new OrderSpecifier[]{store.reviewCount.desc(), store.id.desc()};
     }
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
         Integer lastReviewCount = (Integer) cursorParams.get("lastReviewCount");
-        return lastReviewCount != null ? store.reviewCount.lt(lastReviewCount) : null;
+        Long lastId = (Long) cursorParams.get("lastStoreId");
+        if (lastReviewCount == null || lastId == null) return null;
+        return store.reviewCount.lt(lastReviewCount)
+                .or(store.reviewCount.eq(lastReviewCount).and(store.id.lt(lastId)));
     }
 }

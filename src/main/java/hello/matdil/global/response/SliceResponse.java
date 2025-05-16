@@ -7,8 +7,8 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor(staticName = "of")
-public class SliceResponse<T> {
+public class SliceResponse<T, K> {
     private List<T> content;
     private boolean hasNext;
-    private Object nextCursor;
+    private K nextCursor;
 }

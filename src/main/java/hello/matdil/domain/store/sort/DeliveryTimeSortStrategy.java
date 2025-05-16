@@ -8,15 +8,18 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class DeliveryTimeSortStrategy implements SortStrategy{
+public class DeliveryTimeSortStrategy implements SortStrategy {
     @Override
-    public OrderSpecifier<?> getOrderSpecifier(QStore store) {
-        return store.deliveryTimeEstimate.asc();
+    public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
+        return new OrderSpecifier[]{store.deliveryTimeEstimate.asc(), store.id.asc()};
     }
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
-        Integer lastTime = (Integer) cursorParams.get("lastDeliveryTime");
-        return lastTime != null ? store.deliveryTimeEstimate.gt(lastTime) : null;
+        Integer lastDeliveryTime = (Integer) cursorParams.get("lastDeliveryTime");
+        Long lastId = (Long) cursorParams.get("lastStoreId");
+        if (lastDeliveryTime == null || lastId == null) return null;
+        return store.deliveryTimeEstimate.gt(lastDeliveryTime)
+                .or(store.deliveryTimeEstimate.eq(lastDeliveryTime).and(store.id.gt(lastId)));
     }
 }

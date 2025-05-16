@@ -35,7 +35,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         StoreSortType sortType = StoreSortType.from(request.getSort());
         SortStrategy strategy = sortStrategyMap.get(sortType);
 
-        OrderSpecifier<?> sortCondition = strategy.getOrderSpecifier(store);
+        OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
         if (cursorPredicate != null) {
             builder.and(cursorPredicate);
@@ -44,7 +44,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         List<Store> result = queryFactory
                 .selectFrom(store)
                 .where(builder)
-                .orderBy(sortCondition)
+                .orderBy(sortConditions)
                 .limit(request.getSize() + 1)
                 .fetch();
 
@@ -69,5 +69,4 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         return builder;
     }
 }
-
 

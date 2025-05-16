@@ -7,6 +7,6 @@ import hello.matdil.domain.store.entity.QStore;
 import java.util.Map;
 
 public interface SortStrategy {
-    OrderSpecifier<?> getOrderSpecifier(QStore store);
+    OrderSpecifier<?>[] getOrderSpecifiers(QStore store);
     BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams);
 }

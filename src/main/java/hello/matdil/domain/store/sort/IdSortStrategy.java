@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class IdSortStrategy implements SortStrategy{
-
+public class IdSortStrategy implements SortStrategy {
     @Override
-    public OrderSpecifier<?> getOrderSpecifier(QStore store) {
-        return store.id.desc();
+    public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
+        return new OrderSpecifier[]{store.id.desc()};
     }
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
         Long lastId = (Long) cursorParams.get("lastStoreId");
-        return lastId != null ? store.id.lt(lastId) : null;
+        if (lastId == null) return null;
+        return store.id.lt(lastId);
     }
 }

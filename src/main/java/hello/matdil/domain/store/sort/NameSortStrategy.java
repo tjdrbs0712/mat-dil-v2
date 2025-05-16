@@ -9,15 +9,18 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 
 @Component
-public class NameSortStrategy implements SortStrategy{
+public class NameSortStrategy implements SortStrategy {
     @Override
-    public OrderSpecifier<?> getOrderSpecifier(QStore store) {
-        return store.name.asc();
+    public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
+        return new OrderSpecifier[]{store.name.asc(), store.id.asc()};
     }
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
         String lastName = (String) cursorParams.get("lastName");
-        return StringUtils.hasText(lastName) ? store.name.gt(lastName) : null;
+        Long lastId = (Long) cursorParams.get("lastStoreId");
+        if (!StringUtils.hasText(lastName) || lastId == null) return null;
+        return store.name.gt(lastName)
+                .or(store.name.eq(lastName).and(store.id.gt(lastId)));
     }
 }
