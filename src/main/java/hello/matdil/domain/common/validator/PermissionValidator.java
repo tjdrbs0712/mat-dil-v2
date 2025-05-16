@@ -10,7 +10,7 @@ public class PermissionValidator {
 
     // 사장님이거나 관리자
     public static void validateOwnerOrAdmin(UserRole role) {
-        if (role != UserRole.ADMIN && role != UserRole.OWNER) {
+        if (!(role == UserRole.ADMIN || role == UserRole.OWNER)) {
             throw new StoreException(StoreErrorCode.NO_PERMISSION);
         }
     }
