@@ -8,6 +8,7 @@ import hello.matdil.domain.store.dto.StoreSummaryDto;
 import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
+import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -20,38 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService{
     private final StoreRepository storeRepository;
+    private final StoreFactory storeFactory;
 
     @Override
     @Transactional
     public StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto) {
-
         PermissionValidator.validateOwnerOrAdmin(role);
 
-        // 2. 주소 객체 생성
-        Address address = new Address(
-                requestDto.getCity(),
-                requestDto.getStreet(),
-                requestDto.getDetailAddress()
-        );
-
-        // 3. Store 엔티티 생성
-        Store store = Store.builder()
-                .name(requestDto.getName())
-                .phoneNumber(requestDto.getPhoneNumber())
-                .address(address)
-                .ownerId(userId)
-                .openTime(requestDto.getOpenTime())
-                .closeTime(requestDto.getCloseTime())
-                .minOrderPrice(requestDto.getMinOrderPrice())
-                .deliveryTimeEstimate(requestDto.getDeliveryTimeEstimate())
-                .status(StoreStatus.OPEN) // 기본값 OPEN
-                .build();
-
-        // 4. 저장
-        Store saved = storeRepository.save(store);
-
-        return StoreResponseDto.from(saved);
+        Store store = storeFactory.createStore(userId, requestDto);
+        return StoreResponseDto.from(storeRepository.save(store));
     }
+
 
     @Override
     public List<StoreSummaryDto> getStores(String role, String address, String sort) {
