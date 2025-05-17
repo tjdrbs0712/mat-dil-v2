@@ -8,6 +8,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
+import static hello.matdil.global.util.CursorKey.LAST_NAME;
+import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+
 @Component
 public class NameSortStrategy implements SortStrategy {
     @Override
@@ -17,8 +20,8 @@ public class NameSortStrategy implements SortStrategy {
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
-        String lastName = (String) cursorParams.get("lastName");
-        Long lastId = (Long) cursorParams.get("lastStoreId");
+        String lastName = (String) cursorParams.get(LAST_NAME);
+        Long lastId = (Long) cursorParams.get(LAST_STORE_ID);
         if (!StringUtils.hasText(lastName) || lastId == null) return null;
         return store.name.gt(lastName)
                 .or(store.name.eq(lastName).and(store.id.gt(lastId)));

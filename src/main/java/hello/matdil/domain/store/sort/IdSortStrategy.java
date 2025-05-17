@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+
 @Component
 public class IdSortStrategy implements SortStrategy {
     @Override
@@ -16,7 +18,7 @@ public class IdSortStrategy implements SortStrategy {
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
-        Long lastId = (Long) cursorParams.get("lastStoreId");
+        Long lastId = (Long) cursorParams.get(LAST_STORE_ID);
         if (lastId == null) return null;
         return store.id.lt(lastId);
     }

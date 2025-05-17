@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static hello.matdil.global.util.SortTypeKey.*;
+
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService{
@@ -51,10 +53,10 @@ public class StoreServiceImpl implements StoreService{
 
     private Cursor extractCursor(StoreSummaryResponseDto lastDto, String sort) {
         return switch (sort.toLowerCase()) {
-            case "rating" -> Cursor.of(lastDto.getRating(), lastDto.getId());
-            case "name" -> Cursor.of(lastDto.getName(), lastDto.getId());
-            case "review" -> Cursor.of(lastDto.getReviewCount(), lastDto.getId());
-            case "deliverytime" -> Cursor.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
+            case RATING -> Cursor.of(lastDto.getRating(), lastDto.getId());
+            case NAME -> Cursor.of(lastDto.getName(), lastDto.getId());
+            case REVIEW -> Cursor.of(lastDto.getReviewCount(), lastDto.getId());
+            case DELIVERY_TIME -> Cursor.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
             default -> Cursor.of(lastDto.getId(), lastDto.getId());
         };
     }

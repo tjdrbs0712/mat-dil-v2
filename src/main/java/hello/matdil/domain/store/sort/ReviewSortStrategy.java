@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static hello.matdil.global.util.CursorKey.LAST_REVIEW_COUNT;
+import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+
 @Component
 public class ReviewSortStrategy implements SortStrategy {
     @Override
@@ -16,8 +19,8 @@ public class ReviewSortStrategy implements SortStrategy {
 
     @Override
     public BooleanExpression buildCursorPredicate(QStore store, Map<String, Object> cursorParams) {
-        Integer lastReviewCount = (Integer) cursorParams.get("lastReviewCount");
-        Long lastId = (Long) cursorParams.get("lastStoreId");
+        Integer lastReviewCount = (Integer) cursorParams.get(LAST_REVIEW_COUNT);
+        Long lastId = (Long) cursorParams.get(LAST_STORE_ID);
         if (lastReviewCount == null || lastId == null) return null;
         return store.reviewCount.lt(lastReviewCount)
                 .or(store.reviewCount.eq(lastReviewCount).and(store.id.lt(lastId)));
