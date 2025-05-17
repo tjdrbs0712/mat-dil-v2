@@ -12,7 +12,7 @@ public interface StoreService {
 
     StoreResponseDto getStore(Long userId, UserRole role, Long storeId);
 
-    StoreResponseDto updateStore(Long userId, String role, Long storeId, StoreUpdateRequestDto requestDto);
+    StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto requestDto);
 
     void changeStoreStatus(Long userId, String role, Long storeId, String storeStatus);
 

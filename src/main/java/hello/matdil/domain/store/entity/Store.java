@@ -87,4 +87,16 @@ public class Store {
         menus.add(menu);
         menu.assignStore(this);
     }
+
+    public void updateInfo(String name, String phoneNumber, Address address,
+                           LocalTime openTime, LocalTime closeTime,
+                           int minOrderPrice, int deliveryTimeEstimate) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.minOrderPrice = minOrderPrice;
+        this.deliveryTimeEstimate = deliveryTimeEstimate;
+    }
 }

@@ -1,11 +1,13 @@
 package hello.matdil.domain.store.service;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.factory.StoreFactory;
+import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.Cursor;
@@ -25,6 +27,7 @@ import static hello.matdil.global.util.SortTypeKey.*;
 public class StoreServiceImpl implements StoreService{
     private final StoreRepository storeRepository;
     private final StoreFactory storeFactory;
+    private final StoreMapper storeMapper;
 
     @Override
     @Transactional
@@ -79,8 +82,16 @@ public class StoreServiceImpl implements StoreService{
     }
 
     @Override
-    public StoreResponseDto updateStore(Long userId, String role, Long storeId, StoreUpdateRequestDto requestDto) {
-        return null;
+    @Transactional
+    public StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto dto) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+
+        PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
+
+        storeMapper.update(store, dto);
+
+        return StoreResponseDto.from(store);
     }
 
     @Override

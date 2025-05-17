@@ -56,10 +56,10 @@ public class StoreController {
     // 가게 수정 (사장님 본인 or 관리자)
     @PutMapping("/{storeId}")
     public ResponseEntity<SuccessResponse<StoreResponseDto>> updateStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @LoginUser AuthUser authUser,
             @PathVariable Long storeId,
             @RequestBody StoreUpdateRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.updateStore(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto);
+        StoreResponseDto responseDto = storeService.updateStore(authUser.getUserId(), authUser.getRole(), storeId, requestDto);
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
