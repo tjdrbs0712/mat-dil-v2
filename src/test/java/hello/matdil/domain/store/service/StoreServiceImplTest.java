@@ -57,16 +57,19 @@ class StoreServiceImplTest {
         request.setSort("rating");
         request.setSize(2);
 
+        Long userId = 1L;
+        UserRole userRole = UserRole.USER;
+
         Store store1 = createStore(101L, 4.5);
         Store store2 = createStore(102L, 4.2);
 
         List<Store> stores = List.of(store1, store2);
         Slice<Store> slice = new SliceImpl<>(stores, PageRequest.of(0, 2), true);
 
-        given(storeRepository.findStoresByCondition(any())).willReturn(slice);
+        given(storeRepository.findStoresByCondition(any(), any(), any())).willReturn(slice);
 
         // when
-        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(request);
+        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(userId, userRole, request);
 
         // then
         assertThat(response.getContent()).hasSize(2);
