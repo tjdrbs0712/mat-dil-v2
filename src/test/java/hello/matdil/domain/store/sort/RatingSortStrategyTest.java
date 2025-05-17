@@ -33,7 +33,6 @@ class RatingSortStrategyTest {
         BooleanExpression expression = ratingSortStrategy.buildCursorPredicate(store,cursor);
         //then
         String actual = expression.toString();
-        System.out.println(actual);
         assertThat(actual).contains("store.rating <").contains("store.rating =").contains("store.id <");
     }
 

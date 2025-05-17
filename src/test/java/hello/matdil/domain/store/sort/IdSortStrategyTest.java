@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NameSortStrategyTest {
+class IdSortStrategyTest {
 
-    private final SortStrategy strategy = new NameSortStrategy();
+    private final SortStrategy strategy = new IdSortStrategy();
     private final QStore store = QStore.store;
 
     @Test
@@ -20,26 +20,25 @@ class NameSortStrategyTest {
         OrderSpecifier<?>[] orderSpecifiers = strategy.getOrderSpecifiers(store);
 
         // then
-        assertThat(orderSpecifiers).hasSize(2);
-        assertThat(orderSpecifiers[0].toString()).contains("store.name ASC");
-        assertThat(orderSpecifiers[1].toString()).contains("store.id ASC");
+        assertThat(orderSpecifiers).hasSize(1);
+        assertThat(orderSpecifiers[0].toString()).contains("store.id DESC");
     }
 
     @Test
     void 커서_조건이_정상적일_경우(){
         //given
-        Map<String, Object> cursor = Map.of("lastName", "김밥", "lastStoreId", 123L);
+        Map<String, Object> cursor = Map.of("lastStoreId", 123L);
         // when
         BooleanExpression expression = strategy.buildCursorPredicate(store,cursor);
         //then
         String actual = expression.toString();
-        assertThat(actual).contains("store.name >").contains("store.name =").contains("store.id >");
+        assertThat(actual).contains("store.id <");
     }
 
     @Test
     void 커서_조건이_정상적이지_않을_경우(){
         //given
-        Map<String, Object> cursor = Map.of("lastName", "김밥");
+        Map<String, Object> cursor = Map.of();
         // when
         BooleanExpression expression = strategy.buildCursorPredicate(store,cursor);
         //then
