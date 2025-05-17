@@ -1,6 +1,7 @@
 package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.menu.entity.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -60,6 +63,9 @@ public class Store {
     @Column(nullable = false)
     private int reviewCount;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Menu> menus = new ArrayList<>();
+
     @Builder
     public Store(Address address, String name, Long ownerId, String phoneNumber,
                  LocalTime openTime, LocalTime closeTime, StoreStatus status,
@@ -76,6 +82,9 @@ public class Store {
         this.rating = 0.0;
         this.reviewCount = 0;
     }
+
+    public void addMenu(Menu menu) {
+        menus.add(menu);
+        menu.assignStore(this);
+    }
 }
-
-
