@@ -10,7 +10,7 @@ public interface StoreService {
 
     SliceResponse<StoreSummaryResponseDto, Cursor> getStores(StoreSearchRequestDto request);
 
-    StoreResponseDto getStore(Long userId, String role, Long storeId);
+    StoreResponseDto getStore(Long storeId);
 
     StoreResponseDto updateStore(Long userId, String role, Long storeId, StoreUpdateRequestDto requestDto);
 

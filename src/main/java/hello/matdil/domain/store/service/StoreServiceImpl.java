@@ -2,6 +2,8 @@ package hello.matdil.domain.store.service;
 
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
@@ -63,8 +65,11 @@ public class StoreServiceImpl implements StoreService{
 
 
     @Override
-    public StoreResponseDto getStore(Long userId, String role, Long storeId) {
-        return null;
+    @Transactional(readOnly = true)
+    public StoreResponseDto getStore(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        return StoreResponseDto.from(store);
     }
 
     @Override

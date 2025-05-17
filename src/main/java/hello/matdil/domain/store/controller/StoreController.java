@@ -42,10 +42,8 @@ public class StoreController {
 
     // 가게 단건 조회
     @GetMapping("/{storeId}")
-    public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long storeId) {
-        StoreResponseDto store = storeService.getStore(userDetails.getUserId(), userDetails.getRole(), storeId);
+    public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(@PathVariable Long storeId) {
+        StoreResponseDto store = storeService.getStore(storeId);
         return ResponseEntity.ok(SuccessResponse.success(store));
     }
 
