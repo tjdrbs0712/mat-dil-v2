@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 public enum StoreErrorCode implements ErrorCode {
     NO_PERMISSION(403, "NO_PERMISSION", "해당 요청에 대한 권한이 없습니다."),
     STORE_NOT_FOUND(404, "STORE_NOT_FOUND", "해당 가게를 찾을 수 없습니다."),
+    INVALID_STORE_TIME(400, "INVALID_STORE_TIME", "영업 종료 시간은 시작 시간보다 늦어야 합니다."),
 
 
     ;

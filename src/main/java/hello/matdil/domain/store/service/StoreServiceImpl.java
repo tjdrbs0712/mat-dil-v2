@@ -86,11 +86,9 @@ public class StoreServiceImpl implements StoreService{
     public StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto dto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-
         PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
-
+        store.validateBusinessHours(dto.getOpenTime(), dto.getCloseTime());
         storeMapper.update(store, dto);
-
         return StoreResponseDto.from(store);
     }
 

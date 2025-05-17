@@ -2,7 +2,10 @@ package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.menu.entity.Menu;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -98,5 +101,11 @@ public class Store {
         this.closeTime = closeTime;
         this.minOrderPrice = minOrderPrice;
         this.deliveryTimeEstimate = deliveryTimeEstimate;
+    }
+
+    public void validateBusinessHours(LocalTime openTime, LocalTime closeTime) {
+        if (openTime.isAfter(closeTime)) {
+            throw new StoreException(StoreErrorCode.INVALID_STORE_TIME);
+        }
     }
 }
