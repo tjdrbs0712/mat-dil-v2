@@ -1,6 +1,7 @@
 package hello.matdil.domain.store.service;
 
 import hello.matdil.domain.store.dto.*;
+import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
@@ -14,7 +15,7 @@ public interface StoreService {
 
     StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto requestDto);
 
-    void changeStoreStatus(Long userId, String role, Long storeId, String storeStatus);
+    void changeStoreStatus(Long userId, UserRole role, Long storeId, StoreStatus storeStatus);
 
     void deleteStore(Long userId, String role, Long storeId);
 }

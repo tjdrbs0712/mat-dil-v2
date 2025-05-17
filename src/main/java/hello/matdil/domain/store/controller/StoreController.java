@@ -64,14 +64,14 @@ public class StoreController {
     }
 
     // 가게 상태 변경
-//    @PatchMapping("/{storeId}/status")
-//    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
-//            @PathVariable Long storeId,
-//            @RequestBody StoreStatusChangeRequestDto requestDto) {
-//        storeService.changeStoreStatus(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto.getStatus());
-//        return ResponseEntity.ok(SuccessResponse.success(null));
-//    }
+    @PatchMapping("/{storeId}/status")
+    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long storeId,
+            @RequestBody StoreStatusChangeRequestDto requestDto) {
+        storeService.changeStoreStatus(authUser.getUserId(), authUser.getRole(), storeId, requestDto.getStoreStatus());
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
 
     // 가게 삭제 (soft-delete)
     @DeleteMapping("/{storeId}")
