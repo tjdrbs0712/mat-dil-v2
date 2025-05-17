@@ -13,6 +13,12 @@ public class PermissionValidator {
         }
     }
 
+    public static void validateOwnerOrAdmin(Long userId, Long storeOwnerId, UserRole role) {
+        if (!(role == UserRole.ADMIN || (role == UserRole.OWNER && userId.equals(storeOwnerId)))) {
+            throw new StoreException(StoreErrorCode.NO_PERMISSION);
+        }
+    }
+
     // 관리자만
     public static void validateAdminOnly(UserRole role) {
         if (role != UserRole.ADMIN) {

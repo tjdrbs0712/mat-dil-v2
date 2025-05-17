@@ -47,7 +47,7 @@ public class StoreController {
     public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(
             @LoginUser(required = false) AuthUser authUser,
             @PathVariable Long storeId) {
-        StoreResponseDto store = storeService.getStore(authUser.getRole(), storeId);
+        StoreResponseDto store = storeService.getStore(authUser.getUserId(), authUser.getRole(), storeId);
         return ResponseEntity.ok(SuccessResponse.success(store));
     }
 

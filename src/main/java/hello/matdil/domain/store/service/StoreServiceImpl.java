@@ -2,6 +2,7 @@ package hello.matdil.domain.store.service;
 
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.factory.StoreFactory;
@@ -66,9 +67,14 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public StoreResponseDto getStore(Long storeId) {
+    public StoreResponseDto getStore(Long userId, UserRole role, Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+
+        if(store.getStatus() == StoreStatus.INACTIVE){
+            PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
+        }
+
         return StoreResponseDto.from(store);
     }
 
