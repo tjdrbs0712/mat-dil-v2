@@ -1,11 +1,14 @@
 package hello.matdil.domain.store.service;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.store.dto.StoreCreateRequestDto;
 import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.factory.StoreFactory;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.repository.StoreRepository;
+import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,7 @@ import org.springframework.data.domain.SliceImpl;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -34,8 +37,18 @@ class StoreServiceImplTest {
     @Mock
     private StoreRepository storeRepository;
 
-    @Mock
-    private StoreFactory storeFactory;
+    @Test
+    void 가게_등록_사장_또는_관리자가_아닌_경우() {
+        // given
+        Long userId = 2L;
+        UserRole role = UserRole.USER;
+        StoreCreateRequestDto requestDto = mock(StoreCreateRequestDto.class);
+
+        // when & then
+        assertThatThrownBy(() -> storeService.createStore(userId, role, requestDto))
+                .isInstanceOf(StoreException.class)
+                .hasMessageContaining(StoreErrorCode.NO_PERMISSION.getErrorMessage());
+    }
 
     @Test
     void 커서_기반_정렬_성공() {
