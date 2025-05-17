@@ -1,5 +1,6 @@
 package hello.matdil.domain.menu.entity;
 
+import hello.matdil.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,8 +17,9 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @Column(nullable = false)
     private String name;
@@ -41,9 +43,8 @@ public class Menu {
     private boolean isSoldOut;
 
     @Builder
-    public Menu(Long storeId, String name, int price, String description,
+    public Menu(String name, int price, String description,
                 String imageUrl, String category, boolean isAvailable, boolean isSoldOut) {
-        this.storeId = storeId;
         this.name = name;
         this.price = price;
         this.description = description;
@@ -51,5 +52,9 @@ public class Menu {
         this.category = category;
         this.isAvailable = isAvailable;
         this.isSoldOut = isSoldOut;
+    }
+
+    public void assignStore(Store store) {
+        this.store = store;
     }
 }

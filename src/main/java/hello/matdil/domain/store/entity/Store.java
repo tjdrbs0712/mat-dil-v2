@@ -1,6 +1,7 @@
 package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.menu.entity.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,11 +9,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "stores")
+@Table(
+        name = "stores",
+        indexes = {
+                @Index(name = "idx_store_rating_id", columnList = "rating DESC, id DESC"),
+                @Index(name = "idx_store_review_id", columnList = "reviewCount DESC, id DESC"),
+                @Index(name = "idx_store_delivery_id", columnList = "deliveryTimeEstimate ASC, id ASC"),
+                @Index(name = "idx_store_name_id", columnList = "name ASC, id ASC")
+        }
+)
 public class Store {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +63,9 @@ public class Store {
     @Column(nullable = false)
     private int reviewCount;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Menu> menus = new ArrayList<>();
+
     @Builder
     public Store(Address address, String name, Long ownerId, String phoneNumber,
                  LocalTime openTime, LocalTime closeTime, StoreStatus status,
@@ -68,6 +82,9 @@ public class Store {
         this.rating = 0.0;
         this.reviewCount = 0;
     }
+
+    public void addMenu(Menu menu) {
+        menus.add(menu);
+        menu.assignStore(this);
+    }
 }
-
-

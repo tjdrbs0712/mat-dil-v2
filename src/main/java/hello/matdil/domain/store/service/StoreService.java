@@ -1,19 +1,16 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.store.dto.StoreCreateRequestDto;
-import hello.matdil.domain.store.dto.StoreResponseDto;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
-import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
+import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.user.entity.UserRole;
-
-import java.util.List;
+import hello.matdil.global.response.Cursor;
+import hello.matdil.global.response.SliceResponse;
 
 public interface StoreService {
     StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto);
 
-    List<StoreSummaryDto> getStores(String role, String address, String sort);
+    SliceResponse<StoreSummaryResponseDto, Cursor> getStores(Long userId, UserRole role, StoreSearchRequestDto request);
 
-    StoreResponseDto getStore(Long userId, String role, Long storeId);
+    StoreResponseDto getStore(Long userId, UserRole role, Long storeId);
 
     StoreResponseDto updateStore(Long userId, String role, Long storeId, StoreUpdateRequestDto requestDto);
 

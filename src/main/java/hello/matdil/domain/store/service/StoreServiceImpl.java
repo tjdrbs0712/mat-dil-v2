@@ -1,66 +1,81 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.address.Address;
-import hello.matdil.domain.common.validator.PermissionValidator;
-import hello.matdil.domain.store.dto.StoreCreateRequestDto;
-import hello.matdil.domain.store.dto.StoreResponseDto;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
-import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
+import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
+import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.Cursor;
+import hello.matdil.global.response.SliceResponse;
+import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static hello.matdil.global.util.SortTypeKey.*;
+
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService{
     private final StoreRepository storeRepository;
+    private final StoreFactory storeFactory;
 
     @Override
     @Transactional
     public StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto) {
-        // 1. 권한 검사: 사장님 또는 관리자만 가능
-        PermissionValidator.validateOwnerOrAdmin(userId, userId, role); // 본인이 owner이므로 둘 다 userId
+        PermissionValidator.validateOwnerOrAdmin(role);
 
-        // 2. 주소 객체 생성
-        Address address = new Address(
-                requestDto.getCity(),
-                requestDto.getStreet(),
-                requestDto.getDetailAddress()
+        Store store = storeFactory.createStore(userId, requestDto);
+        return StoreResponseDto.from(storeRepository.save(store));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<StoreSummaryResponseDto, Cursor> getStores(Long userId, UserRole role, StoreSearchRequestDto request) {
+
+        Slice<Store> slice = storeRepository.findStoresByCondition(userId, role, request);
+
+        List<StoreSummaryResponseDto> content = slice.getContent().stream()
+                .map(StoreSummaryResponseDto::from)
+                .toList();
+
+        Cursor nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
+
+        return SliceResponse.of(
+                content,
+                slice.hasNext(),
+                nextCursor
         );
-
-        // 3. Store 엔티티 생성
-        Store store = Store.builder()
-                .name(requestDto.getName())
-                .phoneNumber(requestDto.getPhoneNumber())
-                .address(address)
-                .ownerId(userId)
-                .openTime(requestDto.getOpenTime())
-                .closeTime(requestDto.getCloseTime())
-                .minOrderPrice(requestDto.getMinOrderPrice())
-                .deliveryTimeEstimate(requestDto.getDeliveryTimeEstimate())
-                .status(StoreStatus.OPEN) // 기본값 OPEN
-                .build();
-
-        // 4. 저장
-        Store saved = storeRepository.save(store);
-
-        return StoreResponseDto.from(saved);
     }
 
-    @Override
-    public List<StoreSummaryDto> getStores(String role, String address, String sort) {
-        return List.of();
+    private Cursor extractCursor(StoreSummaryResponseDto lastDto, String sort) {
+        return switch (sort.toLowerCase()) {
+            case RATING -> Cursor.of(lastDto.getRating(), lastDto.getId());
+            case NAME -> Cursor.of(lastDto.getName(), lastDto.getId());
+            case REVIEW -> Cursor.of(lastDto.getReviewCount(), lastDto.getId());
+            case DELIVERY_TIME -> Cursor.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
+            default -> Cursor.of(lastDto.getId(), lastDto.getId());
+        };
     }
 
+
     @Override
-    public StoreResponseDto getStore(Long userId, String role, Long storeId) {
-        return null;
+    @Transactional(readOnly = true)
+    public StoreResponseDto getStore(Long userId, UserRole role, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+
+        if(store.getStatus() == StoreStatus.INACTIVE){
+            PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
+        }
+
+        return StoreResponseDto.from(store);
     }
 
     @Override

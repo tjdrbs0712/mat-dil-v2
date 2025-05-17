@@ -1,6 +1,5 @@
 package hello.matdil.domain.store.dto;
 
-import hello.matdil.domain.menu.dto.MenuResponseDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
 import lombok.AccessLevel;
@@ -8,44 +7,32 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalTime;
-import java.util.List;
-
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StoreResponseDto {
+public class StoreSummaryResponseDto {
 
     private Long id;
     private String name;
     private String phoneNumber;
-    private String address;
-    private LocalTime openTime;
-    private LocalTime closeTime;
-    private int minOrderPrice;
-    private int deliveryTimeEstimate;
+    private String address; // ex) "서울시 강남구 테헤란로 123"
     private double rating;
     private int reviewCount;
+    private int deliveryTimeEstimate;
+    private int minOrderPrice;
     private StoreStatus status;
-    private List<MenuResponseDto> menus;
 
-    public static StoreResponseDto from(Store store) {
-        return StoreResponseDto.builder()
+    public static StoreSummaryResponseDto from(Store store) {
+        return StoreSummaryResponseDto.builder()
                 .id(store.getId())
                 .name(store.getName())
                 .phoneNumber(store.getPhoneNumber())
                 .address(store.getAddress().toString())
-                .openTime(store.getOpenTime())
-                .closeTime(store.getCloseTime())
-                .minOrderPrice(store.getMinOrderPrice())
-                .deliveryTimeEstimate(store.getDeliveryTimeEstimate())
                 .rating(store.getRating())
                 .reviewCount(store.getReviewCount())
+                .deliveryTimeEstimate(store.getDeliveryTimeEstimate())
+                .minOrderPrice(store.getMinOrderPrice())
                 .status(store.getStatus())
-                .menus(store.getMenus().stream()
-                        .map(MenuResponseDto::from)
-                        .toList())
                 .build();
     }
 }
-

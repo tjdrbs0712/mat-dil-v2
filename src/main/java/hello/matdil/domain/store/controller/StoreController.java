@@ -1,21 +1,25 @@
 package hello.matdil.domain.store.controller;
 
+import hello.matdil.auth.annotation.LoginUser;
+import hello.matdil.auth.model.AuthUser;
 import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
+import hello.matdil.global.response.Cursor;
+import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
+@Slf4j
 public class StoreController {
 
     private final StoreService storeService;
@@ -31,20 +35,21 @@ public class StoreController {
 
     // 가게 목록 조회 (필터/정렬)
     @GetMapping
-    public ResponseEntity<SuccessResponse<List<StoreSummaryDto>>> getStores(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(required = false) String address,
-            @RequestParam(defaultValue = "rating") String sort) {
-        List<StoreSummaryDto> stores = storeService.getStores(userDetails.getRole(), address, sort);
-        return ResponseEntity.ok(SuccessResponse.success(stores));
+    public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto, Cursor>>> getStores(
+            @LoginUser(required = false) AuthUser authUser,
+            @ModelAttribute StoreSearchRequestDto request
+    ) {
+        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(
+                authUser.getUserId(), authUser.getRole(), request);
+        return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
     // 가게 단건 조회
     @GetMapping("/{storeId}")
     public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @LoginUser(required = false) AuthUser authUser,
             @PathVariable Long storeId) {
-        StoreResponseDto store = storeService.getStore(userDetails.getUserId(), userDetails.getRole(), storeId);
+        StoreResponseDto store = storeService.getStore(authUser.getUserId(), authUser.getRole(), storeId);
         return ResponseEntity.ok(SuccessResponse.success(store));
     }
 
