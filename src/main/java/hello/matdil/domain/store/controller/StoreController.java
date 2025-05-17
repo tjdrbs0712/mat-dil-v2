@@ -1,5 +1,7 @@
 package hello.matdil.domain.store.controller;
 
+import hello.matdil.auth.annotation.LoginUser;
+import hello.matdil.auth.model.AuthUser;
 import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
@@ -42,8 +44,10 @@ public class StoreController {
 
     // 가게 단건 조회
     @GetMapping("/{storeId}")
-    public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(@PathVariable Long storeId) {
-        StoreResponseDto store = storeService.getStore(storeId);
+    public ResponseEntity<SuccessResponse<StoreResponseDto>> getStore(
+            @LoginUser(required = false) AuthUser authUser,
+            @PathVariable Long storeId) {
+        StoreResponseDto store = storeService.getStore(authUser.getRole(), storeId);
         return ResponseEntity.ok(SuccessResponse.success(store));
     }
 
