@@ -37,9 +37,9 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<StoreSummaryResponseDto, Cursor> getStores(StoreSearchRequestDto request) {
+    public SliceResponse<StoreSummaryResponseDto, Cursor> getStores(Long userId, UserRole role, StoreSearchRequestDto request) {
 
-        Slice<Store> slice = storeRepository.findStoresByCondition(request);
+        Slice<Store> slice = storeRepository.findStoresByCondition(userId, role, request);
 
         List<StoreSummaryResponseDto> content = slice.getContent().stream()
                 .map(StoreSummaryResponseDto::from)

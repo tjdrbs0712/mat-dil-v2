@@ -1,7 +1,6 @@
 package hello.matdil.domain.store.dto;
 
 import hello.matdil.domain.menu.dto.MenuResponseDto;
-import hello.matdil.domain.menu.entity.Menu;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
 import lombok.AccessLevel;

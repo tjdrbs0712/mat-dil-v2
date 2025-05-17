@@ -8,7 +8,7 @@ import hello.matdil.global.response.SliceResponse;
 public interface StoreService {
     StoreResponseDto createStore(Long userId, UserRole role, StoreCreateRequestDto requestDto);
 
-    SliceResponse<StoreSummaryResponseDto, Cursor> getStores(StoreSearchRequestDto request);
+    SliceResponse<StoreSummaryResponseDto, Cursor> getStores(Long userId, UserRole role, StoreSearchRequestDto request);
 
     StoreResponseDto getStore(Long userId, UserRole role, Long storeId);
 

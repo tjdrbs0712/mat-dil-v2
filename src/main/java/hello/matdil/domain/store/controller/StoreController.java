@@ -36,9 +36,11 @@ public class StoreController {
     // 가게 목록 조회 (필터/정렬)
     @GetMapping
     public ResponseEntity<SuccessResponse<SliceResponse<StoreSummaryResponseDto, Cursor>>> getStores(
+            @LoginUser(required = false) AuthUser authUser,
             @ModelAttribute StoreSearchRequestDto request
     ) {
-        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(request);
+        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(
+                authUser.getUserId(), authUser.getRole(), request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 

@@ -8,13 +8,14 @@ import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.entity.QStore;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
+import hello.matdil.domain.store.query.StorePredicateBuilder;
 import hello.matdil.domain.store.sort.SortStrategy;
+import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,12 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
     private final Map<StoreSortType, SortStrategy> sortStrategyMap;
 
     @Override
-    public Slice<Store> findStoresByCondition(StoreSearchRequestDto request) {
+    public Slice<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
         QStore store = QStore.store;
 
-        BooleanBuilder builder = buildWhere(request.getAddress(), request.getName(), store);
+        BooleanBuilder builder = StorePredicateBuilder.build(
+                userId, role, request.getAddress(), request.getName(), store
+        );
 
         StoreSortType sortType = StoreSortType.from(request.getSort());
         SortStrategy strategy = sortStrategyMap.get(sortType);
@@ -52,21 +55,6 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         if (hasNext) result.remove(request.getSize());
 
         return new SliceImpl<>(result, PageRequest.of(0, request.getSize()), hasNext);
-    }
-
-    private BooleanBuilder buildWhere(String address, String name, QStore store) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if (StringUtils.hasText(address)) {
-            builder.and(store.address.city.containsIgnoreCase(address)
-                    .or(store.address.street.containsIgnoreCase(address)));
-        }
-
-        if (StringUtils.hasText(name)) {
-            builder.and(store.name.containsIgnoreCase(name));
-        }
-
-        return builder;
     }
 }
 
