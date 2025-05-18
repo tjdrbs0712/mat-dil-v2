@@ -2,6 +2,8 @@ package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.menu.entity.Menu;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -86,5 +88,30 @@ public class Store {
     public void addMenu(Menu menu) {
         menus.add(menu);
         menu.assignStore(this);
+    }
+
+    public void updateInfo(String name, String phoneNumber, Address address,
+                           LocalTime openTime, LocalTime closeTime,
+                           int minOrderPrice, int deliveryTimeEstimate) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.minOrderPrice = minOrderPrice;
+        this.deliveryTimeEstimate = deliveryTimeEstimate;
+    }
+
+    public void validateBusinessHours(LocalTime openTime, LocalTime closeTime) {
+        if (openTime.isAfter(closeTime)) {
+            throw new StoreException(StoreErrorCode.INVALID_STORE_TIME);
+        }
+    }
+
+    public void changeStoreStatus(StoreStatus newStatus) {
+        if (this.status == newStatus) {
+            throw new StoreException(StoreErrorCode.STORE_STATUS_UNCHANGED);
+        }
+        this.status = newStatus;
     }
 }

@@ -6,7 +6,9 @@ import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.factory.StoreFactory;
+import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
+import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
@@ -25,6 +27,8 @@ import static hello.matdil.global.util.SortTypeKey.*;
 public class StoreServiceImpl implements StoreService{
     private final StoreRepository storeRepository;
     private final StoreFactory storeFactory;
+    private final StoreMapper storeMapper;
+    private final StoreValidator storeValidator;
 
     @Override
     @Transactional
@@ -79,17 +83,18 @@ public class StoreServiceImpl implements StoreService{
     }
 
     @Override
-    public StoreResponseDto updateStore(Long userId, String role, Long storeId, StoreUpdateRequestDto requestDto) {
-        return null;
+    @Transactional
+    public StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto dto) {
+        Store store = storeValidator.validateStoreOwner(userId, storeId, role);
+        store.validateBusinessHours(dto.getOpenTime(), dto.getCloseTime());
+        storeMapper.update(store, dto);
+        return StoreResponseDto.from(store);
     }
 
     @Override
-    public void changeStoreStatus(Long userId, String role, Long storeId, String storeStatus) {
-
-    }
-
-    @Override
-    public void deleteStore(Long userId, String role, Long storeId) {
-
+    @Transactional
+    public void changeStoreStatus(Long userId, UserRole role, Long storeId, StoreStatus storeStatus) {
+        Store store = storeValidator.validateStoreOwner(userId, storeId, role);
+        store.changeStoreStatus(storeStatus);
     }
 }

@@ -56,29 +56,20 @@ public class StoreController {
     // 가게 수정 (사장님 본인 or 관리자)
     @PutMapping("/{storeId}")
     public ResponseEntity<SuccessResponse<StoreResponseDto>> updateStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @LoginUser AuthUser authUser,
             @PathVariable Long storeId,
-            @RequestBody StoreUpdateRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.updateStore(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto);
+            @RequestBody @Valid StoreUpdateRequestDto requestDto) {
+        StoreResponseDto responseDto = storeService.updateStore(authUser.getUserId(), authUser.getRole(), storeId, requestDto);
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
 
     // 가게 상태 변경
-//    @PatchMapping("/{storeId}/status")
-//    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
-//            @PathVariable Long storeId,
-//            @RequestBody StoreStatusChangeRequestDto requestDto) {
-//        storeService.changeStoreStatus(userDetails.getUserId(), userDetails.getRole(), storeId, requestDto.getStatus());
-//        return ResponseEntity.ok(SuccessResponse.success(null));
-//    }
-
-    // 가게 삭제 (soft-delete)
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<SuccessResponse<Void>> deleteStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long storeId) {
-        storeService.deleteStore(userDetails.getUserId(), userDetails.getRole(), storeId);
+    @PatchMapping("/{storeId}/status")
+    public ResponseEntity<SuccessResponse<Void>> changeStoreStatus(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long storeId,
+            @RequestBody StoreStatusChangeRequestDto requestDto) {
+        storeService.changeStoreStatus(authUser.getUserId(), authUser.getRole(), storeId, requestDto.getStoreStatus());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 }
