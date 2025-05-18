@@ -97,9 +97,4 @@ public class StoreServiceImpl implements StoreService{
         Store store = storeValidator.validateStoreOwner(userId, storeId, role);
         store.changeStoreStatus(storeStatus);
     }
-
-    @Override
-    public void deleteStore(Long userId, String role, Long storeId) {
-
-    }
 }

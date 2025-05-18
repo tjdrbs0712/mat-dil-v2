@@ -72,14 +72,5 @@ public class StoreController {
         storeService.changeStoreStatus(authUser.getUserId(), authUser.getRole(), storeId, requestDto.getStoreStatus());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
-
-    // 가게 삭제 (soft-delete)
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<SuccessResponse<Void>> deleteStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long storeId) {
-        storeService.deleteStore(userDetails.getUserId(), userDetails.getRole(), storeId);
-        return ResponseEntity.ok(SuccessResponse.success(null));
-    }
 }
 

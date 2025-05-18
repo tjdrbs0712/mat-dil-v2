@@ -16,6 +16,4 @@ public interface StoreService {
     StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto requestDto);
 
     void changeStoreStatus(Long userId, UserRole role, Long storeId, StoreStatus storeStatus);
-
-    void deleteStore(Long userId, String role, Long storeId);
 }
