@@ -35,24 +35,22 @@ public class Menu extends BaseTimeEntity {
     private String imageUrl;
 
     @Column(length = 100)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private MenuCategory category;
 
-    @Column(nullable = false)
-    private boolean isAvailable;
-
-    @Column(nullable = false)
-    private boolean isSoldOut;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MenuStatus status;
 
     @Builder
     public Menu(String name, int price, String description,
-                String imageUrl, String category, boolean isAvailable, boolean isSoldOut) {
+                String imageUrl, MenuCategory category, MenuStatus menuStatus) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
         this.category = category;
-        this.isAvailable = isAvailable;
-        this.isSoldOut = isSoldOut;
+        this.status = menuStatus;
     }
 
     public void assignStore(Store store) {
