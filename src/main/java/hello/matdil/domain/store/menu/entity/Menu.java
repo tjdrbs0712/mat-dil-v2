@@ -34,6 +34,9 @@ public class Menu extends BaseTimeEntity {
     @Column(length = 500)
     private String imageUrl;
 
+    @Column(nullable = false)
+    private int orderIndex;
+
     @Column(length = 100)
     @Enumerated(EnumType.STRING)
     private MenuCategory category;
@@ -49,6 +52,7 @@ public class Menu extends BaseTimeEntity {
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.orderIndex = 1;
         this.category = category;
         this.menuStatus = menuStatus;
     }
