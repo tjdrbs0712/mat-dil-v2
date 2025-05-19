@@ -29,7 +29,7 @@ public class MenuResponseDto {
                 .description(menu.getDescription())
                 .imageUrl(menu.getImageUrl())
                 .category(menu.getCategory())
-                .menuStatus(menu.getStatus())
+                .menuStatus(menu.getMenuStatus())
                 .build();
     }
 }

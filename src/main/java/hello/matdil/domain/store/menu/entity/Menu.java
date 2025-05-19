@@ -40,7 +40,7 @@ public class Menu extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private MenuStatus status;
+    private MenuStatus menuStatus;
 
     @Builder
     public Menu(String name, int price, String description,
@@ -50,7 +50,7 @@ public class Menu extends BaseTimeEntity {
         this.description = description;
         this.imageUrl = imageUrl;
         this.category = category;
-        this.status = menuStatus;
+        this.menuStatus = menuStatus;
     }
 
     public void assignStore(Store store) {
