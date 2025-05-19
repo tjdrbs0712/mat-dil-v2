@@ -1,6 +1,6 @@
-package hello.matdil.domain.menu.dto;
+package hello.matdil.domain.store.menu.dto;
 
-import hello.matdil.domain.menu.entity.Menu;
+import hello.matdil.domain.store.menu.entity.Menu;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

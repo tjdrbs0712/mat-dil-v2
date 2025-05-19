@@ -1,5 +1,6 @@
-package hello.matdil.domain.menu.entity;
+package hello.matdil.domain.store.menu.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "menus")
-public class Menu {
+public class Menu extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
