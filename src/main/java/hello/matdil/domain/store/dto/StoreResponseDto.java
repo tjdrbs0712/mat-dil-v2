@@ -27,7 +27,6 @@ public class StoreResponseDto {
     private double rating;
     private int reviewCount;
     private StoreStatus status;
-    private List<MenuResponseDto> menus;
 
     public static StoreResponseDto from(Store store) {
         return StoreResponseDto.builder()
@@ -42,9 +41,6 @@ public class StoreResponseDto {
                 .rating(store.getRating())
                 .reviewCount(store.getReviewCount())
                 .status(store.getStatus())
-                .menus(store.getMenus().stream()
-                        .map(MenuResponseDto::from)
-                        .toList())
                 .build();
     }
 }
