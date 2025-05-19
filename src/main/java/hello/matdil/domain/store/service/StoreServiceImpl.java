@@ -36,7 +36,8 @@ public class StoreServiceImpl implements StoreService{
         PermissionValidator.validateOwnerOrAdmin(role);
 
         Store store = storeFactory.createStore(userId, requestDto);
-        return StoreResponseDto.from(storeRepository.save(store));
+        storeRepository.save(store);
+        return StoreResponseDto.from(store);
     }
 
     @Override

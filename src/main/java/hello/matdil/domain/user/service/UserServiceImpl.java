@@ -35,10 +35,11 @@ public class UserServiceImpl implements UserService{
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
 
         User user = userFactory.createUser(requestDto);
+        userRepository.save(user);
         UserRegisterResponseDto responseDto;
 
         try {
-            responseDto = UserRegisterResponseDto.from(userRepository.save(user));
+            responseDto = UserRegisterResponseDto.from(user);
         } catch (DataIntegrityViolationException e) {
             throw userExceptionTranslator.translate(e);
         }
