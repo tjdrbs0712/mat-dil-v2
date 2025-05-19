@@ -3,7 +3,6 @@ package hello.matdil.domain.store.service;
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.mapper.StoreMapper;
@@ -12,6 +11,7 @@ import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.Cursor;
 import hello.matdil.global.response.SliceResponse;
+import hello.matdil.test.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,9 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,8 +99,8 @@ class StoreServiceImplTest {
 
     @Test
     void 가게_수정_성공() {
-        store = createDefaultStore();
-        StoreUpdateRequestDto dto = setUpdateDto();
+        store = TestData.setUpStore();
+        StoreUpdateRequestDto dto = TestData.setUpdateDto();
 
         given(storeValidator.validateStoreOwner(1L, 1L, UserRole.OWNER)).willReturn(store);
 
@@ -117,11 +115,11 @@ class StoreServiceImplTest {
 
     @Test
     void 권한_없는_가게_수정() {
-        store = createDefaultStore();
+        store = TestData.setUpStore();
         given(storeValidator.validateStoreOwner(999L, 1L, UserRole.OWNER))
                 .willThrow(new StoreException(StoreErrorCode.NO_PERMISSION));
 
-        StoreUpdateRequestDto dto = setUpdateDto();
+        StoreUpdateRequestDto dto = TestData.setUpdateDto();
 
         assertThatThrownBy(() ->
                 storeService.updateStore(999L, UserRole.OWNER, 1L, dto))
@@ -135,42 +133,11 @@ class StoreServiceImplTest {
         given(storeValidator.validateStoreOwner(1L, 1L, UserRole.OWNER))
                 .willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
-        StoreUpdateRequestDto dto = setUpdateDto();
+        StoreUpdateRequestDto dto = TestData.setUpdateDto();
 
         assertThatThrownBy(() ->
                 storeService.updateStore(1L, UserRole.OWNER, 1L, dto))
                 .isInstanceOf(StoreException.class)
                 .hasMessageContaining(StoreErrorCode.STORE_NOT_FOUND.getErrorMessage());
-    }
-
-    private Store createDefaultStore() {
-        Store store = Store.builder()
-                .name("기존 가게")
-                .phoneNumber("010-1234-5678")
-                .ownerId(1L)
-                .address(new Address("서울시", "강남구", "101호"))
-                .openTime(LocalTime.of(9, 0))
-                .closeTime(LocalTime.of(22, 0))
-                .minOrderPrice(10000)
-                .deliveryTimeEstimate(30)
-                .status(StoreStatus.OPEN)
-                .build();
-
-        ReflectionTestUtils.setField(store, "id", 1L);
-        return store;
-    }
-
-    private StoreUpdateRequestDto setUpdateDto() {
-        StoreUpdateRequestDto dto = new StoreUpdateRequestDto();
-        ReflectionTestUtils.setField(dto, "name", "수정된 가게");
-        ReflectionTestUtils.setField(dto, "phoneNumber", "010-9876-5432");
-        ReflectionTestUtils.setField(dto, "city", "서울시");
-        ReflectionTestUtils.setField(dto, "street", "서초구");
-        ReflectionTestUtils.setField(dto, "detailAddress", "202호");
-        ReflectionTestUtils.setField(dto, "openTime", LocalTime.of(10, 0));
-        ReflectionTestUtils.setField(dto, "closeTime", LocalTime.of(23, 0));
-        ReflectionTestUtils.setField(dto, "minOrderPrice", 12000);
-        ReflectionTestUtils.setField(dto, "deliveryTimeEstimate", 25);
-        return dto;
     }
 }

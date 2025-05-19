@@ -1,0 +1,68 @@
+package hello.matdil.test;
+
+import hello.matdil.domain.address.Address;
+import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
+import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.entity.StoreStatus;
+import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
+import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.store.menu.entity.MenuCategory;
+import hello.matdil.domain.store.menu.entity.MenuStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalTime;
+
+public class TestData {
+    public static Store setUpStore() {
+        Store store = Store.builder()
+                .name("김밥천국")
+                .phoneNumber("010-1234-5678")
+                .ownerId(1L)
+                .address(new Address("서울시", "강남구", "101호"))
+                .openTime(LocalTime.of(9, 0))
+                .closeTime(LocalTime.of(22, 0))
+                .minOrderPrice(10000)
+                .deliveryTimeEstimate(30)
+                .status(StoreStatus.OPEN)
+                .build();
+
+        ReflectionTestUtils.setField(store, "id", 1L);
+        return store;
+    }
+
+    public static StoreUpdateRequestDto setUpdateDto() {
+        StoreUpdateRequestDto dto = new StoreUpdateRequestDto();
+        ReflectionTestUtils.setField(dto, "name", "수정된 가게");
+        ReflectionTestUtils.setField(dto, "phoneNumber", "010-9876-5432");
+        ReflectionTestUtils.setField(dto, "city", "서울시");
+        ReflectionTestUtils.setField(dto, "street", "서초구");
+        ReflectionTestUtils.setField(dto, "detailAddress", "202호");
+        ReflectionTestUtils.setField(dto, "openTime", LocalTime.of(10, 0));
+        ReflectionTestUtils.setField(dto, "closeTime", LocalTime.of(23, 0));
+        ReflectionTestUtils.setField(dto, "minOrderPrice", 12000);
+        ReflectionTestUtils.setField(dto, "deliveryTimeEstimate", 25);
+        return dto;
+    }
+
+    public static Menu setUpMenu(){
+        return Menu.builder()
+                .name("비빔면")
+                .price(6500)
+                .description("맛있어요")
+                .imageUrl("url")
+                .category(MenuCategory.MAIN)
+                .menuStatus(MenuStatus.AVAILABLE)
+                .build();
+    }
+
+    public static MenuCreateRequestDto setMenuCreateDto() {
+        MenuCreateRequestDto dto = new MenuCreateRequestDto();
+        ReflectionTestUtils.setField(dto, "name", "비빔면");
+        ReflectionTestUtils.setField(dto, "price", 6500);
+        ReflectionTestUtils.setField(dto, "description", "맛있어요");
+        ReflectionTestUtils.setField(dto, "imageUrl", "url");
+        ReflectionTestUtils.setField(dto, "menuStatus", "AVAILABLE");
+        ReflectionTestUtils.setField(dto, "category", "MAIN");
+        return dto;
+    }
+}
