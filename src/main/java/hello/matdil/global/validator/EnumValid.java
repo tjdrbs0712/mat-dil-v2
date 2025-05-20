@@ -15,4 +15,5 @@ public @interface EnumValid {
     Class<? extends Payload>[] payload() default {};
 
     Class<? extends Enum<?>> enumClass();
+    boolean ignoreCase() default false;
 }
