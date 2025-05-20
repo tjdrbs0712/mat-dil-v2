@@ -28,7 +28,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
     private final Map<StoreSortType, SortStrategy> sortStrategyMap;
 
     @Override
-    public Slice<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
+    public List<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
         QStore store = QStore.store;
 
         BooleanBuilder builder = StorePredicateBuilder.build(
@@ -44,17 +44,12 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
             builder.and(cursorPredicate);
         }
 
-        List<Store> result = queryFactory
+        return queryFactory
                 .selectFrom(store)
                 .where(builder)
                 .orderBy(sortConditions)
                 .limit(request.getSize() + 1)
                 .fetch();
-
-        boolean hasNext = result.size() > request.getSize();
-        if (hasNext) result.remove(request.getSize());
-
-        return new SliceImpl<>(result, PageRequest.of(0, request.getSize()), hasNext);
     }
 }
 

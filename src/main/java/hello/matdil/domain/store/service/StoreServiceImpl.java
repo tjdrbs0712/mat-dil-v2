@@ -12,6 +12,7 @@ import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
+import hello.matdil.global.util.pagination.PageAssembler;
 import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
@@ -29,6 +30,7 @@ public class StoreServiceImpl implements StoreService{
     private final StoreFactory storeFactory;
     private final StoreMapper storeMapper;
     private final StoreValidator storeValidator;
+    private final PageAssembler pageAssembler;
 
     @Override
     @Transactional
@@ -42,30 +44,27 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> getStores(Long userId, UserRole role, StoreSearchRequestDto request) {
+    public SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> getStores(
+            Long userId, UserRole role, StoreSearchRequestDto request) {
 
-        Slice<Store> slice = storeRepository.findStoresByCondition(userId, role, request);
+        List<Store> stores = storeRepository.findStoresByCondition(userId, role, request);
+        int pageSize = request.getSize();
 
-        List<StoreSummaryResponseDto> content = slice.getContent().stream()
-                .map(StoreSummaryResponseDto::from)
-                .toList();
-
-        StoreCursorResponseDto nextStoreCursorResponseDto = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
-
-        return SliceResponse.of(
-                content,
-                slice.hasNext(),
-                nextStoreCursorResponseDto
+        return pageAssembler.assemble(
+                stores,
+                pageSize,
+                last -> extractCursor(last, request.getSort()),    // Cursor 생성
+                StoreSummaryResponseDto::from                      // DTO 매핑
         );
     }
 
-    private StoreCursorResponseDto extractCursor(StoreSummaryResponseDto lastDto, String sort) {
+    private StoreCursorResponseDto extractCursor(Store store, String sort) {
         return switch (sort.toLowerCase()) {
-            case RATING -> StoreCursorResponseDto.of(lastDto.getRating(), lastDto.getId());
-            case NAME -> StoreCursorResponseDto.of(lastDto.getName(), lastDto.getId());
-            case REVIEW -> StoreCursorResponseDto.of(lastDto.getReviewCount(), lastDto.getId());
-            case DELIVERY_TIME -> StoreCursorResponseDto.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
-            default -> StoreCursorResponseDto.of(lastDto.getId(), lastDto.getId());
+            case RATING -> StoreCursorResponseDto.from(store.getRating(), store.getId());
+            case NAME -> StoreCursorResponseDto.from(store.getName(), store.getId());
+            case REVIEW -> StoreCursorResponseDto.from(store.getReviewCount(), store.getId());
+            case DELIVERY_TIME -> StoreCursorResponseDto.from(store.getDeliveryTimeEstimate(), store.getId());
+            default -> StoreCursorResponseDto.from(store.getId(), store.getId());
         };
     }
 
