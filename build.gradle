@@ -30,6 +30,11 @@ ext {
 }
 
 dependencies {
+
+    // 쿼리문 꾸미기
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
+
+
     // QueryDSL (jakarta 사용)
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
     annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"

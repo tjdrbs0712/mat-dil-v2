@@ -10,7 +10,7 @@ import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.global.response.Cursor;
+import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<StoreSummaryResponseDto, Cursor> getStores(Long userId, UserRole role, StoreSearchRequestDto request) {
+    public SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> getStores(Long userId, UserRole role, StoreSearchRequestDto request) {
 
         Slice<Store> slice = storeRepository.findStoresByCondition(userId, role, request);
 
@@ -50,22 +50,22 @@ public class StoreServiceImpl implements StoreService{
                 .map(StoreSummaryResponseDto::from)
                 .toList();
 
-        Cursor nextCursor = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
+        StoreCursorResponseDto nextStoreCursorResponseDto = content.isEmpty() ? null : extractCursor(content.get(content.size() - 1), request.getSort());
 
         return SliceResponse.of(
                 content,
                 slice.hasNext(),
-                nextCursor
+                nextStoreCursorResponseDto
         );
     }
 
-    private Cursor extractCursor(StoreSummaryResponseDto lastDto, String sort) {
+    private StoreCursorResponseDto extractCursor(StoreSummaryResponseDto lastDto, String sort) {
         return switch (sort.toLowerCase()) {
-            case RATING -> Cursor.of(lastDto.getRating(), lastDto.getId());
-            case NAME -> Cursor.of(lastDto.getName(), lastDto.getId());
-            case REVIEW -> Cursor.of(lastDto.getReviewCount(), lastDto.getId());
-            case DELIVERY_TIME -> Cursor.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
-            default -> Cursor.of(lastDto.getId(), lastDto.getId());
+            case RATING -> StoreCursorResponseDto.of(lastDto.getRating(), lastDto.getId());
+            case NAME -> StoreCursorResponseDto.of(lastDto.getName(), lastDto.getId());
+            case REVIEW -> StoreCursorResponseDto.of(lastDto.getReviewCount(), lastDto.getId());
+            case DELIVERY_TIME -> StoreCursorResponseDto.of(lastDto.getDeliveryTimeEstimate(), lastDto.getId());
+            default -> StoreCursorResponseDto.of(lastDto.getId(), lastDto.getId());
         };
     }
 

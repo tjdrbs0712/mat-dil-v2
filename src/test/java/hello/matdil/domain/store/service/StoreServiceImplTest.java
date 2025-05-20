@@ -9,7 +9,7 @@ import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.global.response.Cursor;
+import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.test.TestData;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ class StoreServiceImplTest {
         given(storeRepository.findStoresByCondition(any(), any(), any())).willReturn(slice);
 
         // when
-        SliceResponse<StoreSummaryResponseDto, Cursor> response = storeService.getStores(userId, userRole, request);
+        SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> response = storeService.getStores(userId, userRole, request);
 
         // then
         assertThat(response.getContent()).hasSize(2);

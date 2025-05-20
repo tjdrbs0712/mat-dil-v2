@@ -27,9 +27,19 @@ spring:
           auth: true
           starttls:
             enable: true
+logging:
+  level:
+    org.hibernate.SQL: debug             # SQL 출력
+    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
+
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000
   refreshExpirationMillis: 36000000
 server:
   port: ${SERVER_PORT}
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
