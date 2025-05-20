@@ -1,4 +1,4 @@
-package hello.matdil.domain.store.menu;
+package hello.matdil.domain.store.menu.factory;
 
 import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
 import hello.matdil.domain.store.menu.entity.Menu;
