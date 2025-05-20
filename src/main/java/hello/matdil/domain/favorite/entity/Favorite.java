@@ -7,12 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorites")
+@Table(
+        name = "favorites",
+        uniqueConstraints = @UniqueConstraint(name = "UK_favorite_user_store", columnNames = {"userId", "storeId"})
+)
 public class Favorite extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +25,9 @@ public class Favorite extends BaseTimeEntity {
     @Column(nullable = false)
     private Long storeId;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @Builder
     public Favorite(Long userId, Long storeId){
         this.userId = userId;
         this.storeId = storeId;
-        this.createdAt = LocalDateTime.now();
     }
 }

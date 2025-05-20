@@ -1,6 +1,5 @@
 package hello.matdil.domain.store.dto;
 
-import hello.matdil.domain.store.menu.dto.MenuResponseDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
 import lombok.AccessLevel;
@@ -9,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalTime;
-import java.util.List;
 
 @Getter
 @Builder

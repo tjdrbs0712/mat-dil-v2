@@ -30,6 +30,7 @@ public class Delivery extends BaseTimeEntity {
     @Column(nullable = false)
     private DeliveryStatus deliveryStatus;
 
+    @Column(nullable = false)
     private LocalDateTime assignedTime;
 
     @Builder

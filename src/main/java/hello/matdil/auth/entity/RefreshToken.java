@@ -1,5 +1,6 @@
 package hello.matdil.auth.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "refresh_tokens")
-public class RefreshToken {
+public class RefreshToken extends BaseTimeEntity {
 
     @Id
     private Long userId; // 사용자 ID (고유)

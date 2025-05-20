@@ -3,7 +3,6 @@ package hello.matdil.domain.store.service;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 
 public interface StoreService {

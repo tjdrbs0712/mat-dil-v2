@@ -44,7 +44,6 @@ public class User extends BaseTimeEntity {
     private UserRole role;
 
     @Embedded
-    @Column(nullable = false)
     private Address address;
 
     @Column(nullable = false, unique = true)

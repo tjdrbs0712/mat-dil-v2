@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "coupons")
+@Table(
+        name = "coupons",
+        uniqueConstraints = @UniqueConstraint(name = "UK_coupon_code", columnNames = "code")
+)
 public class Coupon extends BaseTimeEntity {
 
     @Id
@@ -22,7 +25,7 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String code;
 
     @Column(nullable = false)

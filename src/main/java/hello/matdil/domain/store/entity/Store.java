@@ -2,9 +2,9 @@ package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.common.BaseTimeEntity;
-import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
+import hello.matdil.domain.store.menu.entity.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

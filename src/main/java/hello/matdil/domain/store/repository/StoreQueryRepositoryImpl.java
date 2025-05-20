@@ -12,9 +12,6 @@ import hello.matdil.domain.store.query.StorePredicateBuilder;
 import hello.matdil.domain.store.sort.SortStrategy;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

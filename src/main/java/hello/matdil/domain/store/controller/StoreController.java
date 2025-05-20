@@ -5,7 +5,6 @@ import hello.matdil.auth.model.AuthUser;
 import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
-import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;

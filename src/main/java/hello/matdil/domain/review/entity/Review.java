@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,13 +29,8 @@ public class Review extends BaseTimeEntity {
     @Column(nullable = false)
     private int rating;
 
+    @Column
     private String comment;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Builder
     public Review(Long userId, Long orderId, Long storeId, int rating, String comment) {
@@ -46,7 +39,5 @@ public class Review extends BaseTimeEntity {
         this.storeId = storeId;
         this.rating = rating;
         this.comment = comment;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }

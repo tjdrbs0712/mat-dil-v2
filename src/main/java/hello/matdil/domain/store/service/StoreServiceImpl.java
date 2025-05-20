@@ -10,12 +10,10 @@ import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
 import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

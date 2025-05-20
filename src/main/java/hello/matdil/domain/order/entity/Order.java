@@ -27,8 +27,7 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private Long storeId;
 
-    @ElementCollection
-    @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -52,11 +51,15 @@ public class Order extends BaseTimeEntity {
                  int totalPrice, String requestNote, LocalDateTime expectedDeliveryTime) {
         this.userId = userId;
         this.storeId = storeId;
-        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
         this.isPaid = false;
+
+        for (OrderItem item : orderItems) {
+            item.assignOrder(this);
+        }
+        this.orderItems = orderItems;
     }
 }

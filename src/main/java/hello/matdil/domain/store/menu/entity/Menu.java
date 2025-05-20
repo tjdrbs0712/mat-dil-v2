@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "menus")
+@Table(name = "menus", indexes = {
+        @Index(name = "idx_menu_store_status_order", columnList = "store_id, menu_status, order_index, id DESC")
+})
 public class Menu extends BaseTimeEntity {
 
     @Id

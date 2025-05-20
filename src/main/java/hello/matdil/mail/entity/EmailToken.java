@@ -1,5 +1,6 @@
 package hello.matdil.mail.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity(name = "email_tokens")
-public class EmailToken {
+public class EmailToken extends BaseTimeEntity {
     @Id
     private String token;
 
