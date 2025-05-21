@@ -1,6 +1,7 @@
 package hello.matdil.domain.user.entity;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.user.dto.UserInfoChangeRequestDto;
 import hello.matdil.domain.user.exception.UserErrorCode;
 import hello.matdil.domain.user.exception.UserException;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(name = "UK_user_phone_number", columnNames = "phone_number")
         }
 )
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +44,6 @@ public class User {
     private UserRole role;
 
     @Embedded
-    @Column(nullable = false)
     private Address address;
 
     @Column(nullable = false, unique = true)
@@ -59,9 +59,6 @@ public class User {
     @Column
     private LocalDateTime lastLoginAt;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @Builder
     public User(String name, String email, String password,
                 UserRole role, Address address, String phoneNumber) {
@@ -72,7 +69,6 @@ public class User {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.userStatus = UserStatus.INACTIVE;
-        this.createdAt = LocalDateTime.now();
         this.lastLoginAt = null;
     }
 

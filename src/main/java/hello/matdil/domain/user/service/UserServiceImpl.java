@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserService{
 
         User user = userFactory.createUser(requestDto);
         UserRegisterResponseDto responseDto;
-
         try {
             responseDto = UserRegisterResponseDto.from(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {

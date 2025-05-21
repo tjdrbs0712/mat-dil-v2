@@ -38,5 +38,6 @@ public class StoreUpdateRequestDto {
     private Integer minOrderPrice;
 
     @NotNull(message = "배달 예상 시간은 필수입니다.")
+    @Min(value = 0, message = "최소 배달 시간은 0분 이상이어야 합니다.")
     private Integer deliveryTimeEstimate;
 }

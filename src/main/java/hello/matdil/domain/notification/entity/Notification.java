@@ -1,5 +1,6 @@
 package hello.matdil.domain.notification.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "nofications")
-public class Notification {
+@Table(name = "notifications")
+public class Notification extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +33,9 @@ public class Notification {
     private boolean isRead;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     private LocalDateTime scheduledAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationStatus status;
 
@@ -48,7 +48,6 @@ public class Notification {
         this.scheduledAt = scheduledAt;
         this.status = status;
         this.isRead = false; // 기본값
-        this.createdAt = LocalDateTime.now(); // 생성 시 자동 설정
     }
 
 }

@@ -1,6 +1,7 @@
 package hello.matdil.domain.delivery.entity;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "deliveries")
-public class Delivery {
+public class Delivery extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,7 @@ public class Delivery {
     @Column(nullable = false)
     private DeliveryStatus deliveryStatus;
 
+    @Column(nullable = false)
     private LocalDateTime assignedTime;
 
     @Builder

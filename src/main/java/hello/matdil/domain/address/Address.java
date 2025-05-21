@@ -12,13 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 public class Address {
-    @Column(nullable = false)
+
+    @Column(name = "address_city", nullable = false)
     private String city;
 
-    @Column(nullable = false)
+    @Column(name = "address_street", nullable = false)
     private String street;
 
-    @Column(nullable = false)
+    @Column(name = "address_detail_address", nullable = false)
     private String detailAddress;
 
     public Address(String city, String street, String detailAddress) {

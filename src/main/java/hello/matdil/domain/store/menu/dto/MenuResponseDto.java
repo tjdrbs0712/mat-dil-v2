@@ -1,6 +1,8 @@
-package hello.matdil.domain.menu.dto;
+package hello.matdil.domain.store.menu.dto;
 
-import hello.matdil.domain.menu.entity.Menu;
+import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.store.menu.entity.MenuCategory;
+import hello.matdil.domain.store.menu.entity.MenuStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +18,8 @@ public class MenuResponseDto {
     private int price;
     private String description;
     private String imageUrl;
-    private String category;
-    private boolean isAvailable;
-    private boolean isSoldOut;
+    private MenuCategory  category;
+    private MenuStatus menuStatus;
 
     public static MenuResponseDto from(Menu menu) {
         return MenuResponseDto.builder()
@@ -28,8 +29,7 @@ public class MenuResponseDto {
                 .description(menu.getDescription())
                 .imageUrl(menu.getImageUrl())
                 .category(menu.getCategory())
-                .isAvailable(menu.isAvailable())
-                .isSoldOut(menu.isSoldOut())
+                .menuStatus(menu.getMenuStatus())
                 .build();
     }
 }

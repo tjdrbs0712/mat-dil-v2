@@ -1,18 +1,20 @@
 package hello.matdil.domain.favorite.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorites")
-public class Favorite {
+@Table(
+        name = "favorites",
+        uniqueConstraints = @UniqueConstraint(name = "UK_favorite_user_store", columnNames = {"userId", "storeId"})
+)
+public class Favorite extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +25,9 @@ public class Favorite {
     @Column(nullable = false)
     private Long storeId;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @Builder
     public Favorite(Long userId, Long storeId){
         this.userId = userId;
         this.storeId = storeId;
-        this.createdAt = LocalDateTime.now();
     }
 }

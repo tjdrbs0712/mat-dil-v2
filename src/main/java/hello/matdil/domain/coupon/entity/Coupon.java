@@ -1,5 +1,6 @@
 package hello.matdil.domain.coupon.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,8 +12,11 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "coupons")
-public class Coupon {
+@Table(
+        name = "coupons",
+        uniqueConstraints = @UniqueConstraint(name = "UK_coupon_code", columnNames = "code")
+)
+public class Coupon extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +25,7 @@ public class Coupon {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String code;
 
     @Column(nullable = false)

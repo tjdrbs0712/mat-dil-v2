@@ -1,5 +1,6 @@
 package hello.matdil.domain.order.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
-public class Order {
+public class Order extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +27,7 @@ public class Order {
     @Column(nullable = false)
     private Long storeId;
 
-    @ElementCollection
-    @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -43,23 +43,24 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime expectedDeliveryTime;
 
-    @Column(nullable = false)
-    private boolean isPaid;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     @Builder
     public Order(Long userId, Long storeId, List<OrderItem> orderItems, OrderStatus orderStatus,
-                 int totalPrice, String requestNote, LocalDateTime expectedDeliveryTime) {
+                 String requestNote, LocalDateTime expectedDeliveryTime) {
         this.userId = userId;
         this.storeId = storeId;
-        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
-        this.totalPrice = totalPrice;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
-        this.isPaid = false;
-        this.createdAt = LocalDateTime.now();
+
+        for (OrderItem item : orderItems) {
+            item.assignOrder(this);
+        }
+        this.orderItems = orderItems;
+        this.totalPrice = orderItems.stream().mapToInt(OrderItem::getPrice).sum();
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.assignOrder(this);
     }
 }

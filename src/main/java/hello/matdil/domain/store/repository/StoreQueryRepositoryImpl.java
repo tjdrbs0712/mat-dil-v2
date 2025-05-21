@@ -12,9 +12,6 @@ import hello.matdil.domain.store.query.StorePredicateBuilder;
 import hello.matdil.domain.store.sort.SortStrategy;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,15 +25,14 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
     private final Map<StoreSortType, SortStrategy> sortStrategyMap;
 
     @Override
-    public Slice<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
+    public List<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
         QStore store = QStore.store;
 
         BooleanBuilder builder = StorePredicateBuilder.build(
                 userId, role, request.getAddress(), request.getName(), store
         );
 
-        StoreSortType sortType = StoreSortType.from(request.getSort());
-        SortStrategy strategy = sortStrategyMap.get(sortType);
+        SortStrategy strategy = sortStrategyMap.get(request.getSort());
 
         OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
@@ -44,17 +40,12 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
             builder.and(cursorPredicate);
         }
 
-        List<Store> result = queryFactory
+        return queryFactory
                 .selectFrom(store)
                 .where(builder)
                 .orderBy(sortConditions)
                 .limit(request.getSize() + 1)
                 .fetch();
-
-        boolean hasNext = result.size() > request.getSize();
-        if (hasNext) result.remove(request.getSize());
-
-        return new SliceImpl<>(result, PageRequest.of(0, request.getSize()), hasNext);
     }
 }
 

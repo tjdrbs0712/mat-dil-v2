@@ -1,18 +1,17 @@
 package hello.matdil.domain.review.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "reviews")
-public class Review {
+public class Review extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +29,8 @@ public class Review {
     @Column(nullable = false)
     private int rating;
 
+    @Column
     private String comment;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Builder
     public Review(Long userId, Long orderId, Long storeId, int rating, String comment) {
@@ -45,7 +39,5 @@ public class Review {
         this.storeId = storeId;
         this.rating = rating;
         this.comment = comment;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }
