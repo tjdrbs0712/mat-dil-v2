@@ -3,10 +3,7 @@ package hello.matdil.domain.store.menu.service;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
-import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorResponseDto;
-import hello.matdil.domain.store.menu.dto.MenuResponseDto;
+import hello.matdil.domain.store.menu.dto.*;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.exception.MenuErrorCode;
 import hello.matdil.domain.store.menu.exception.MenuException;
@@ -77,6 +74,18 @@ public class MenuServiceImpl implements MenuService {
             throw new MenuException(MenuErrorCode.NO_PERMISSION);
         }
 
+        return MenuResponseDto.from(menu);
+    }
+
+    @Override
+    @Transactional
+    public MenuResponseDto updateMenu(Long userId, UserRole role, Long storeId, Long menuId, MenuUpdateRequestDto requestDto) {
+        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
+                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+        Store store = menu.getStore();
+
+        store.validateModifiableBy(userId, role);
+        menu.update(requestDto);
         return MenuResponseDto.from(menu);
     }
 }

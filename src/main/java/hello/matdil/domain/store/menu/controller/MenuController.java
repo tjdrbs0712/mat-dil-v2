@@ -2,10 +2,7 @@ package hello.matdil.domain.store.menu.controller;
 
 import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
-import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorResponseDto;
-import hello.matdil.domain.store.menu.dto.MenuResponseDto;
+import hello.matdil.domain.store.menu.dto.*;
 import hello.matdil.domain.store.menu.service.MenuService;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
@@ -51,6 +48,23 @@ public class MenuController {
         MenuResponseDto response = menuService.getMenu(
                 authUser.getUserId(), authUser.getRole(), storeId, menuId);
 
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @PutMapping("/{menuId}")
+    public ResponseEntity<SuccessResponse<MenuResponseDto>> updateMenu(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long storeId,
+            @PathVariable Long menuId,
+            @RequestBody @Valid MenuUpdateRequestDto requestDto
+    ) {
+        MenuResponseDto response = menuService.updateMenu(
+                authUser.getUserId(),
+                authUser.getRole(),
+                storeId,
+                menuId,
+                requestDto
+        );
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 

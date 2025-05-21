@@ -2,6 +2,7 @@ package hello.matdil.domain.store.menu.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.menu.dto.MenuUpdateRequestDto;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -66,5 +67,15 @@ public class Menu extends BaseTimeEntity {
 
     public boolean isVisibleTo(UserRole role, Long userId, Long storeOwnerId) {
         return menuStatus.isVisibleTo(role, userId, storeOwnerId);
+    }
+
+    public void update(MenuUpdateRequestDto dto) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.description = dto.getDescription();
+        this.imageUrl = dto.getImageUrl();
+        this.orderIndex = dto.getOrderIndex();
+        this.category = dto.getCategory();
+        this.menuStatus = dto.getMenuStatus();
     }
 }
