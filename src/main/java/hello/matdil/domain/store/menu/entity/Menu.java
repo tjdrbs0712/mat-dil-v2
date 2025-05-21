@@ -69,9 +69,10 @@ public class Menu extends BaseTimeEntity {
 
     public void validateAccessibleTo(UserRole role, Long userId, Store store) {
         store.validateVisibleTo(role, userId);
-         if(!menuStatus.isVisibleTo(role, userId, store.getOwnerId())){
-             throw new MenuException(MenuErrorCode.NO_PERMISSION);
-         };
+        if (!menuStatus.isVisibleTo(role, userId, store.getOwnerId())) {
+            throw new MenuException(MenuErrorCode.NO_PERMISSION);
+        }
+        ;
     }
 
     public void update(MenuUpdateRequestDto dto) {
@@ -90,4 +91,9 @@ public class Menu extends BaseTimeEntity {
         }
         this.menuStatus = MenuStatus.DELETE;
     }
+
+    public boolean isAvailable() {
+        return this.menuStatus == MenuStatus.AVAILABLE;
+    }
 }
+

@@ -1,5 +1,8 @@
 package hello.matdil.domain.order.entity;
 
+import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.store.menu.exception.MenuErrorCode;
+import hello.matdil.domain.store.menu.exception.MenuException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,11 +33,22 @@ public class OrderItem {
     private int price;
 
     @Builder
-    public OrderItem(Order order, Long menuId, int quantity, int price) {
-        this.order = order;
+    public OrderItem(Long menuId, int quantity, int price){
         this.menuId = menuId;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public static OrderItem of(Menu menu, int quantity) {
+        if (!menu.isAvailable()) {
+            throw new MenuException(MenuErrorCode.UNAVAILABLE_MENU);
+        }
+
+        return OrderItem.builder()
+                .menuId(menu.getId())
+                .quantity(quantity)
+                .price(menu.getPrice() * quantity)
+                .build();
     }
 
     public void assignOrder(Order order) {
