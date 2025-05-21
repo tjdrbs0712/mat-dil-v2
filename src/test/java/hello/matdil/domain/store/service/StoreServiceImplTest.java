@@ -110,7 +110,7 @@ class StoreServiceImplTest {
     void 가게_수정_성공() {
         // given
         store = TestData.setUpStore();
-        StoreUpdateRequestDto dto = TestData.setUpdateDto();
+        StoreUpdateRequestDto dto = TestData.setStoreUpdateDto();
         given(storeRepository.findById(anyLong())).willReturn(Optional.of(store));
 
         // when
@@ -126,7 +126,7 @@ class StoreServiceImplTest {
         store = TestData.setUpStore();
         given(storeRepository.findById(1L)).willReturn(Optional.of(store));
 
-        StoreUpdateRequestDto dto = TestData.setUpdateDto();
+        StoreUpdateRequestDto dto = TestData.setStoreUpdateDto();
 
         // when & then
         assertThatThrownBy(() ->
@@ -139,7 +139,7 @@ class StoreServiceImplTest {
     @Test
     void 존재하지_않는_가게_수정() {
         // given
-        StoreUpdateRequestDto dto = TestData.setUpdateDto();
+        StoreUpdateRequestDto dto = TestData.setStoreUpdateDto();
         given(storeRepository.findById(1L)).willReturn(Optional.empty());
 
         // when & then

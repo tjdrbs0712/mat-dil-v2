@@ -7,6 +7,7 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
+import hello.matdil.domain.store.menu.dto.MenuUpdateRequestDto;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.entity.MenuCategory;
 import hello.matdil.domain.store.menu.entity.MenuStatus;
@@ -39,7 +40,7 @@ public class TestData {
         return dto;
     }
 
-    public static StoreUpdateRequestDto setUpdateDto() {
+    public static StoreUpdateRequestDto setStoreUpdateDto() {
         StoreUpdateRequestDto dto = new StoreUpdateRequestDto();
         ReflectionTestUtils.setField(dto, "name", "수정된 가게");
         ReflectionTestUtils.setField(dto, "phoneNumber", "010-9876-5432");
@@ -74,4 +75,17 @@ public class TestData {
         ReflectionTestUtils.setField(dto, "category", MenuCategory.MAIN);
         return dto;
     }
+
+    public static MenuUpdateRequestDto setMenuUpdateDto() {
+        MenuUpdateRequestDto dto = new MenuUpdateRequestDto();
+        ReflectionTestUtils.setField(dto, "name", "수정된 매운 떡볶이");
+        ReflectionTestUtils.setField(dto, "price", 8900);
+        ReflectionTestUtils.setField(dto, "description", "매운맛을 강화한 떡볶이입니다.");
+        ReflectionTestUtils.setField(dto, "imageUrl", "https://cdn.matdil.com/menu/spicy-tteokbokki.jpg");
+        ReflectionTestUtils.setField(dto, "orderIndex", 2);
+        ReflectionTestUtils.setField(dto, "category", MenuCategory.SIDE);
+        ReflectionTestUtils.setField(dto, "menuStatus", MenuStatus.AVAILABLE);
+        return dto;
+    }
+
 }

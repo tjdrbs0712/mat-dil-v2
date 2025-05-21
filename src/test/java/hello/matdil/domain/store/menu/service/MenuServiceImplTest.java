@@ -3,11 +3,10 @@ package hello.matdil.domain.store.menu.service;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
-import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
-import hello.matdil.domain.store.menu.dto.MenuCursorResponseDto;
-import hello.matdil.domain.store.menu.dto.MenuResponseDto;
+import hello.matdil.domain.store.menu.dto.*;
 import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.store.menu.exception.MenuErrorCode;
+import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
 import hello.matdil.domain.store.repository.StoreRepository;
@@ -138,6 +137,61 @@ class MenuServiceImplTest {
         MenuResponseDto result = menuService.getMenu(1L, UserRole.ADMIN, 1L, 1L);
         // then
         assertThat(result.getName()).isEqualTo(menu.getName());
+    }
 
+    @Test
+    void 메뉴_수정_성공(){
+        // given
+        store.addMenu(menu, 1L, UserRole.ADMIN);
+        MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
+        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
+
+        // when
+        MenuResponseDto result = menuService.updateMenu(1L, UserRole.ADMIN, 1L, 1L, dto);
+
+        // then
+        assertThat(result.getName()).isEqualTo(dto.getName());
+    }
+
+    @Test
+    void 메뉴_수정_권한없음() {
+        // given
+        store.addMenu(menu, 1L, UserRole.OWNER); // menu의 store 소유자는 1L
+        MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
+        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.of(menu));
+
+        // when & then
+        assertThatThrownBy(() ->
+                menuService.updateMenu(999L, UserRole.OWNER, 1L, 1L, dto))
+                .isInstanceOf(StoreException.class)
+                .hasMessageContaining(StoreErrorCode.NO_PERMISSION.getErrorMessage());
+    }
+
+    @Test
+    void 메뉴_수정_storeId_불일치() {
+        // given
+        store.addMenu(menu, 1L, UserRole.ADMIN);
+        MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
+
+        given(menuRepository.findByIdWithStore(1L, 999L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() ->
+                menuService.updateMenu(1L, UserRole.ADMIN, 999L, 1L, dto))
+                .isInstanceOf(MenuException.class)
+                .hasMessageContaining(MenuErrorCode.MENU_NOT_FOUND.getErrorMessage());
+    }
+
+    @Test
+    void 메뉴_수정_메뉴없음() {
+        // given
+        MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
+        given(menuRepository.findByIdWithStore(999L, 1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() ->
+                menuService.updateMenu(1L, UserRole.ADMIN, 1L, 999L, dto))
+                .isInstanceOf(MenuException.class)
+                .hasMessageContaining(MenuErrorCode.MENU_NOT_FOUND.getErrorMessage());
     }
 }
