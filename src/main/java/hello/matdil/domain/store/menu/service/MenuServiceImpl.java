@@ -13,6 +13,7 @@ import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
 import hello.matdil.domain.store.repository.StoreRepository;
+import hello.matdil.domain.store.validator.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -30,6 +31,7 @@ public class MenuServiceImpl implements MenuService {
     private final StoreRepository storeRepository;
     private final MenuFactory menuFactory;
     private final PageAssembler pageAssembler;
+    private final StoreReader storeReader;
 
     @Override
     @Transactional
@@ -49,8 +51,7 @@ public class MenuServiceImpl implements MenuService {
     public SliceResponse<MenuResponseDto, MenuCursorResponseDto> getMenus(
             Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor) {
 
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        storeReader.getStoreWithPermission(userId, storeId, role);
 
         List<Menu> menus = menuRepository.findMenusByCursor(userId, role, storeId, cursor);
         int pageSize = cursor.pageSize();
@@ -67,7 +68,9 @@ public class MenuServiceImpl implements MenuService {
     @Transactional(readOnly = true)
     public MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId) {
 
-        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
+        storeReader.getStoreWithPermission(userId, storeId, role);
+
+        Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
 
         if (!menu.isVisibleTo(role, userId, menu.getStore().getOwnerId())) {

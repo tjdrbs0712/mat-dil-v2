@@ -68,7 +68,7 @@ public class StoreServiceImpl implements StoreService{
     public StoreResponseDto getStore(Long userId, UserRole role, Long storeId) {
         Store store = getStoreOrThrow(storeId);
 
-        if (!store.isVisibleTo(role, userId)) {
+        if (store.isVisibleTo(role, userId)) {
             throw new StoreException(StoreErrorCode.NO_PERMISSION);
         }
 

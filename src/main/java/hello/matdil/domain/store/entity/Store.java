@@ -107,7 +107,7 @@ public class Store extends BaseTimeEntity {
     }
 
     public boolean isVisibleTo(UserRole role, Long userId) {
-        return this.status.isVisibleTo(role, userId, this.ownerId);
+        return !this.status.isVisibleTo(role, userId, this.ownerId);
     }
 
     public void validateBusinessHours(LocalTime openTime, LocalTime closeTime) {
