@@ -37,10 +37,9 @@ public class MenuServiceImpl implements MenuService {
     public MenuResponseDto createMenu(Long userId, UserRole role, Long storeId, MenuCreateRequestDto requestDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-        PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
 
         Menu menu = menuFactory.createMenu(requestDto);
-        store.addMenu(menu);
+        store.addMenu(menu, userId, role);
 
         menuRepository.save(menu);
         return MenuResponseDto.from(menu);
