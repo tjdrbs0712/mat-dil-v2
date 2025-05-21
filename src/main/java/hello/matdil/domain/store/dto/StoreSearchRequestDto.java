@@ -1,7 +1,7 @@
 package hello.matdil.domain.store.dto;
 
 import hello.matdil.domain.store.entity.StoreSortType;
-import hello.matdil.global.validator.EnumValid;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +26,10 @@ public class StoreSearchRequestDto {
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다."
     )
-    @EnumValid(enumClass = StoreSortType.class, ignoreCase = true, message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다.")
-    private String sort = "rating";
+
+    @Schema(defaultValue = "RATING", description = "정렬 기준 (RATING, NAME, REVIEW, DELIVERY_TIME)")
+    @NotNull(message = "정렬 기준은 필수입니다.")
+    private StoreSortType sort = StoreSortType.RATING;
 
     @Min(value = 1, message = "최소 1개 이상 조회해야 합니다.")
     @Max(value = 100, message = "최대 100개까지 조회할 수 있습니다.")

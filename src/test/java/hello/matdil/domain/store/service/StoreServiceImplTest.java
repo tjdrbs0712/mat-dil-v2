@@ -5,11 +5,8 @@ import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
-import hello.matdil.domain.store.mapper.StoreMapper;
 import hello.matdil.domain.store.repository.StoreRepository;
-import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.store.dto.StoreCursorResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.test.TestData;
 import org.junit.jupiter.api.Test;
@@ -28,7 +25,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class StoreServiceImplTest {
@@ -40,10 +36,6 @@ class StoreServiceImplTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private StoreMapper storeMapper;
-
-    @Mock
-    private StoreValidator storeValidator;
 
     private Store store;
 
@@ -102,22 +94,18 @@ class StoreServiceImplTest {
         store = TestData.setUpStore();
         StoreUpdateRequestDto dto = TestData.setUpdateDto();
 
-        given(storeValidator.validateStoreOwner(1L, 1L, UserRole.OWNER)).willReturn(store);
-
         StoreResponseDto expected = StoreResponseDto.from(store);
 
         StoreResponseDto result = storeService.updateStore(1L, UserRole.OWNER, 1L, dto);
 
         assertThat(result.getName()).isEqualTo(expected.getName());
-        verify(storeValidator).validateStoreOwner(1L, 1L, UserRole.OWNER);
-        verify(storeMapper).update(store, dto);
     }
 
     @Test
     void 권한_없는_가게_수정() {
         store = TestData.setUpStore();
-        given(storeValidator.validateStoreOwner(999L, 1L, UserRole.OWNER))
-                .willThrow(new StoreException(StoreErrorCode.NO_PERMISSION));
+//        given(storeValidator.validateStoreOwner(999L, 1L, UserRole.OWNER))
+//                .willThrow(new StoreException(StoreErrorCode.NO_PERMISSION));
 
         StoreUpdateRequestDto dto = TestData.setUpdateDto();
 
@@ -130,8 +118,8 @@ class StoreServiceImplTest {
 
     @Test
     void 존재하지_않는_가게_수정() {
-        given(storeValidator.validateStoreOwner(1L, 1L, UserRole.OWNER))
-                .willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+//        given(storeValidator.validateStoreOwner(1L, 1L, UserRole.OWNER))
+//                .willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
         StoreUpdateRequestDto dto = TestData.setUpdateDto();
 

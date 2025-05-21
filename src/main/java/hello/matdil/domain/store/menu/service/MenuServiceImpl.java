@@ -16,7 +16,6 @@ import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
-import hello.matdil.global.validator.PermissionValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

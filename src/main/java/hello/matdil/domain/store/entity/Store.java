@@ -2,9 +2,11 @@ package hello.matdil.domain.store.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.common.BaseTimeEntity;
+import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -86,7 +88,8 @@ public class Store extends BaseTimeEntity {
         this.reviewCount = 0;
     }
 
-    public void addMenu(Menu menu) {
+    public void addMenu(Menu menu, Long userId, UserRole role) {
+        validateModifiableBy(userId, role);
         menus.add(menu);
         menu.assignStore(this);
     }
@@ -103,9 +106,22 @@ public class Store extends BaseTimeEntity {
         this.deliveryTimeEstimate = deliveryTimeEstimate;
     }
 
+    public boolean isVisibleTo(UserRole role, Long userId) {
+        return this.status.isVisibleTo(role, userId, this.ownerId);
+    }
+
     public void validateBusinessHours(LocalTime openTime, LocalTime closeTime) {
         if (openTime.isAfter(closeTime)) {
             throw new StoreException(StoreErrorCode.INVALID_STORE_TIME);
+        }
+    }
+
+    public void validateModifiableBy(Long userId, UserRole role) {
+        boolean isAdmin = role == UserRole.ADMIN;
+        boolean isOwner = role == UserRole.OWNER && this.ownerId.equals(userId);
+
+        if (!(isAdmin || isOwner)) {
+            throw new StoreException(StoreErrorCode.NO_PERMISSION);
         }
     }
 
@@ -114,5 +130,15 @@ public class Store extends BaseTimeEntity {
             throw new StoreException(StoreErrorCode.STORE_STATUS_UNCHANGED);
         }
         this.status = newStatus;
+    }
+
+    public void update(StoreUpdateRequestDto dto) {
+        this.name = dto.getName();
+        this.phoneNumber = getPhoneNumber();
+        this.address = new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
+        this.openTime = dto.getOpenTime();
+        this.closeTime = dto.getCloseTime();
+        this.minOrderPrice = dto.getMinOrderPrice();
+        this.deliveryTimeEstimate = dto.getDeliveryTimeEstimate();
     }
 }

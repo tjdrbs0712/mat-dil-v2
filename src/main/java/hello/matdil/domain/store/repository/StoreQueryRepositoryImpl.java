@@ -32,8 +32,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 userId, role, request.getAddress(), request.getName(), store
         );
 
-        StoreSortType sortType = StoreSortType.from(request.getSort());
-        SortStrategy strategy = sortStrategyMap.get(sortType);
+        SortStrategy strategy = sortStrategyMap.get(request.getSort());
 
         OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
