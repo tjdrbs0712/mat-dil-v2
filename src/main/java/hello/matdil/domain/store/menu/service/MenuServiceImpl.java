@@ -8,6 +8,8 @@ import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
 import hello.matdil.domain.store.menu.dto.MenuCursorResponseDto;
 import hello.matdil.domain.store.menu.dto.MenuResponseDto;
 import hello.matdil.domain.store.menu.entity.Menu;
+import hello.matdil.domain.store.menu.exception.MenuErrorCode;
+import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
 import hello.matdil.domain.store.repository.StoreRepository;
@@ -32,10 +34,10 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     @Transactional
-    public MenuResponseDto createMenu(Long userId, UserRole userRole, Long storeId, MenuCreateRequestDto requestDto) {
+    public MenuResponseDto createMenu(Long userId, UserRole role, Long storeId, MenuCreateRequestDto requestDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-        PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), userRole);
+        PermissionValidator.validateOwnerOrAdmin(userId, store.getOwnerId(), role);
 
         Menu menu = menuFactory.createMenu(requestDto);
         store.addMenu(menu);
@@ -63,4 +65,17 @@ public class MenuServiceImpl implements MenuService {
         );
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId) {
+
+        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
+                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+
+        if (!menu.isVisibleTo(role, userId, menu.getStore().getOwnerId())) {
+            throw new MenuException(MenuErrorCode.NO_PERMISSION);
+        }
+
+        return MenuResponseDto.from(menu);
+    }
 }

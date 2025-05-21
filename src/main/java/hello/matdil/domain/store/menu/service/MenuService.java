@@ -12,4 +12,6 @@ public interface MenuService {
     MenuResponseDto createMenu(Long userId, UserRole userRole, Long storeId, @Valid MenuCreateRequestDto requestDto);
 
     SliceResponse<MenuResponseDto, MenuCursorResponseDto> getMenus(Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor);
+
+    MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId);
 }

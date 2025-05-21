@@ -3,6 +3,7 @@ package hello.matdil.domain.store.menu.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import hello.matdil.domain.store.entity.QStore;
 import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.entity.MenuStatus;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -53,6 +55,19 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
 
             case ADMIN -> Expressions.TRUE;
         };
+    }
+
+    public Optional<Menu> findByIdWithStore(Long menuId, Long storeId) {
+        QMenu menu = QMenu.menu;
+        QStore store = QStore.store;
+
+        Menu result = queryFactory
+                .selectFrom(menu)
+                .join(menu.store, store).fetchJoin()
+                .where(menu.id.eq(menuId), store.id.eq(storeId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 
 }

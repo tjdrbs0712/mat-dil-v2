@@ -6,8 +6,10 @@ import hello.matdil.domain.user.entity.UserRole;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MenuQueryRepository {
     List<Menu> findMenusByCursor(Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor);
+    Optional<Menu> findByIdWithStore(Long menuId, Long storeId);
 }

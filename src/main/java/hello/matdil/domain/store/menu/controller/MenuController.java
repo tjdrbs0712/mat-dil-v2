@@ -42,5 +42,16 @@ public class MenuController {
                 authUser.getUserId(), authUser.getRole(), storeId, cursor)));
     }
 
+    @GetMapping("/{menuId}")
+    public ResponseEntity<SuccessResponse<MenuResponseDto>> getMenu(
+            @LoginUser(required = false) AuthUser authUser,
+            @PathVariable Long storeId,
+            @PathVariable Long menuId
+    ) {
+        MenuResponseDto response = menuService.getMenu(
+                authUser.getUserId(), authUser.getRole(), storeId, menuId);
+
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
 
 }
