@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceImplTest {
@@ -123,5 +124,17 @@ class MenuServiceImplTest {
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getName()).isEqualTo(menu.getName());
         assertThat(result.isHasNext()).isFalse();
+    }
+
+    @Test
+    void 메뉴_단건_조회_성공(){
+        // given
+        store.addMenu(menu, 1L, UserRole.ADMIN);
+        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
+        // when
+        MenuResponseDto result = menuService.getMenu(1L, UserRole.USER, 1L, 1L);
+        // then
+        assertThat(result.getName()).isEqualTo(menu.getName());
+
     }
 }
