@@ -43,23 +43,24 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime expectedDeliveryTime;
 
-    @Column(nullable = false)
-    private boolean isPaid;
-
     @Builder
     public Order(Long userId, Long storeId, List<OrderItem> orderItems, OrderStatus orderStatus,
-                 int totalPrice, String requestNote, LocalDateTime expectedDeliveryTime) {
+                 String requestNote, LocalDateTime expectedDeliveryTime) {
         this.userId = userId;
         this.storeId = storeId;
         this.orderStatus = orderStatus;
-        this.totalPrice = totalPrice;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
-        this.isPaid = false;
 
         for (OrderItem item : orderItems) {
             item.assignOrder(this);
         }
         this.orderItems = orderItems;
+        this.totalPrice = orderItems.stream().mapToInt(OrderItem::getPrice).sum();
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.assignOrder(this);
     }
 }
