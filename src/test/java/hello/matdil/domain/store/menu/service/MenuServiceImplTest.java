@@ -132,7 +132,7 @@ class MenuServiceImplTest {
         store.addMenu(menu, 1L, UserRole.ADMIN);
         given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
         // when
-        MenuResponseDto result = menuService.getMenu(1L, UserRole.USER, 1L, 1L);
+        MenuResponseDto result = menuService.getMenu(1L, UserRole.ADMIN, 1L, 1L);
         // then
         assertThat(result.getName()).isEqualTo(menu.getName());
 
