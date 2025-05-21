@@ -3,6 +3,8 @@ package hello.matdil.domain.store.menu.entity;
 import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.dto.MenuUpdateRequestDto;
+import hello.matdil.domain.store.menu.exception.MenuErrorCode;
+import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -65,8 +67,10 @@ public class Menu extends BaseTimeEntity {
         this.store = store;
     }
 
-    public boolean isVisibleTo(UserRole role, Long userId, Long storeOwnerId) {
-        return menuStatus.isVisibleTo(role, userId, storeOwnerId);
+    public void validateVisibleTo(UserRole role, Long userId, Long storeOwnerId) {
+         if(!menuStatus.isVisibleTo(role, userId, storeOwnerId)){
+             throw new MenuException(MenuErrorCode.NO_PERMISSION);
+         };
     }
 
     public void update(MenuUpdateRequestDto dto) {

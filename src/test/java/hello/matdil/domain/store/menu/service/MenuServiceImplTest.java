@@ -133,8 +133,7 @@ class MenuServiceImplTest {
     void 메뉴_단건_조회_성공(){
         // given
         store.addMenu(menu, 1L, UserRole.ADMIN);
-        given(storeReader.getStoreWithPermission(1L, 1L, UserRole.ADMIN)).willReturn(store);
-        given(menuRepository.findById(1L)).willReturn(Optional.ofNullable(menu));
+        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
         // when
         MenuResponseDto result = menuService.getMenu(1L, UserRole.ADMIN, 1L, 1L);
         // then

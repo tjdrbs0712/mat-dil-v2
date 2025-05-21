@@ -106,8 +106,10 @@ public class Store extends BaseTimeEntity {
         this.deliveryTimeEstimate = deliveryTimeEstimate;
     }
 
-    public boolean isVisibleTo(UserRole role, Long userId) {
-        return !this.status.isVisibleTo(role, userId, this.ownerId);
+    public void validateVisibleTo(UserRole role, Long userId) {
+        if(!this.status.isVisibleTo(role, userId, this.ownerId)){
+            throw new StoreException(StoreErrorCode.NO_PERMISSION);
+        }
     }
 
     public void validateBusinessHours(LocalTime openTime, LocalTime closeTime) {

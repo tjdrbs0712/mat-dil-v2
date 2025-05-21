@@ -64,15 +64,12 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional(readOnly = true)
     public MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId) {
-
-        storeReader.getStoreWithPermission(userId, storeId, role);
-
-        Menu menu = menuRepository.findById(menuId)
+        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
                 .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+        Store store = menu.getStore();
 
-        if (!menu.isVisibleTo(role, userId, menu.getStore().getOwnerId())) {
-            throw new MenuException(MenuErrorCode.NO_PERMISSION);
-        }
+        store.validateVisibleTo(role, userId);
+        menu.validateVisibleTo(role, userId, store.getOwnerId());
 
         return MenuResponseDto.from(menu);
     }

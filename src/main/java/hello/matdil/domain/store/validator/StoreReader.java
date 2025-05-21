@@ -18,9 +18,7 @@ public class StoreReader {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
-        if (store.isVisibleTo(role, userId)) {
-            throw new StoreException(StoreErrorCode.NO_PERMISSION);
-        }
+        store.validateVisibleTo(role, userId);
         return store;
     }
 }
