@@ -67,8 +67,9 @@ public class Menu extends BaseTimeEntity {
         this.store = store;
     }
 
-    public void validateVisibleTo(UserRole role, Long userId, Long storeOwnerId) {
-         if(!menuStatus.isVisibleTo(role, userId, storeOwnerId)){
+    public void validateAccessibleTo(UserRole role, Long userId, Store store) {
+        store.validateVisibleTo(role, userId);
+         if(!menuStatus.isVisibleTo(role, userId, store.getOwnerId())){
              throw new MenuException(MenuErrorCode.NO_PERMISSION);
          };
     }
@@ -81,5 +82,12 @@ public class Menu extends BaseTimeEntity {
         this.orderIndex = dto.getOrderIndex();
         this.category = dto.getCategory();
         this.menuStatus = dto.getMenuStatus();
+    }
+
+    public void delete() {
+        if (this.menuStatus == MenuStatus.DELETE) {
+            throw new MenuException(MenuErrorCode.ALREADY_DELETED);
+        }
+        this.menuStatus = MenuStatus.DELETE;
     }
 }

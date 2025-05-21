@@ -64,12 +64,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional(readOnly = true)
     public MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId) {
-        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
-                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+        Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
-        store.validateVisibleTo(role, userId);
-        menu.validateVisibleTo(role, userId, store.getOwnerId());
+        menu.validateAccessibleTo(role, userId, store);
 
         return MenuResponseDto.from(menu);
     }
@@ -77,12 +75,26 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public MenuResponseDto updateMenu(Long userId, UserRole role, Long storeId, Long menuId, MenuUpdateRequestDto requestDto) {
-        Menu menu = menuRepository.findByIdWithStore(menuId, storeId)
-                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+        Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
         store.validateModifiableBy(userId, role);
         menu.update(requestDto);
         return MenuResponseDto.from(menu);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMenu(Long userId, UserRole role, Long storeId, Long menuId) {
+        Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
+        Store store = menu.getStore();
+
+        store.validateModifiableBy(userId, role);
+        menu.delete();
+    }
+
+    private Menu getMenuWithStoreOrThrow(Long menuId, Long storeId) {
+        return menuRepository.findByIdWithStore(menuId, storeId)
+                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
     }
 }

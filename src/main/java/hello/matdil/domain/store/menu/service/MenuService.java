@@ -13,4 +13,6 @@ public interface MenuService {
     MenuResponseDto getMenu(Long userId, UserRole role, Long storeId, Long menuId);
 
     MenuResponseDto updateMenu(Long userId, UserRole role, Long storeId, Long menuId, @Valid MenuUpdateRequestDto requestDto);
+
+    void deleteMenu(Long userId, UserRole role, Long storeId, Long menuId);
 }
