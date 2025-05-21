@@ -11,6 +11,7 @@ import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
 import hello.matdil.domain.store.repository.StoreRepository;
+import hello.matdil.domain.store.validator.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -46,6 +47,9 @@ class MenuServiceImplTest {
 
     @Mock
     private PageAssembler pageAssembler;
+
+    @Mock
+    private StoreReader storeReader;
 
     @InjectMocks
     private MenuServiceImpl menuService;
@@ -88,8 +92,7 @@ class MenuServiceImplTest {
     @Test
     void 가게가_존재하지_않으면_예외를_던진다() {
         // given
-        given(storeRepository.findById(anyLong()))
-                .willReturn(Optional.empty());
+        given(storeReader.getStoreWithPermission(1L, 1L, UserRole.USER)).willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
         // when & then
         assertThatThrownBy(() -> menuService.getMenus(1L, UserRole.USER, 1L, cursor))
@@ -100,7 +103,7 @@ class MenuServiceImplTest {
     @Test
     void 메뉴_리스트를_정상적으로_조회하고_조립한다() {
         // given
-        given(storeRepository.findById(1L)).willReturn(Optional.of(store));
+        given(storeReader.getStoreWithPermission(1L, 1L, UserRole.OWNER)).willReturn(store);
         given(menuRepository.findMenusByCursor(1L, UserRole.OWNER, 1L, cursor))
                 .willReturn(List.of(menu));
 
@@ -130,7 +133,8 @@ class MenuServiceImplTest {
     void 메뉴_단건_조회_성공(){
         // given
         store.addMenu(menu, 1L, UserRole.ADMIN);
-        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
+        given(storeReader.getStoreWithPermission(1L, 1L, UserRole.ADMIN)).willReturn(store);
+        given(menuRepository.findById(1L)).willReturn(Optional.ofNullable(menu));
         // when
         MenuResponseDto result = menuService.getMenu(1L, UserRole.ADMIN, 1L, 1L);
         // then
