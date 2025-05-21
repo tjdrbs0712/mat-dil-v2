@@ -1,10 +1,9 @@
 package hello.matdil.domain.store.dto;
 
 import hello.matdil.domain.store.entity.StoreSortType;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.Map;
 import static hello.matdil.global.util.CursorKey.*;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class StoreSearchRequestDto {
 
     @Size(max = 100, message = "주소는 최대 100자까지 입력할 수 있습니다.")
@@ -27,7 +26,6 @@ public class StoreSearchRequestDto {
             message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다."
     )
 
-    @Schema(defaultValue = "RATING", description = "정렬 기준 (RATING, NAME, REVIEW, DELIVERY_TIME)")
     @NotNull(message = "정렬 기준은 필수입니다.")
     private StoreSortType sort = StoreSortType.RATING;
 

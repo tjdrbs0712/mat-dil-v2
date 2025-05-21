@@ -1,8 +1,10 @@
 package hello.matdil.test;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.menu.dto.MenuCreateRequestDto;
 import hello.matdil.domain.store.menu.entity.Menu;
@@ -28,6 +30,13 @@ public class TestData {
 
         ReflectionTestUtils.setField(store, "id", 1L);
         return store;
+    }
+
+    public static StoreSearchRequestDto setStoreSearchRequestDto() {
+        StoreSearchRequestDto dto = new StoreSearchRequestDto();
+        ReflectionTestUtils.setField(dto, "sort", StoreSortType.RATING);
+        ReflectionTestUtils.setField(dto, "size", 2);
+        return dto;
     }
 
     public static StoreUpdateRequestDto setUpdateDto() {
@@ -61,8 +70,8 @@ public class TestData {
         ReflectionTestUtils.setField(dto, "price", 6500);
         ReflectionTestUtils.setField(dto, "description", "맛있어요");
         ReflectionTestUtils.setField(dto, "imageUrl", "url");
-        ReflectionTestUtils.setField(dto, "menuStatus", "AVAILABLE");
-        ReflectionTestUtils.setField(dto, "category", "MAIN");
+        ReflectionTestUtils.setField(dto, "menuStatus", MenuStatus.AVAILABLE);
+        ReflectionTestUtils.setField(dto, "category", MenuCategory.MAIN);
         return dto;
     }
 }

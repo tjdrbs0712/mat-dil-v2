@@ -17,10 +17,6 @@ public class OrderService {
     @Transactional
     public void createOrder(OrderCreateDto orderCreateDto) {
 
-//        OrderItem orderItem = OrderItem.builder()
-//                .order()
-//                .build();
-//
 //        Order order = Order.builder()
 //                .userId(orderCreateDto.userId())
 //                .storeId(orderCreateDto.storeId())
