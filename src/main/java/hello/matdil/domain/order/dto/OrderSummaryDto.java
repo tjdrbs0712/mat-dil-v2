@@ -17,7 +17,7 @@ public class OrderSummaryDto {
     private Long orderId;
     private Long storeId;
     private String storeName;
-    private String storeImageUrl; // ✅ 추가
+    private String storeImageUrl;
     private OrderStatus orderStatus;
     private int totalPrice;
     private LocalDateTime createdAt;
@@ -27,7 +27,7 @@ public class OrderSummaryDto {
                 .orderId(order.getId())
                 .storeId(order.getStoreId())
                 .storeName(storeSummary.name())
-                .storeImageUrl(storeSummary.imageUrl()) // ✅ 추가
+                .storeImageUrl(storeSummary.imageUrl())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .createdAt(order.getCreatedAt())
