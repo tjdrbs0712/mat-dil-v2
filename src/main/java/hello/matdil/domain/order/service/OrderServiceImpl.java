@@ -23,15 +23,7 @@ public class OrderServiceImpl implements OrderService{
     public Order createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
                              String requestNote, List<OrderItem> orderItems) {
 
-        Order order = Order.builder()
-                .userId(userId)
-                .storeId(storeId)
-                .orderStatus(OrderStatus.CREATED)
-                .expectedDeliveryTime(expectedDeliveryTime)
-                .requestNote(requestNote)
-                .orderItems(orderItems)
-                .build();
-
+        Order order = Order.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
         return orderRepository.save(order);
     }
 }

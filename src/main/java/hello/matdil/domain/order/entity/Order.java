@@ -51,11 +51,33 @@ public class Order extends BaseTimeEntity {
         this.orderStatus = orderStatus;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
+        this.orderItems = orderItems;
+    }
+
+    public static Order create(Long userId,
+                               Long storeId,
+                               LocalDateTime expectedDeliveryTime,
+                               String requestNote,
+                               List<OrderItem> orderItems) {
+
+        // 주문 객체 생성
+        Order order = Order.builder()
+                .userId(userId)
+                .storeId(storeId)
+                .orderStatus(OrderStatus.CREATED)
+                .expectedDeliveryTime(expectedDeliveryTime)
+                .requestNote(requestNote)
+                .orderItems(orderItems)
+                .build();
 
         for (OrderItem item : orderItems) {
-            item.assignOrder(this);
+            item.assignOrder(order);
         }
-        this.orderItems = orderItems;
-        this.totalPrice = orderItems.stream().mapToInt(OrderItem::getPrice).sum();
+
+        order.totalPrice = orderItems.stream()
+                .mapToInt(OrderItem::getPrice)
+                .sum();
+
+        return order;
     }
 }

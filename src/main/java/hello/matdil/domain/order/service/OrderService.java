@@ -7,6 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(Long userId, Long id, LocalDateTime expectedDeliveryTime
+    Order createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime
             , String requestNote, List<OrderItem> orderItems);
 }
