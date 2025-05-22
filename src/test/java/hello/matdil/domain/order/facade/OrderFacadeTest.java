@@ -1,6 +1,7 @@
 package hello.matdil.domain.order.facade;
 
 import hello.matdil.domain.order.dto.OrderCreateRequestDto;
+import hello.matdil.domain.order.dto.OrderItemRequestDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.service.OrderService;
@@ -52,15 +53,15 @@ class OrderFacadeTest {
         Store store = mock(Store.class);
         Order order = mock(Order.class);
 
-        OrderCreateRequestDto.OrderItemDto itemDto = new OrderCreateRequestDto.OrderItemDto();
-        ReflectionTestUtils.setField(itemDto, "menuId", 1L);
-        ReflectionTestUtils.setField(itemDto, "quantity", 2);
+        OrderItemRequestDto OrderItemRequestDto = new OrderItemRequestDto();
+        ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
+        ReflectionTestUtils.setField(OrderItemRequestDto, "quantity", 2);
 
         OrderCreateRequestDto requestDto = new OrderCreateRequestDto();
         ReflectionTestUtils.setField(requestDto, "storeId", storeId);
         ReflectionTestUtils.setField(requestDto, "expectedDeliveryTime", LocalDateTime.now().plusHours(1));
         ReflectionTestUtils.setField(requestDto, "requestNote", "조심히 와주세요");
-        ReflectionTestUtils.setField(requestDto, "orderItems", List.of(itemDto));
+        ReflectionTestUtils.setField(requestDto, "orderItems", List.of(OrderItemRequestDto));
 
         given(store.getId()).willReturn(storeId);
         given(storeReader.getStoreWithPermission(userId, storeId, role)).willReturn(store);

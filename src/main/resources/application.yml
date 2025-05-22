@@ -21,7 +21,7 @@ spring:
       password: none
   mail:
     host: smtp.gmail.com
-    port: 587
+    port: ${MAIL_PORT}
     username: ${GOOGLE_ID}
     password: ${GOOGLE_PASSWORD}
     properties:
@@ -30,6 +30,12 @@ spring:
           auth: true
           starttls:
             enable: true
+  data:
+    redis:
+      host: localhost
+      port: ${REDIS_PROT}
+    cache:
+      type: redis
 logging:
   level:
     org.hibernate.SQL: debug             # SQL 출력
