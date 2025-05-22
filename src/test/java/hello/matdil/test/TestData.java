@@ -55,7 +55,7 @@ public class TestData {
     }
 
     public static Menu setUpMenu(){
-        return Menu.builder()
+        Menu menu = Menu.builder()
                 .name("비빔면")
                 .price(6500)
                 .description("맛있어요")
@@ -63,6 +63,8 @@ public class TestData {
                 .category(MenuCategory.MAIN)
                 .menuStatus(MenuStatus.AVAILABLE)
                 .build();
+        ReflectionTestUtils.setField(menu, "id", 1L);
+        return menu;
     }
 
     public static MenuCreateRequestDto setMenuCreateDto() {
