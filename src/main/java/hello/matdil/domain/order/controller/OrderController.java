@@ -2,17 +2,14 @@ package hello.matdil.domain.order.controller;
 
 import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
-import hello.matdil.domain.order.dto.OrderCreateRequestDto;
-import hello.matdil.domain.order.dto.OrderResponseDto;
+import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.facade.OrderFacade;
+import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +30,25 @@ public class OrderController {
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
-    // 이후 GET /me, GET /{orderId}, PATCH /{orderId}/status 도 이어서 만들 수 있어
+    @GetMapping("/me")
+    public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getOrders(
+            @LoginUser AuthUser authUser,
+            @ModelAttribute OrderCursorRequestDto requestDto
+            ) {
+
+        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> response =
+                orderFacade.getOrders(authUser.getUserId(), requestDto);
+
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<SuccessResponse<OrderResponseDto>> getOrder(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long orderId
+    ) {
+        OrderResponseDto response = orderFacade.getOrder(authUser.getUserId(), authUser.getRole(), orderId);
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
 }

@@ -1,7 +1,6 @@
 package hello.matdil.domain.order.facade;
 
-import hello.matdil.domain.order.dto.OrderCreateRequestDto;
-import hello.matdil.domain.order.dto.OrderResponseDto;
+import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.service.OrderService;
@@ -9,9 +8,10 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.exception.MenuErrorCode;
 import hello.matdil.domain.store.menu.exception.MenuException;
-import hello.matdil.domain.store.menu.validator.MenuReader;
-import hello.matdil.domain.store.validator.StoreReader;
+import hello.matdil.domain.store.menu.reader.MenuReader;
+import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +39,7 @@ public class OrderFacade {
         return OrderResponseDto.from(order);
     }
 
-    private List<OrderItem> toOrderItems(List<OrderCreateRequestDto.OrderItemDto> itemDtos, Long storeId) {
+    private List<OrderItem> toOrderItems(List<OrderItemRequestDto> itemDtos, Long storeId) {
         return itemDtos.stream()
                 .map(itemDto -> {
                     Menu menu = menuReader.getMenuWithStoreValidation(itemDto.getMenuId(), storeId);
@@ -48,12 +48,24 @@ public class OrderFacade {
                 .toList();
     }
 
-    private void validateDuplicateMenuIds(List<OrderCreateRequestDto.OrderItemDto> items) {
+    private void validateDuplicateMenuIds(List<OrderItemRequestDto> items) {
         Set<Long> menuIds = new HashSet<>();
-        for (OrderCreateRequestDto.OrderItemDto item : items) {
+        for (OrderItemRequestDto item : items) {
             if (!menuIds.add(item.getMenuId())) {
                 throw new MenuException(MenuErrorCode.DUPLICATE_MENU_IN_ORDER);
             }
         }
     }
+
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
+            Long userId, OrderCursorRequestDto requestDto) {
+
+        return orderService.getOrders(userId, requestDto);
+    }
+
+    public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
+        Order order = orderService.getOrder(orderId, userId, role);
+        return OrderResponseDto.from(order);
+    }
+
 }

@@ -9,8 +9,8 @@ import hello.matdil.domain.store.menu.exception.MenuErrorCode;
 import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
+import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.store.repository.StoreRepository;
-import hello.matdil.domain.store.validator.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceImplTest {

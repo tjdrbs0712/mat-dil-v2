@@ -1,4 +1,4 @@
-package hello.matdil.domain.store.menu.validator;
+package hello.matdil.domain.store.menu.reader;
 
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.exception.MenuErrorCode;

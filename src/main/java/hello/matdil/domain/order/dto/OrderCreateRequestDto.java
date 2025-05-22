@@ -1,6 +1,5 @@
 package hello.matdil.domain.order.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -22,12 +21,12 @@ public class OrderCreateRequestDto {
     private String requestNote;
 
     @NotEmpty
-    private List<OrderItemDto> orderItems;
+    private List<OrderItemRequestDto> orderItems;
 
-    @Getter
-    @NoArgsConstructor
-    public static class OrderItemDto {
-        @NotNull private Long menuId;
-        @Min(1) private int quantity;
-    }
+//    @Getter
+//    @NoArgsConstructor
+//    public static class OrderItemDto {
+//        @NotNull private Long menuId;
+//        @Min(1) private int quantity;
+//    }
 }

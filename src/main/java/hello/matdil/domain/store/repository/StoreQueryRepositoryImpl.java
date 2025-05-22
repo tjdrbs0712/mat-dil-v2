@@ -5,6 +5,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hello.matdil.domain.store.dto.StoreSearchRequestDto;
+import hello.matdil.domain.store.dto.StoreSummaryDto;
 import hello.matdil.domain.store.entity.QStore;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,6 +48,25 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 .orderBy(sortConditions)
                 .limit(request.getSize() + 1)
                 .fetch();
+    }
+
+    @Override
+    public Map<Long, StoreSummaryDto> findStoreSummariesByIds(List<Long> storeIds) {
+        QStore store = QStore.store;
+
+        return queryFactory
+                .select(store.id, store.name, store.imageUrl)
+                .from(store)
+                .where(store.id.in(storeIds))
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(store.id),
+                        tuple -> new StoreSummaryDto(
+                                tuple.get(store.name),
+                                tuple.get(store.imageUrl)
+                        )
+                ));
     }
 }
 

@@ -43,6 +43,9 @@ public class Store extends BaseTimeEntity {
     @Column(nullable = false)
     private Long ownerId;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     @Column(nullable = false)
     private String phoneNumber;
 

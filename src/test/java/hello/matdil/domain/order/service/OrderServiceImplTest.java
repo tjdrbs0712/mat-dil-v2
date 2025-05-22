@@ -2,7 +2,6 @@ package hello.matdil.domain.order.service;
 
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
-import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,9 @@
 package hello.matdil.domain.order.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
+import hello.matdil.domain.order.exception.OrderErrorCode;
+import hello.matdil.domain.order.exception.OrderException;
+import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -60,7 +63,6 @@ public class Order extends BaseTimeEntity {
                                String requestNote,
                                List<OrderItem> orderItems) {
 
-        // 주문 객체 생성
         Order order = Order.builder()
                 .userId(userId)
                 .storeId(storeId)
@@ -79,5 +81,14 @@ public class Order extends BaseTimeEntity {
                 .sum();
 
         return order;
+    }
+
+    public void validateAccessibleTo(Long userId, UserRole role) {
+        boolean isAdmin = role == UserRole.ADMIN;
+        boolean isOwner = this.userId.equals(userId);
+
+        if (!isAdmin && !isOwner) {
+            throw new OrderException(OrderErrorCode.NO_PERMISSION);
+        }
     }
 }
