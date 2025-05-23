@@ -1,11 +1,11 @@
 package hello.matdil.domain.order.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
+import hello.matdil.domain.order.exception.OrderErrorCode;
+import hello.matdil.domain.order.exception.OrderException;
+import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    @Setter
     @Column(nullable = false)
     private int totalPrice;
 
@@ -44,23 +45,26 @@ public class Order extends BaseTimeEntity {
     private LocalDateTime expectedDeliveryTime;
 
     @Builder
-    public Order(Long userId, Long storeId, List<OrderItem> orderItems, OrderStatus orderStatus,
-                 String requestNote, LocalDateTime expectedDeliveryTime) {
+    public Order(Long userId,
+                  Long storeId,
+                  List<OrderItem> orderItems,
+                  OrderStatus orderStatus,
+                  String requestNote,
+                  LocalDateTime expectedDeliveryTime) {
         this.userId = userId;
         this.storeId = storeId;
+        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
-
-        for (OrderItem item : orderItems) {
-            item.assignOrder(this);
-        }
-        this.orderItems = orderItems;
-        this.totalPrice = orderItems.stream().mapToInt(OrderItem::getPrice).sum();
     }
 
-    public void addOrderItem(OrderItem orderItem){
-        orderItems.add(orderItem);
-        orderItem.assignOrder(this);
+    public void validateAccessibleTo(Long userId, UserRole role) {
+        boolean isAdmin = role == UserRole.ADMIN;
+        boolean isOwner = this.userId.equals(userId);
+
+        if (!isAdmin && !isOwner) {
+            throw new OrderException(OrderErrorCode.NO_PERMISSION);
+        }
     }
 }

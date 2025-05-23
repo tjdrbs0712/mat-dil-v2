@@ -7,5 +7,6 @@ public enum OrderStatus {
     READY,        // 픽업 준비 완료
     DELIVERING,   // 배달 중
     COMPLETED,    // 배달 완료
-    CANCELED      // 주문 취소
+    CANCELED,     // 주문 취소
+    DELETED       // 주문 삭제
 }

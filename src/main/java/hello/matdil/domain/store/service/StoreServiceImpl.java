@@ -25,6 +25,7 @@ public class StoreServiceImpl implements StoreService{
     private final StoreFactory storeFactory;
     private final PageAssembler pageAssembler;
     private final StoreCreatePolicy storeCreatePolicy;
+    private final StoreSummaryCacheService cacheService;
 
     @Override
     @Transactional
@@ -83,6 +84,7 @@ public class StoreServiceImpl implements StoreService{
         store.validateBusinessHours(dto.getOpenTime(), dto.getCloseTime());
 
         store.update(dto);
+        cacheService.evict(storeId);
         return StoreResponseDto.from(store);
     }
 
