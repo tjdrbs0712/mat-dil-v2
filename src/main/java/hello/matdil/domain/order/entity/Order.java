@@ -5,10 +5,7 @@ import hello.matdil.domain.order.exception.OrderErrorCode;
 import hello.matdil.domain.order.exception.OrderException;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +34,7 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    @Setter
     @Column(nullable = false)
     private int totalPrice;
 
@@ -47,40 +45,18 @@ public class Order extends BaseTimeEntity {
     private LocalDateTime expectedDeliveryTime;
 
     @Builder
-    public Order(Long userId, Long storeId, List<OrderItem> orderItems, OrderStatus orderStatus,
-                 String requestNote, LocalDateTime expectedDeliveryTime) {
+    public Order(Long userId,
+                  Long storeId,
+                  List<OrderItem> orderItems,
+                  OrderStatus orderStatus,
+                  String requestNote,
+                  LocalDateTime expectedDeliveryTime) {
         this.userId = userId;
         this.storeId = storeId;
+        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
-        this.orderItems = orderItems;
-    }
-
-    public static Order create(Long userId,
-                               Long storeId,
-                               LocalDateTime expectedDeliveryTime,
-                               String requestNote,
-                               List<OrderItem> orderItems) {
-
-        Order order = Order.builder()
-                .userId(userId)
-                .storeId(storeId)
-                .orderStatus(OrderStatus.CREATED)
-                .expectedDeliveryTime(expectedDeliveryTime)
-                .requestNote(requestNote)
-                .orderItems(orderItems)
-                .build();
-
-        for (OrderItem item : orderItems) {
-            item.assignOrder(order);
-        }
-
-        order.totalPrice = orderItems.stream()
-                .mapToInt(OrderItem::getPrice)
-                .sum();
-
-        return order;
     }
 
     public void validateAccessibleTo(Long userId, UserRole role) {

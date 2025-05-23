@@ -22,11 +22,4 @@ public class OrderCreateRequestDto {
 
     @NotEmpty
     private List<OrderItemRequestDto> orderItems;
-
-//    @Getter
-//    @NoArgsConstructor
-//    public static class OrderItemDto {
-//        @NotNull private Long menuId;
-//        @Min(1) private int quantity;
-//    }
 }

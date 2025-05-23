@@ -5,6 +5,7 @@ import hello.matdil.domain.order.dto.OrderCursorResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.store.dto.StoreSummaryDto;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
+    private final OrderFactory orderFactory;
     private final OrderReader orderReader;
     private final PageAssembler pageAssembler;
     private final StoreSummaryLoader storeSummaryLoader;
@@ -34,7 +36,7 @@ public class OrderServiceImpl implements OrderService{
     public Order createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
                              String requestNote, List<OrderItem> orderItems) {
 
-        Order order = Order.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
+        Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
         return orderRepository.save(order);
     }
 
@@ -44,7 +46,7 @@ public class OrderServiceImpl implements OrderService{
             Long userId,
             OrderCursorRequestDto cursor
     ) {
-        List<Order> orders = orderRepository.findOrdersByUserIdWithCursor(userId, cursor);
+        List<Order> orders = orderReader.getOrdersByUserIdWithCursor(userId, cursor);
         int pageSize = cursor.pageSize();
 
         List<Long> storeIds = orders.stream()
