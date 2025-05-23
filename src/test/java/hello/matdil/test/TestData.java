@@ -1,6 +1,9 @@
 package hello.matdil.test;
 
 import hello.matdil.domain.address.Address;
+import hello.matdil.domain.order.entity.Order;
+import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.entity.Store;
@@ -13,7 +16,9 @@ import hello.matdil.domain.store.menu.entity.MenuCategory;
 import hello.matdil.domain.store.menu.entity.MenuStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 public class TestData {
     public static Store setUpStore() {
@@ -88,6 +93,26 @@ public class TestData {
         ReflectionTestUtils.setField(dto, "category", MenuCategory.SIDE);
         ReflectionTestUtils.setField(dto, "menuStatus", MenuStatus.AVAILABLE);
         return dto;
+    }
+
+    public static Order setOrder(){
+
+        List<OrderItem> orderItems = List.of(
+                OrderItem.builder().menuId(1L).price(10000 * 2).quantity(2).build(),
+                OrderItem.builder().menuId(2L).price(5000).quantity(1).build()
+        );
+
+        Order expectedOrder = Order.builder()
+                .userId(1L)
+                .storeId(1L)
+                .orderStatus(OrderStatus.CREATED)
+                .expectedDeliveryTime(LocalDateTime.now().plusHours(1))
+                .requestNote("문 앞에 놓아주세요.")
+                .orderItems(orderItems)
+                .build();
+        expectedOrder.setTotalPrice(25000);
+
+        return expectedOrder;
     }
 
 }
