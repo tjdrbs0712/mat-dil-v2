@@ -5,7 +5,7 @@ import hello.matdil.domain.order.dto.OrderItemRequestDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.service.OrderService;
-import hello.matdil.domain.store.dto.StoreInfoDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.reader.MenuReader;
@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +63,7 @@ class OrderFacadeTest {
         ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
         ReflectionTestUtils.setField(OrderItemRequestDto, "quantity", 2);
 
-        Map<Long, StoreInfoDto> storeSummaryMap = new HashMap<>();
-        StoreInfoDto storeInfoDto = new StoreInfoDto("가게1", "url");
+        StoreSummaryResponseDto storeInfoDto = new StoreSummaryResponseDto();
 
         OrderCreateRequestDto requestDto = new OrderCreateRequestDto();
         ReflectionTestUtils.setField(requestDto, "storeId", storeId);

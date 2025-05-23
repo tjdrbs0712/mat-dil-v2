@@ -17,6 +17,7 @@ public class StoreResponseDto {
     private Long id;
     private String name;
     private String phoneNumber;
+    private String imageUrl;
     private String address;
     private LocalTime openTime;
     private LocalTime closeTime;
@@ -31,6 +32,7 @@ public class StoreResponseDto {
                 .id(store.getId())
                 .name(store.getName())
                 .phoneNumber(store.getPhoneNumber())
+                .imageUrl(store.getImageUrl())
                 .address(store.getAddress().toString())
                 .openTime(store.getOpenTime())
                 .closeTime(store.getCloseTime())

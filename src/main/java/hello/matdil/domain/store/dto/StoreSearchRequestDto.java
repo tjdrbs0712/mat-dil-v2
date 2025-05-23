@@ -25,7 +25,6 @@ public class StoreSearchRequestDto {
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다."
     )
-
     @NotNull(message = "정렬 기준은 필수입니다.")
     private StoreSortType sort = StoreSortType.RATING;
 

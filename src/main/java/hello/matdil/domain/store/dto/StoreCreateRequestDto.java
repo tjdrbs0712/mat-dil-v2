@@ -18,6 +18,8 @@ public class StoreCreateRequestDto {
     @NotBlank(message = "전화번호는 필수입니다.")
     private String phoneNumber;
 
+    private String imageUrl;
+
     @NotBlank(message = "시/도는 필수입니다.")
     private String city;
 
