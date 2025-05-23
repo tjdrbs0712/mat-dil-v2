@@ -1,6 +1,6 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.store.dto.StoreSummaryDto;
+import hello.matdil.domain.store.dto.StoreInfoDto;
 import hello.matdil.infrastructure.RedisCacheHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ public class StoreSummaryCacheService {
         return "store:summary:" + storeId;
     }
 
-    public Optional<StoreSummaryDto> get(Long storeId) {
-        return redisCacheHelper.get(getKey(storeId), StoreSummaryDto.class);
+    public Optional<StoreInfoDto> get(Long storeId) {
+        return redisCacheHelper.get(getKey(storeId), StoreInfoDto.class);
     }
 
-    public void put(Long storeId, StoreSummaryDto dto) {
+    public void put(Long storeId, StoreInfoDto dto) {
         redisCacheHelper.put(getKey(storeId), dto, TTL);
     }
 
@@ -34,12 +34,12 @@ public class StoreSummaryCacheService {
         redisCacheHelper.delete(getKey(storeId));
     }
 
-    public Map<Long, StoreSummaryDto> getBatch(List<Long> storeIds) {
+    public Map<Long, StoreInfoDto> getBatch(List<Long> storeIds) {
         List<String> keys = storeIds.stream()
                 .map(this::getKey)
                 .collect(Collectors.toList());
 
-        Map<String, StoreSummaryDto> result = redisCacheHelper.multiGet(keys, StoreSummaryDto.class);
+        Map<String, StoreInfoDto> result = redisCacheHelper.multiGet(keys, StoreInfoDto.class);
 
         return result.entrySet().stream()
                 .collect(Collectors.toMap(

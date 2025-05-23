@@ -2,7 +2,7 @@ package hello.matdil.domain.order.dto;
 
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
+import hello.matdil.domain.store.dto.StoreInfoDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ public class OrderSummaryDto {
     private int totalPrice;
     private LocalDateTime createdAt;
 
-    public static OrderSummaryDto from(Order order, StoreSummaryDto storeSummary) {
+    public static OrderSummaryDto from(Order order, StoreInfoDto storeSummary) {
         return OrderSummaryDto.builder()
                 .orderId(order.getId())
                 .storeId(order.getStoreId())

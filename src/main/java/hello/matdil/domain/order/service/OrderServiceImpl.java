@@ -8,7 +8,7 @@ import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
+import hello.matdil.domain.store.dto.StoreInfoDto;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
@@ -54,14 +54,14 @@ public class OrderServiceImpl implements OrderService{
                 .distinct()
                 .toList();
 
-        Map<Long, StoreSummaryDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(storeIds);
+        Map<Long, StoreInfoDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(storeIds);
 
         return pageAssembler.assemble(
                 orders,
                 pageSize,
                 last -> new OrderCursorResponseDto(pageSize, last.getCreatedAt(), last.getId()),
                 order -> {
-                    StoreSummaryDto summary = storeSummaryMap.get(order.getStoreId());
+                    StoreInfoDto summary = storeSummaryMap.get(order.getStoreId());
                     return OrderSummaryDto.from(order, summary);
                 }
         );

@@ -4,12 +4,11 @@ import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.dto.OrderCursorResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
-import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
-import hello.matdil.domain.store.dto.StoreSummaryDto;
+import hello.matdil.domain.store.dto.StoreInfoDto;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -109,9 +108,9 @@ class OrderServiceImplTest {
         List<Order> orders = List.of(order1, order2);
 
         // 가게 요약 정보
-        Map<Long, StoreSummaryDto> storeSummaryMap = Map.of(
-                1L, new StoreSummaryDto("가게1", "url1"),
-                2L, new StoreSummaryDto("가게2", "url2")
+        Map<Long, StoreInfoDto> storeSummaryMap = Map.of(
+                1L, new StoreInfoDto("가게1", "url1"),
+                2L, new StoreInfoDto("가게2", "url2")
         );
 
         // 기대하는 응답 DTO

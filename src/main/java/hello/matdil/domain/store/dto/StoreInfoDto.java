@@ -1,6 +1,6 @@
 package hello.matdil.domain.store.dto;
 
-public record StoreSummaryDto(
+public record StoreInfoDto(
         String name,
         String imageUrl
 ) {}
