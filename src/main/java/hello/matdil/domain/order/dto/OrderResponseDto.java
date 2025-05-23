@@ -29,13 +29,13 @@ public class OrderResponseDto {
 
     private List<OrderItemResponseDto> orderItems;
 
-    public static OrderResponseDto from(Order order, StoreInfoDto storeSummary) {
+    public static OrderResponseDto from(Order order, StoreInfoDto storeInfoDto) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
                 .storeId(order.getStoreId())
                 .userId(order.getUserId())
-                .storeName(storeSummary.name())
-                .storeImageUrl(storeSummary.imageUrl())
+                .storeName(storeInfoDto.name())
+                .storeImageUrl(storeInfoDto.imageUrl())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .requestNote(order.getRequestNote())

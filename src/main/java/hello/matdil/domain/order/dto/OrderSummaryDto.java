@@ -22,12 +22,12 @@ public class OrderSummaryDto {
     private int totalPrice;
     private LocalDateTime createdAt;
 
-    public static OrderSummaryDto from(Order order, StoreInfoDto storeSummary) {
+    public static OrderSummaryDto from(Order order, StoreInfoDto storeInfoDto) {
         return OrderSummaryDto.builder()
                 .orderId(order.getId())
                 .storeId(order.getStoreId())
-                .storeName(storeSummary.name())
-                .storeImageUrl(storeSummary.imageUrl())
+                .storeName(storeInfoDto.name())
+                .storeImageUrl(storeInfoDto.imageUrl())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .createdAt(order.getCreatedAt())
