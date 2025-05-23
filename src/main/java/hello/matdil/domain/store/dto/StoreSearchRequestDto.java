@@ -4,6 +4,7 @@ import hello.matdil.domain.store.entity.StoreSortType;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 import static hello.matdil.global.util.CursorKey.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class StoreSearchRequestDto {
 
