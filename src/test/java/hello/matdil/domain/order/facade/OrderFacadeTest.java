@@ -3,10 +3,11 @@ package hello.matdil.domain.order.facade;
 import hello.matdil.domain.order.dto.OrderCreateRequestDto;
 import hello.matdil.domain.order.dto.OrderItemRequestDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
+import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.service.OrderCreateProcessor;
 import hello.matdil.domain.order.service.OrderService;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.entity.Menu;
-import hello.matdil.domain.store.menu.reader.MenuReader;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.test.TestData;
@@ -38,7 +39,7 @@ class OrderFacadeTest {
     private StoreReader storeReader;
 
     @Mock
-    private MenuReader menuReader;
+    private OrderCreateProcessor orderCreateProcessor;
 
     @Mock
     private OrderService orderService;
@@ -48,9 +49,9 @@ class OrderFacadeTest {
         Long userId = 1L;
         Long storeId = 10L;
         UserRole role = UserRole.USER;
-        Menu menu = TestData.setUpMenu();
         Store store = mock(Store.class);
         OrderResponseDto responseDto = mock(OrderResponseDto.class);
+        OrderItem orderItem = mock(OrderItem.class);
 
         OrderItemRequestDto OrderItemRequestDto = new OrderItemRequestDto();
         ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
@@ -64,7 +65,8 @@ class OrderFacadeTest {
 
         given(store.getId()).willReturn(storeId);
         given(storeReader.getStoreVisibleToUser(userId, storeId, role)).willReturn(store);
-        given(menuReader.getMenuWithStoreValidation(1L, storeId)).willReturn(menu);
+        given(orderCreateProcessor.toOrderItems(
+                requestDto.getOrderItems(), requestDto.getStoreId())).willReturn(List.of(orderItem));
         given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
@@ -73,7 +75,7 @@ class OrderFacadeTest {
         // then
         assertThat(result).isNotNull();
         verify(storeReader).getStoreVisibleToUser(userId, storeId, role);
-        verify(menuReader).getMenuWithStoreValidation(1L, storeId);
+        verify(orderCreateProcessor).toOrderItems(requestDto.getOrderItems(), storeId);
         verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
 
     }
