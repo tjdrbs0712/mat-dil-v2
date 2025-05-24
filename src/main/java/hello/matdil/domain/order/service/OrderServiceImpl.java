@@ -10,7 +10,11 @@ import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
+import hello.matdil.domain.store.entity.Store;
+import hello.matdil.domain.store.exception.StoreErrorCode;
+import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
+import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -31,6 +35,7 @@ public class OrderServiceImpl implements OrderService{
     private final OrderReader orderReader;
     private final PageAssembler pageAssembler;
     private final StoreSummaryLoader storeSummaryLoader;
+    private final StoreRepository storeRepository;
 
     @Override
     @Transactional
@@ -70,22 +75,45 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.getOrderWithPermission(orderId, userId, role);
         return getOrderResponseDto(order);
     }
 
     @Override
-    @Transactional
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
+        List<Order> orders = orderReader.getOrdersByStoreIdWithCursor(storeId, cursor);
+
+        Store store = storeRepository.findByIdWithNotDeleted(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        store.validateAccessibleTo(userId, role);
+
+        int pageSize = cursor.pageSize();
+
+        return pageAssembler.assemble(
+                orders,
+                pageSize,
+                last -> new OrderCursorResponseDto(pageSize, last.getCreatedAt(), last.getId()),
+                order -> {
+                    return OrderSummaryDto.from(order, StoreSummaryResponseDto.from(store));
+                }
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.getOwnerOrderWithPermission(orderId, userId, role);
         return getOrderResponseDto(order);
     }
 
     private OrderResponseDto getOrderResponseDto(Order order) {
-        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
-        StoreSummaryResponseDto responseDto = storeSummaryMap.get(order.getStoreId());
-        return OrderResponseDto.from(order, responseDto);
+        StoreSummaryResponseDto storeSummary = storeSummaryLoader
+                .loadWithCacheFallback(List.of(order.getStoreId()))
+                .get(order.getStoreId());
+
+        return OrderResponseDto.from(order, storeSummary);
     }
 }

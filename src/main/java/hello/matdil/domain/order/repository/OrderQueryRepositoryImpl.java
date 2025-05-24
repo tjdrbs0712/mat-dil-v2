@@ -36,6 +36,20 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository{
         BooleanExpression baseCondition = order.userId.eq(userId)
                 .and(order.orderStatus.ne(OrderStatus.DELETED));
 
+        return getOrders(cursor, order, baseCondition);
+    }
+
+    @Override
+    public List<Order> findOrdersByStoreIdWithCursor(Long storeId, OrderCursorRequestDto cursor) {
+        QOrder order = QOrder.order;
+
+        BooleanExpression baseCondition = order.storeId.eq(storeId)
+                .and(order.orderStatus.ne(OrderStatus.DELETED));
+
+        return getOrders(cursor, order, baseCondition);
+    }
+
+    private List<Order> getOrders(OrderCursorRequestDto cursor, QOrder order, BooleanExpression baseCondition) {
         BooleanExpression cursorCondition = null;
         if (cursor.hasCursor()) {
             cursorCondition = order.createdAt.lt(cursor.lastCreatedAt())

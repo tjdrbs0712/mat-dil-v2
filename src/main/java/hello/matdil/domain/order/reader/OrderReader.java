@@ -34,6 +34,10 @@ public class OrderReader {
         return orderRepository.findOrdersByUserIdWithCursor(userId, cursor);
     }
 
+    public List<Order> getOrdersByStoreIdWithCursor(Long storeId, OrderCursorRequestDto cursor) {
+        return orderRepository.findOrdersByUserIdWithCursor(storeId, cursor);
+    }
+
     public Order getOwnerOrderWithPermission(Long orderId, Long userId, UserRole role) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));

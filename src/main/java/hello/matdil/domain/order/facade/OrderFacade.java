@@ -26,7 +26,6 @@ public class OrderFacade {
     private final OrderService orderService;
     private final StoreReader storeReader;
     private final MenuReader menuReader;
-    private final StoreSummaryLoader storeSummaryLoader;
 
     public OrderResponseDto createOrder(Long userId, UserRole role, OrderCreateRequestDto dto) {
         Store store = storeReader.getStoreWithPermission(userId, dto.getStoreId(), role);
@@ -49,9 +48,9 @@ public class OrderFacade {
     }
 
     public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
-            Long userId, OrderCursorRequestDto requestDto) {
+            Long userId, OrderCursorRequestDto cursor) {
 
-        return orderService.getOrders(userId, requestDto);
+        return orderService.getOrders(userId, cursor);
     }
 
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
@@ -60,5 +59,10 @@ public class OrderFacade {
 
     public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
         return orderService.getOwnerOrder(userId, role, orderId);
+    }
+
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
+        return orderService.getOwnerOrders(userId, role, cursor, storeId);
     }
 }

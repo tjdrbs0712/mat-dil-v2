@@ -22,4 +22,7 @@ public interface OrderService {
     OrderResponseDto getOrder(Long userId, UserRole role, Long orderId);
 
     OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId);
+
+    SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId);
 }

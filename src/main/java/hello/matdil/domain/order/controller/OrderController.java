@@ -33,11 +33,11 @@ public class OrderController {
     @GetMapping("/me")
     public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getOrders(
             @LoginUser AuthUser authUser,
-            @ModelAttribute OrderCursorRequestDto requestDto
+            @ModelAttribute OrderCursorRequestDto cursor
             ) {
 
         SliceResponse<OrderSummaryDto, OrderCursorResponseDto> response =
-                orderFacade.getOrders(authUser.getUserId(), requestDto);
+                orderFacade.getOrders(authUser.getUserId(), cursor);
 
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
@@ -48,6 +48,19 @@ public class OrderController {
             @PathVariable Long orderId
     ) {
         OrderResponseDto response = orderFacade.getOrder(authUser.getUserId(), authUser.getRole(), orderId);
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @GetMapping("/owner/store/{storeId}")
+    public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getOwnerOrders(
+            @LoginUser AuthUser authUser,
+            @ModelAttribute OrderCursorRequestDto cursor,
+            @PathVariable Long storeId
+    ) {
+
+        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> response =
+                orderFacade.getOwnerOrders(authUser.getUserId(), authUser.getRole(), cursor ,storeId);
+
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
