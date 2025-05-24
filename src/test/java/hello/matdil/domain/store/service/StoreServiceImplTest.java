@@ -1,11 +1,9 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
-import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.policy.StoreCreatePolicy;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.store.repository.StoreRepository;
@@ -102,14 +100,6 @@ class StoreServiceImplTest {
         assertThat(response.getContent()).hasSize(1);
         assertThat(response.isHasNext()).isFalse();
         assertThat(response.getContent().get(0).getName()).isEqualTo(store.getName());
-    }
-
-    private Store createStore(Long id, double rating) {
-        Store store = mock(Store.class);
-        given(store.getId()).willReturn(id);
-        given(store.getRating()).willReturn(rating);
-        given(store.getAddress()).willReturn(mock(Address.class));
-        return store;
     }
 
     @Test

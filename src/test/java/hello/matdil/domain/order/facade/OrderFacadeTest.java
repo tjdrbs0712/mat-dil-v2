@@ -3,14 +3,11 @@ package hello.matdil.domain.order.facade;
 import hello.matdil.domain.order.dto.OrderCreateRequestDto;
 import hello.matdil.domain.order.dto.OrderItemRequestDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
-import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.service.OrderService;
-import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.reader.MenuReader;
 import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.test.TestData;
 import org.junit.jupiter.api.Test;
@@ -22,7 +19,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
