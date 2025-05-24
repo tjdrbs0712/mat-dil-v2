@@ -90,7 +90,7 @@ class MenuServiceImplTest {
     @Test
     void 가게가_존재하지_않으면_예외를_던진다() {
         // given
-        given(storeReader.getStore(1L, 1L, UserRole.USER)).willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        given(storeReader.getStoreVisibleToUser(1L, 1L, UserRole.USER)).willThrow(new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
         // when & then
         assertThatThrownBy(() -> menuService.getMenus(1L, UserRole.USER, 1L, cursor))
@@ -101,7 +101,7 @@ class MenuServiceImplTest {
     @Test
     void 메뉴_리스트를_정상적으로_조회하고_조립한다() {
         // given
-        given(storeReader.getStore(1L, 1L, UserRole.OWNER)).willReturn(store);
+        given(storeReader.getStoreVisibleToUser(1L, 1L, UserRole.OWNER)).willReturn(store);
         given(menuRepository.findMenusByCursor(1L, UserRole.OWNER, 1L, cursor))
                 .willReturn(List.of(menu));
 

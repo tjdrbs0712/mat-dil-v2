@@ -14,7 +14,7 @@ public class StoreReader {
 
     private final StoreRepository storeRepository;
 
-    public Store getStore(Long userId, Long storeId, UserRole role) {
+    public Store getStoreVisibleToUser(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 
@@ -22,7 +22,7 @@ public class StoreReader {
         return store;
     }
 
-    public Store readWithPermission(Long userId, Long storeId, UserRole role) {
+    public Store getStoreAccessibleByOwner(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findByIdWithNotDeleted(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
 

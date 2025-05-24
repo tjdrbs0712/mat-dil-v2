@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
-        Store store = storeReader.readWithPermission(userId, storeId, role);
+        Store store = storeReader.getStoreAccessibleByOwner(userId, storeId, role);
         List<Order> orders = orderReader.readByStoreWithCursor(storeId, cursor);
 
         return pageAssembler.assemble(

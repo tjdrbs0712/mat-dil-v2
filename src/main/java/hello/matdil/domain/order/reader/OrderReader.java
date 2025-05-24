@@ -30,7 +30,7 @@ public class OrderReader {
     public Order readWithStorePermission(Long orderId, Long userId, UserRole role) {
         Order order = orderRepository.findByIdWithNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
-        Store store = storeReader.readWithPermission(userId, order.getStoreId(), role);
+        Store store = storeReader.getStoreAccessibleByOwner(userId, order.getStoreId(), role);
         return order;
     }
 
