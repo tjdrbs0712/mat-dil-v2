@@ -1,6 +1,6 @@
 package hello.matdil.domain.store.reader;
 
-import hello.matdil.domain.store.dto.StoreInfoDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.store.service.StoreSummaryCacheService;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +16,15 @@ public class StoreSummaryLoader {
     private final StoreSummaryCacheService storeCacheService;
     private final StoreRepository storeRepository;
 
-    public Map<Long, StoreInfoDto> loadWithCacheFallback(List<Long> storeIds) {
-        Map<Long, StoreInfoDto> cached = storeCacheService.getBatch(storeIds);
+    public Map<Long, StoreSummaryResponseDto> loadWithCacheFallback(List<Long> storeIds) {
+        Map<Long, StoreSummaryResponseDto> cached = storeCacheService.getBatch(storeIds);
 
         List<Long> missingIds = storeIds.stream()
                 .filter(id -> !cached.containsKey(id))
                 .toList();
 
         if (!missingIds.isEmpty()) {
-            Map<Long, StoreInfoDto> loaded = storeRepository.findStoreSummariesByIds(missingIds);
+            Map<Long, StoreSummaryResponseDto> loaded = storeRepository.findStoreSummariesByIds(missingIds);
             loaded.forEach(storeCacheService::put);
             cached.putAll(loaded);
         }

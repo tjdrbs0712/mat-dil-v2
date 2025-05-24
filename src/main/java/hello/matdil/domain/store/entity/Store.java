@@ -75,12 +75,13 @@ public class Store extends BaseTimeEntity {
     private List<Menu> menus = new ArrayList<>();
 
     @Builder
-    public Store(Address address, String name, Long ownerId, String phoneNumber,
+    public Store(Address address, String name, Long ownerId, String imageUrl, String phoneNumber,
                  LocalTime openTime, LocalTime closeTime, StoreStatus status,
                  int minOrderPrice, int deliveryTimeEstimate) {
         this.address = address;
         this.name = name;
         this.ownerId = ownerId;
+        this.imageUrl = imageUrl;
         this.phoneNumber = phoneNumber;
         this.openTime = openTime;
         this.closeTime = closeTime;

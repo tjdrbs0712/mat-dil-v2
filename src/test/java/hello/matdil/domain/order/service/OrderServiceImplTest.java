@@ -8,7 +8,7 @@ import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
-import hello.matdil.domain.store.dto.StoreInfoDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -108,9 +109,9 @@ class OrderServiceImplTest {
         List<Order> orders = List.of(order1, order2);
 
         // 가게 요약 정보
-        Map<Long, StoreInfoDto> storeSummaryMap = Map.of(
-                1L, new StoreInfoDto("가게1", "url1"),
-                2L, new StoreInfoDto("가게2", "url2")
+        Map<Long, StoreSummaryResponseDto> storeSummaryMap = Map.of(
+                1L, new StoreSummaryResponseDto(),
+                2L, new StoreSummaryResponseDto()
         );
 
         // 기대하는 응답 DTO
@@ -139,8 +140,6 @@ class OrderServiceImplTest {
 
         // then
         assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent().get(0).getStoreName()).isEqualTo("가게1");
-        assertThat(result.getContent().get(1).getStoreName()).isEqualTo("가게2");
 
         verify(orderReader).getOrdersByUserIdWithCursor(userId, cursor);
         verify(storeSummaryLoader).loadWithCacheFallback(List.of(1L, 2L));

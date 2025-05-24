@@ -8,6 +8,7 @@ import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.policy.StoreCreatePolicy;
+import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class StoreServiceImpl implements StoreService{
     private final PageAssembler pageAssembler;
     private final StoreCreatePolicy storeCreatePolicy;
     private final StoreSummaryCacheService cacheService;
+    private final StoreSummaryLoader storeSummaryLoader;
 
     @Override
     @Transactional
@@ -45,11 +48,23 @@ public class StoreServiceImpl implements StoreService{
         List<Store> stores = storeRepository.findStoresByCondition(userId, role, request);
         int pageSize = request.getSize();
 
+        List<Long> storeIds = stores.stream()
+                .map(Store::getId)
+                .toList();
+
+        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(storeIds);
+
         return pageAssembler.assemble(
                 stores,
                 pageSize,
-                last -> extractCursor(last, request.getSort()),    // Cursor 생성
-                StoreSummaryResponseDto::from                      // DTO 매핑
+                last -> extractCursor(last, request.getSort()),
+                store -> {
+                    StoreSummaryResponseDto summary = storeSummaryMap.get(store.getId());
+                    if (summary == null) {
+                        throw new StoreException(StoreErrorCode.STORE_NOT_FOUND);
+                    }
+                    return summary;
+                }
         );
     }
 

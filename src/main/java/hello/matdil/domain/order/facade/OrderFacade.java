@@ -4,7 +4,7 @@ import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.service.OrderService;
-import hello.matdil.domain.store.dto.StoreInfoDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.reader.MenuReader;
@@ -37,8 +37,8 @@ public class OrderFacade {
         Order order = orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
                 dto.getRequestNote(), orderItems);
 
-        StoreInfoDto storeInfoDto = getStoreInfoDto(order);
-        return OrderResponseDto.from(order, storeInfoDto);
+        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
+        return OrderResponseDto.from(order, responseDto);
     }
 
     private List<OrderItem> toOrderItems(List<OrderItemRequestDto> itemDtos, Long storeId) {
@@ -58,12 +58,12 @@ public class OrderFacade {
 
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderService.getOrder(orderId, userId, role);
-        StoreInfoDto storeInfoDto = getStoreInfoDto(order);
-        return OrderResponseDto.from(order, storeInfoDto);
+        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
+        return OrderResponseDto.from(order, responseDto);
     }
 
-    private StoreInfoDto getStoreInfoDto(Order order) {
-        Map<Long, StoreInfoDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
+    private StoreSummaryResponseDto getStoreSummaryDto(Order order) {
+        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
         return storeSummaryMap.get(order.getStoreId());
     }
 

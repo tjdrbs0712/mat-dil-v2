@@ -2,7 +2,7 @@ package hello.matdil.domain.order.dto;
 
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
-import hello.matdil.domain.store.dto.StoreInfoDto;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +29,13 @@ public class OrderResponseDto {
 
     private List<OrderItemResponseDto> orderItems;
 
-    public static OrderResponseDto from(Order order, StoreInfoDto storeInfoDto) {
+    public static OrderResponseDto from(Order order, StoreSummaryResponseDto responseDto) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
                 .storeId(order.getStoreId())
                 .userId(order.getUserId())
-                .storeName(storeInfoDto.name())
-                .storeImageUrl(storeInfoDto.imageUrl())
+                .storeName(responseDto.getName())
+                .storeImageUrl(responseDto.getImageUrl())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
                 .requestNote(order.getRequestNote())

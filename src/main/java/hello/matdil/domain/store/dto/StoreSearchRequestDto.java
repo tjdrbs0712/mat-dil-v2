@@ -4,6 +4,7 @@ import hello.matdil.domain.store.entity.StoreSortType;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 import static hello.matdil.global.util.CursorKey.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class StoreSearchRequestDto {
 
@@ -25,7 +27,6 @@ public class StoreSearchRequestDto {
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다."
     )
-
     @NotNull(message = "정렬 기준은 필수입니다.")
     private StoreSortType sort = StoreSortType.RATING;
 
