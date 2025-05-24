@@ -34,11 +34,9 @@ public class OrderFacade {
         MenuValidator.validateNoDuplicateMenuIds(dto.getOrderItems());
 
         List<OrderItem> orderItems = toOrderItems(dto.getOrderItems(), dto.getStoreId());
-        Order order = orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
-                dto.getRequestNote(), orderItems);
 
-        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
-        return OrderResponseDto.from(order, responseDto);
+        return orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
+                dto.getRequestNote(), orderItems);
     }
 
     private List<OrderItem> toOrderItems(List<OrderItemRequestDto> itemDtos, Long storeId) {
@@ -57,14 +55,7 @@ public class OrderFacade {
     }
 
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
-        Order order = orderService.getOrder(orderId, userId, role);
-        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
-        return OrderResponseDto.from(order, responseDto);
-    }
-
-    private StoreSummaryResponseDto getStoreSummaryDto(Order order) {
-        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
-        return storeSummaryMap.get(order.getStoreId());
+        return orderService.getOrder(userId, role, orderId);
     }
 
 }

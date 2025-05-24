@@ -2,6 +2,7 @@ package hello.matdil.domain.order.service;
 
 import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.dto.OrderCursorResponseDto;
+import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
@@ -33,11 +34,14 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional
-    public Order createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
+    public OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
                              String requestNote, List<OrderItem> orderItems) {
 
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
+        StoreSummaryResponseDto responseDto = storeSummaryMap.get(order.getStoreId());
+        return OrderResponseDto.from(order, responseDto);
     }
 
     @Override
@@ -68,8 +72,11 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Order getOrder(Long orderId, Long userId, UserRole role) {
-        return orderReader.getOrderWithPermission(orderId, userId, role);
+    @Transactional
+    public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
+        Order order = orderReader.getOrderWithPermission(orderId, userId, role);
+        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
+        StoreSummaryResponseDto responseDto = storeSummaryMap.get(order.getStoreId());
+        return OrderResponseDto.from(order, responseDto);
     }
 }
