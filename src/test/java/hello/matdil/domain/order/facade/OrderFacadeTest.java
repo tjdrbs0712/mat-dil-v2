@@ -47,9 +47,6 @@ class OrderFacadeTest {
     @Mock
     private OrderService orderService;
 
-    @Mock
-    private StoreSummaryLoader storeSummaryLoader;
-
     @Test
     void 주문_생성_퍼싸드_흐름_성공() {
         Long userId = 1L;
@@ -57,13 +54,11 @@ class OrderFacadeTest {
         UserRole role = UserRole.USER;
         Menu menu = TestData.setUpMenu();
         Store store = mock(Store.class);
-        Order order = mock(Order.class);
+        OrderResponseDto responseDto = mock(OrderResponseDto.class);
 
         OrderItemRequestDto OrderItemRequestDto = new OrderItemRequestDto();
         ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
         ReflectionTestUtils.setField(OrderItemRequestDto, "quantity", 2);
-
-        StoreSummaryResponseDto storeInfoDto = new StoreSummaryResponseDto();
 
         OrderCreateRequestDto requestDto = new OrderCreateRequestDto();
         ReflectionTestUtils.setField(requestDto, "storeId", storeId);
@@ -74,16 +69,13 @@ class OrderFacadeTest {
         given(store.getId()).willReturn(storeId);
         given(storeReader.getStore(userId, storeId, role)).willReturn(store);
         given(menuReader.getMenuWithStoreValidation(1L, storeId)).willReturn(menu);
-        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(order);
-        given(order.getStoreId()).willReturn(storeId);
-        given(storeSummaryLoader.loadWithCacheFallback(List.of(storeId)))
-                .willReturn(Map.of(storeId, storeInfoDto));
+        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
-        OrderResponseDto response = orderFacade.createOrder(userId, role, requestDto);
+        OrderResponseDto result = orderFacade.createOrder(userId, role, requestDto);
 
         // then
-        assertThat(response).isNotNull();
+        assertThat(result).isNotNull();
         verify(storeReader).getStore(userId, storeId, role);
         verify(menuReader).getMenuWithStoreValidation(1L, storeId);
         verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
