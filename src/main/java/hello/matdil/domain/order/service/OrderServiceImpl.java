@@ -11,10 +11,8 @@ import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.exception.StoreErrorCode;
-import hello.matdil.domain.store.exception.StoreException;
+import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
-import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -28,92 +26,79 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderFactory orderFactory;
     private final OrderReader orderReader;
+    private final StoreReader storeReader;
     private final PageAssembler pageAssembler;
     private final StoreSummaryLoader storeSummaryLoader;
-    private final StoreRepository storeRepository;
 
     @Override
     @Transactional
     public OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
-                             String requestNote, List<OrderItem> orderItems) {
-
+                                        String requestNote, List<OrderItem> orderItems) {
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
-        order = orderRepository.save(order);
-        return getOrderResponseDto(order);
+        Order savedOrder = orderRepository.save(order);
+        return buildOrderResponse(savedOrder);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
-            Long userId,
-            OrderCursorRequestDto cursor
-    ) {
-        List<Order> orders = orderReader.getOrdersByUserIdWithCursor(userId, cursor);
-        int pageSize = cursor.pageSize();
-
-        List<Long> storeIds = orders.stream()
-                .map(Order::getStoreId)
-                .distinct()
-                .toList();
-
-        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(storeIds);
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(Long userId, OrderCursorRequestDto cursor) {
+        List<Order> orders = orderReader.readByUserWithCursor(userId, cursor);
+        Map<Long, StoreSummaryResponseDto> storeSummaries = loadStoreSummaries(orders);
 
         return pageAssembler.assemble(
                 orders,
-                pageSize,
-                last -> new OrderCursorResponseDto(pageSize, last.getCreatedAt(), last.getId()),
-                order -> {
-                    StoreSummaryResponseDto summary = storeSummaryMap.get(order.getStoreId());
-                    return OrderSummaryDto.from(order, summary);
-                }
+                cursor.pageSize(),
+                last -> new OrderCursorResponseDto(cursor.pageSize(), last.getCreatedAt(), last.getId()),
+                order -> OrderSummaryDto.from(order, storeSummaries.get(order.getStoreId()))
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
+        Store store = storeReader.readWithPermission(userId, storeId, role);
+        List<Order> orders = orderReader.readByStoreWithCursor(storeId, cursor);
+
+        return pageAssembler.assemble(
+                orders,
+                cursor.pageSize(),
+                last -> new OrderCursorResponseDto(cursor.pageSize(), last.getCreatedAt(), last.getId()),
+                order -> OrderSummaryDto.from(order, StoreSummaryResponseDto.from(store))
         );
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
-        Order order = orderReader.getOrderWithPermission(orderId, userId, role);
-        return getOrderResponseDto(order);
-    }
-
-    @Override
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
-            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
-        List<Order> orders = orderReader.getOrdersByStoreIdWithCursor(storeId, cursor);
-
-        Store store = storeRepository.findByIdWithNotDeleted(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-        store.validateAccessibleTo(userId, role);
-
-        int pageSize = cursor.pageSize();
-
-        return pageAssembler.assemble(
-                orders,
-                pageSize,
-                last -> new OrderCursorResponseDto(pageSize, last.getCreatedAt(), last.getId()),
-                order -> {
-                    return OrderSummaryDto.from(order, StoreSummaryResponseDto.from(store));
-                }
-        );
+        Order order = orderReader.readWithUserPermission(orderId, userId, role);
+        return buildOrderResponse(order);
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
-        Order order = orderReader.getOwnerOrderWithPermission(orderId, userId, role);
-        return getOrderResponseDto(order);
+        Order order = orderReader.readWithStorePermission(orderId, userId, role);
+        return buildOrderResponse(order);
     }
 
-    private OrderResponseDto getOrderResponseDto(Order order) {
+    private OrderResponseDto buildOrderResponse(Order order) {
         StoreSummaryResponseDto storeSummary = storeSummaryLoader
                 .loadWithCacheFallback(List.of(order.getStoreId()))
                 .get(order.getStoreId());
-
         return OrderResponseDto.from(order, storeSummary);
+    }
+
+    private Map<Long, StoreSummaryResponseDto> loadStoreSummaries(List<Order> orders) {
+        List<Long> storeIds = orders.stream()
+                .map(Order::getStoreId)
+                .distinct()
+                .toList();
+        return storeSummaryLoader.loadWithCacheFallback(storeIds);
     }
 }
