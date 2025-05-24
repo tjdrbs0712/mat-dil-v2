@@ -95,7 +95,7 @@ public class StoreServiceImpl implements StoreService{
     public StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto dto) {
         Store store = getStoreOrThrow(storeId);
 
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         store.validateBusinessHours(dto.getOpenTime(), dto.getCloseTime());
 
         store.update(dto);
@@ -107,7 +107,7 @@ public class StoreServiceImpl implements StoreService{
     @Transactional
     public void changeStoreStatus(Long userId, UserRole role, Long storeId, StoreStatus storeStatus) {
         Store store = getStoreOrThrow(storeId);
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         store.changeStoreStatus(storeStatus);
     }
 

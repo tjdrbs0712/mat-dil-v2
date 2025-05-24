@@ -39,9 +39,7 @@ public class OrderServiceImpl implements OrderService{
 
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
         order = orderRepository.save(order);
-        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
-        StoreSummaryResponseDto responseDto = storeSummaryMap.get(order.getStoreId());
-        return OrderResponseDto.from(order, responseDto);
+        return getOrderResponseDto(order);
     }
 
     @Override
@@ -75,6 +73,17 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.getOrderWithPermission(orderId, userId, role);
+        return getOrderResponseDto(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
+        Order order = orderReader.getOwnerOrderWithPermission(orderId, userId, role);
+        return getOrderResponseDto(order);
+    }
+
+    private OrderResponseDto getOrderResponseDto(Order order) {
         Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
         StoreSummaryResponseDto responseDto = storeSummaryMap.get(order.getStoreId());
         return OrderResponseDto.from(order, responseDto);

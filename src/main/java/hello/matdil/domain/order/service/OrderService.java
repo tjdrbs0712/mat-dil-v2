@@ -20,4 +20,6 @@ public interface OrderService {
             Long userId, OrderCursorRequestDto cursor);
 
     OrderResponseDto getOrder(Long userId, UserRole role, Long orderId);
+
+    OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId);
 }

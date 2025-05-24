@@ -78,7 +78,7 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         menu.update(requestDto);
         return MenuResponseDto.from(menu);
     }
@@ -89,7 +89,7 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         menu.delete();
     }
 

@@ -67,4 +67,13 @@ public class Order extends BaseTimeEntity {
             throw new OrderException(OrderErrorCode.NO_PERMISSION);
         }
     }
+
+    public void validateOwnerAccessibleTo(Long userId, UserRole role, Long storeOwnerId) {
+        boolean isAdmin = role == UserRole.ADMIN;
+        boolean isOwner = this.userId.equals(userId);
+
+        if (!isAdmin && !isOwner) {
+            throw new OrderException(OrderErrorCode.NO_PERMISSION);
+        }
+    }
 }

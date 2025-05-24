@@ -51,4 +51,13 @@ public class OrderController {
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
+    @GetMapping("/owner/{orderId}")
+    public ResponseEntity<SuccessResponse<OrderResponseDto>> getOwnerOrder(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long orderId
+    ) {
+        OrderResponseDto response = orderFacade.getOwnerOrder(authUser.getUserId(), authUser.getRole(), orderId);
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
 }

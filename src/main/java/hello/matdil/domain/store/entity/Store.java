@@ -93,7 +93,7 @@ public class Store extends BaseTimeEntity {
     }
 
     public void addMenu(Menu menu, Long userId, UserRole role) {
-        validateModifiableBy(userId, role);
+        validateAccessibleTo(userId, role);
         menus.add(menu);
         menu.assignStore(this);
     }
@@ -122,7 +122,7 @@ public class Store extends BaseTimeEntity {
         }
     }
 
-    public void validateModifiableBy(Long userId, UserRole role) {
+    public void validateAccessibleTo(Long userId, UserRole role) {
         boolean isAdmin = role == UserRole.ADMIN;
         boolean isOwner = role == UserRole.OWNER && this.ownerId.equals(userId);
 

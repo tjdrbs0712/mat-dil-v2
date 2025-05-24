@@ -58,4 +58,7 @@ public class OrderFacade {
         return orderService.getOrder(userId, role, orderId);
     }
 
+    public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
+        return orderService.getOwnerOrder(userId, role, orderId);
+    }
 }
