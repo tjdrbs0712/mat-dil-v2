@@ -2,6 +2,7 @@ package hello.matdil.domain.order.facade;
 
 import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.service.OrderCreateProcessor;
 import hello.matdil.domain.order.service.OrderService;
 import hello.matdil.domain.store.entity.Store;
@@ -49,5 +50,13 @@ public class OrderFacade {
     public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
         return orderService.getOwnerOrders(userId, role, cursor, storeId);
+    }
+
+    public void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeOwnerOrderStatus(userId, role, orderId, status);
+    }
+
+    public void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeOrderStatus(userId, role, orderId, status);
     }
 }

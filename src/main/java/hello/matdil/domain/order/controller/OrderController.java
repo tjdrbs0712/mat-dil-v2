@@ -73,4 +73,24 @@ public class OrderController {
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
+    @PatchMapping("/owner/{orderId}/status")
+    public ResponseEntity<SuccessResponse<Void>> changeOwnerOrderStatus(
+            @PathVariable Long orderId,
+            @LoginUser AuthUser authUser,
+            @RequestBody @Valid OrderStatusUpdateRequestDto request
+    ) {
+        orderFacade.changeOwnerOrderStatus(authUser.getUserId(), authUser.getRole(), orderId, request.toEnum());
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<SuccessResponse<Void>> changeOrderStatus(
+            @PathVariable Long orderId,
+            @LoginUser AuthUser authUser,
+            @RequestBody @Valid  OrderStatusUpdateRequestDto request
+    ) {
+        orderFacade.changeOrderStatus(authUser.getUserId(), authUser.getRole(), orderId, request.toEnum());
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
 }

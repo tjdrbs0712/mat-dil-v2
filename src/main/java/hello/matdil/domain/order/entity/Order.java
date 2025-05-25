@@ -6,10 +6,13 @@ import hello.matdil.domain.order.exception.OrderException;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hello.matdil.domain.order.entity.OrderStatus.CANCELED;
 
 @Entity
 @Getter
@@ -68,12 +71,8 @@ public class Order extends BaseTimeEntity {
         }
     }
 
-    public void validateOwnerAccessibleTo(Long userId, UserRole role, Long storeOwnerId) {
-        boolean isAdmin = role == UserRole.ADMIN;
-        boolean isOwner = this.userId.equals(userId);
-
-        if (!isAdmin && !isOwner) {
-            throw new OrderException(OrderErrorCode.NO_PERMISSION);
-        }
+    public void changeStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
     }
+
 }

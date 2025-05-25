@@ -5,6 +5,7 @@ import hello.matdil.domain.order.dto.OrderCursorResponseDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 
@@ -24,4 +25,8 @@ public interface OrderService {
 
     SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId);
+
+    void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
+
+    void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
 }

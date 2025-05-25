@@ -6,7 +6,9 @@ import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.factory.OrderFactory;
+import hello.matdil.domain.order.policy.OrderStatusChangePolicy;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
@@ -34,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final StoreReader storeReader;
     private final PageAssembler pageAssembler;
     private final StoreSummaryLoader storeSummaryLoader;
+    private final OrderStatusChangePolicy policy;
 
     @Override
     @Transactional
@@ -85,6 +88,22 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.readWithStorePermission(orderId, userId, role);
         return buildOrderResponse(order);
+    }
+
+    @Override
+    @Transactional
+    public void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
+        Order order = orderReader.readWithStorePermission(orderId, userId, role);
+        policy.validateChange(order.getOrderStatus(), newStatus, role);
+        order.changeStatus(newStatus);
+    }
+
+    @Override
+    @Transactional
+    public void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
+        Order order = orderReader.readWithUserPermission(orderId, userId, role);
+        policy.validateChange(order.getOrderStatus(), newStatus, role);
+        order.changeStatus(newStatus);
     }
 
     private OrderResponseDto buildOrderResponse(Order order) {
