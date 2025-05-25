@@ -6,13 +6,10 @@ import hello.matdil.domain.order.exception.OrderException;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static hello.matdil.domain.order.entity.OrderStatus.CANCELED;
 
 @Entity
 @Getter

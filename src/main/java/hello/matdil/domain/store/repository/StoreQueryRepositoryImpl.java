@@ -36,7 +36,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 userId, role, request.getAddress(), request.getName(), store
         );
 
-        SortStrategy strategy = sortStrategyMap.get(request.getSort());
+        SortStrategy strategy = sortStrategyMap.get(request.toEnum());
 
         OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
@@ -75,6 +75,20 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 .where(
                         store.id.eq(storeId),
                         store.status.ne(StoreStatus.DELETED)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<Store> findByIdWithOpen(Long storeId) {
+        QStore store = QStore.store;
+
+        Store result = queryFactory.selectFrom(store)
+                .where(
+                        store.id.eq(storeId),
+                        store.status.eq(StoreStatus.OPEN)
                 )
                 .fetchOne();
 

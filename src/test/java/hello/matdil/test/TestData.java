@@ -40,7 +40,7 @@ public class TestData {
 
     public static StoreSearchRequestDto setStoreSearchRequestDto() {
         StoreSearchRequestDto dto = new StoreSearchRequestDto();
-        ReflectionTestUtils.setField(dto, "sort", StoreSortType.RATING);
+        ReflectionTestUtils.setField(dto, "sort", String.valueOf(StoreSortType.RATING));
         ReflectionTestUtils.setField(dto, "size", 2);
         return dto;
     }

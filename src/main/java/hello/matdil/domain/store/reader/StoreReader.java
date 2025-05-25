@@ -22,6 +22,11 @@ public class StoreReader {
         return store;
     }
 
+    public Store getOpenStoreVisibleToUser(Long storeId) {
+        return storeRepository.findByIdWithOpen(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+    }
+
     public Store getStoreAccessibleByOwner(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findByIdWithNotDeleted(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
@@ -29,7 +34,5 @@ public class StoreReader {
         store.validateAccessibleTo(userId, role);
         return store;
     }
-
-
 
 }

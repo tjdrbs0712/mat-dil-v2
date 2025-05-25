@@ -131,7 +131,7 @@ class MenuServiceImplTest {
     void 메뉴_단건_조회_성공(){
         // given
         store.addMenu(menu, 1L, UserRole.ADMIN);
-        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
+        given(menuRepository.findByIdWithStoreFetchJoinNotDeleted(1L, 1L)).willReturn(Optional.ofNullable(menu));
         // when
         MenuResponseDto result = menuService.getMenu(1L, UserRole.ADMIN, 1L, 1L);
         // then
@@ -143,7 +143,7 @@ class MenuServiceImplTest {
         // given
         store.addMenu(menu, 1L, UserRole.ADMIN);
         MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
-        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.ofNullable(menu));
+        given(menuRepository.findByIdWithStoreFetchJoinNotDeleted(1L, 1L)).willReturn(Optional.ofNullable(menu));
 
         // when
         MenuResponseDto result = menuService.updateMenu(1L, UserRole.ADMIN, 1L, 1L, dto);
@@ -157,7 +157,7 @@ class MenuServiceImplTest {
         // given
         store.addMenu(menu, 1L, UserRole.OWNER); // menu의 store 소유자는 1L
         MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
-        given(menuRepository.findByIdWithStore(1L, 1L)).willReturn(Optional.of(menu));
+        given(menuRepository.findByIdWithStoreFetchJoinNotDeleted(1L, 1L)).willReturn(Optional.of(menu));
 
         // when & then
         assertThatThrownBy(() ->
@@ -172,7 +172,7 @@ class MenuServiceImplTest {
         store.addMenu(menu, 1L, UserRole.ADMIN);
         MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
 
-        given(menuRepository.findByIdWithStore(1L, 999L)).willReturn(Optional.empty());
+        given(menuRepository.findByIdWithStoreFetchJoinNotDeleted(1L, 999L)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() ->
@@ -185,7 +185,7 @@ class MenuServiceImplTest {
     void 메뉴_수정_메뉴없음() {
         // given
         MenuUpdateRequestDto dto = TestData.setMenuUpdateDto();
-        given(menuRepository.findByIdWithStore(999L, 1L)).willReturn(Optional.empty());
+        given(menuRepository.findByIdWithStoreFetchJoinNotDeleted(999L, 1L)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() ->

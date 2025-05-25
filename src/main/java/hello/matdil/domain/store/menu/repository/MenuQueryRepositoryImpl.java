@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hello.matdil.domain.store.entity.QStore;
+import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.menu.dto.MenuCursorRequestDto;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.entity.MenuStatus;
@@ -57,14 +58,32 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
         };
     }
 
-    public Optional<Menu> findByIdWithStore(Long menuId, Long storeId) {
+    public Optional<Menu> findByIdWithStoreFetchJoinNotDeleted(Long menuId, Long storeId) {
         QMenu menu = QMenu.menu;
         QStore store = QStore.store;
 
         Menu result = queryFactory
                 .selectFrom(menu)
                 .join(menu.store, store).fetchJoin()
-                .where(menu.id.eq(menuId), store.id.eq(storeId))
+                .where(
+                        menu.id.eq(menuId),
+                        store.id.eq(storeId),
+                        store.status.ne(StoreStatus.DELETED)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    public Optional<Menu> findByIdWithStore(Long menuId, Long storeId) {
+        QMenu menu = QMenu.menu;
+
+        Menu result = queryFactory
+                .selectFrom(menu)
+                .where(
+                        menu.id.eq(menuId),
+                        menu.store.id.eq(storeId)
+                )
                 .fetchOne();
 
         return Optional.ofNullable(result);

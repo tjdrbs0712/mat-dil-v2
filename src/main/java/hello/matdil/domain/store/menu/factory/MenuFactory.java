@@ -13,8 +13,8 @@ public class MenuFactory {
                 .price(dto.getPrice())
                 .description(dto.getDescription())
                 .imageUrl(dto.getImageUrl())
-                .category(dto.getCategory())
-                .menuStatus(dto.getMenuStatus())
+                .category(dto.toMenuCategoryEnum())
+                .menuStatus(dto.toMenuStatusEnum())
                 .build();
     }
 }

@@ -81,8 +81,8 @@ public class Menu extends BaseTimeEntity {
         this.description = dto.getDescription();
         this.imageUrl = dto.getImageUrl();
         this.orderIndex = dto.getOrderIndex();
-        this.category = dto.getCategory();
-        this.menuStatus = dto.getMenuStatus();
+        this.category = dto.toMenuCategoryEnum();
+        this.menuStatus = dto.toMenuStatusEnum();
     }
 
     public void delete() {

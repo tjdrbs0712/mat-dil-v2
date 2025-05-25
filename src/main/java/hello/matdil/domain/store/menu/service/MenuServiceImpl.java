@@ -94,7 +94,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     private Menu getMenuWithStoreOrThrow(Long menuId, Long storeId) {
-        return menuRepository.findByIdWithStore(menuId, storeId)
+        return menuRepository.findByIdWithStoreFetchJoinNotDeleted(menuId, storeId)
                 .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
     }
 }

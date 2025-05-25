@@ -24,7 +24,7 @@ public class OrderFacade {
     private final StoreReader storeReader;
 
     public OrderResponseDto createOrder(Long userId, UserRole role, OrderCreateRequestDto dto) {
-        Store store = storeReader.getStoreVisibleToUser(userId, dto.getStoreId(), role);
+        Store store = storeReader.getOpenStoreVisibleToUser(dto.getStoreId());
 
         MenuValidator.validateNoDuplicateMenuIds(dto.getOrderItems());
         List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.getOrderItems(), dto.getStoreId());

@@ -17,4 +17,6 @@ public interface StoreQueryRepository {
     Map<Long, StoreSummaryResponseDto> findStoreSummariesByIds(List<Long> storeIds);
 
     Optional<Store> findByIdWithNotDeleted(Long storeId);
+
+    Optional<Store> findByIdWithOpen(Long storeId);
 }

@@ -57,7 +57,7 @@ public class StoreServiceImpl implements StoreService{
         return pageAssembler.assemble(
                 stores,
                 pageSize,
-                last -> extractCursor(last, request.getSort()),
+                last -> extractCursor(last, request.toEnum()),
                 store -> {
                     StoreSummaryResponseDto summary = storeSummaryMap.get(store.getId());
                     if (summary == null) {
