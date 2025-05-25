@@ -14,7 +14,7 @@ public class StoreReader {
 
     private final StoreRepository storeRepository;
 
-    public Store readById(Long userId, Long storeId, UserRole role) {
+    public Store readByIdWithPermission(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
         store.validateVisibleTo(role, userId);

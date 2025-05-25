@@ -5,7 +5,7 @@ import hello.matdil.domain.user.entity.UserRole;
 public enum StoreStatus {
     OPEN,       // 영업 중
     CLOSED,     // 휴무
-    INACTIVE,   // 비활성화 / 폐업
+    INACTIVE,   // 비활성화
     DELETED;    // 삭제
 
     public boolean isVisibleTo(UserRole role, Long userId, Long ownerId) {

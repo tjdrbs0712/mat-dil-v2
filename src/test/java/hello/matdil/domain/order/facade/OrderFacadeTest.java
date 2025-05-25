@@ -62,7 +62,7 @@ class OrderFacadeTest {
         ReflectionTestUtils.setField(requestDto, "orderItems", List.of(OrderItemRequestDto));
 
         given(store.getId()).willReturn(storeId);
-        given(storeReader.readById(userId, storeId, role)).willReturn(store);
+        given(storeReader.readByIdWithPermission(userId, storeId, role)).willReturn(store);
         given(orderCreateProcessor.toOrderItems(
                 requestDto.getOrderItems(), requestDto.getStoreId())).willReturn(List.of(orderItem));
         given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
@@ -72,7 +72,7 @@ class OrderFacadeTest {
 
         // then
         assertThat(result).isNotNull();
-        verify(storeReader).readById(userId, storeId, role);
+        verify(storeReader).readByIdWithPermission(userId, storeId, role);
         verify(orderCreateProcessor).toOrderItems(requestDto.getOrderItems(), storeId);
         verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
 
