@@ -46,7 +46,6 @@ class OrderFacadeTest {
     void 주문_생성_퍼싸드_흐름_성공() {
         Long userId = 1L;
         Long storeId = 10L;
-        UserRole role = UserRole.USER;
         Store store = mock(Store.class);
         OrderResponseDto responseDto = mock(OrderResponseDto.class);
         OrderItem orderItem = mock(OrderItem.class);
@@ -62,17 +61,17 @@ class OrderFacadeTest {
         ReflectionTestUtils.setField(requestDto, "orderItems", List.of(OrderItemRequestDto));
 
         given(store.getId()).willReturn(storeId);
-        given(storeReader.readByIdWithPermission(userId, storeId, role)).willReturn(store);
+        given(storeReader.readWithOpen(storeId)).willReturn(store);
         given(orderCreateProcessor.toOrderItems(
                 requestDto.getOrderItems(), requestDto.getStoreId())).willReturn(List.of(orderItem));
         given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
-        OrderResponseDto result = orderFacade.createOrder(userId, role, requestDto);
+        OrderResponseDto result = orderFacade.createOrder(userId, requestDto);
 
         // then
         assertThat(result).isNotNull();
-        verify(storeReader).readByIdWithPermission(userId, storeId, role);
+        verify(storeReader).readWithOpen(storeId);
         verify(orderCreateProcessor).toOrderItems(requestDto.getOrderItems(), storeId);
         verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
 

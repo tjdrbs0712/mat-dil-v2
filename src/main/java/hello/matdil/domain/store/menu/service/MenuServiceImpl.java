@@ -25,7 +25,6 @@ import java.util.List;
 public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
     private final MenuFactory menuFactory;
     private final PageAssembler pageAssembler;
     private final StoreReader storeReader;
@@ -33,8 +32,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public MenuResponseDto createMenu(Long userId, UserRole role, Long storeId, MenuCreateRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        Store store = storeReader.readByIdWithPermission(userId, storeId, role);
 
         Menu menu = menuFactory.createMenu(requestDto);
         store.addMenu(menu, userId, role);

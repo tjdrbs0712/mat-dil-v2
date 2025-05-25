@@ -78,8 +78,8 @@ public class TestData {
         ReflectionTestUtils.setField(dto, "price", 6500);
         ReflectionTestUtils.setField(dto, "description", "맛있어요");
         ReflectionTestUtils.setField(dto, "imageUrl", "url");
-        ReflectionTestUtils.setField(dto, "menuStatus", MenuStatus.AVAILABLE);
-        ReflectionTestUtils.setField(dto, "category", MenuCategory.MAIN);
+        ReflectionTestUtils.setField(dto, "menuStatus", "AVAILABLE");
+        ReflectionTestUtils.setField(dto, "category", "MAIN");
         return dto;
     }
 
@@ -90,8 +90,8 @@ public class TestData {
         ReflectionTestUtils.setField(dto, "description", "매운맛을 강화한 떡볶이입니다.");
         ReflectionTestUtils.setField(dto, "imageUrl", "https://cdn.matdil.com/menu/spicy-tteokbokki.jpg");
         ReflectionTestUtils.setField(dto, "orderIndex", 2);
-        ReflectionTestUtils.setField(dto, "category", MenuCategory.SIDE);
-        ReflectionTestUtils.setField(dto, "menuStatus", MenuStatus.AVAILABLE);
+        ReflectionTestUtils.setField(dto, "category", "SIDE");
+        ReflectionTestUtils.setField(dto, "menuStatus", "AVAILABLE");
         return dto;
     }
 
