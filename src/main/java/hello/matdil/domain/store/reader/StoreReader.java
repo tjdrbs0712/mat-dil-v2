@@ -14,23 +14,21 @@ public class StoreReader {
 
     private final StoreRepository storeRepository;
 
-    public Store getStoreVisibleToUser(Long userId, Long storeId, UserRole role) {
+    public Store readById(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-
         store.validateVisibleTo(role, userId);
         return store;
     }
 
-    public Store getOpenStoreVisibleToUser(Long storeId) {
+    public Store readWithOpen(Long storeId) {
         return storeRepository.findByIdWithOpen(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
     }
 
-    public Store getStoreAccessibleByOwner(Long userId, Long storeId, UserRole role) {
+    public Store readWithNotDeletedWithPermission(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findByIdWithNotDeleted(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-
         store.validateAccessibleTo(userId, role);
         return store;
     }

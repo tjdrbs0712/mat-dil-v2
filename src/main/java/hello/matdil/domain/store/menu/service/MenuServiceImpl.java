@@ -48,7 +48,7 @@ public class MenuServiceImpl implements MenuService {
     public SliceResponse<MenuResponseDto, MenuCursorResponseDto> getMenus(
             Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor) {
 
-        storeReader.getStoreVisibleToUser(userId, storeId, role);
+        storeReader.readById(userId, storeId, role);
 
         List<Menu> menus = menuRepository.findMenusByCursor(userId, role, storeId, cursor);
         int pageSize = cursor.pageSize();

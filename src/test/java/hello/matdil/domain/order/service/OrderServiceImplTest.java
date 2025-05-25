@@ -142,7 +142,7 @@ class OrderServiceImplTest {
                 .willReturn(expectedResponse);
 
         // when
-        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> result = orderService.getOrders(userId, cursor);
+        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> result = orderService.getUserOrders(userId, cursor);
 
         // then
         assertThat(result.getContent()).hasSize(2);

@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(Long userId, OrderCursorRequestDto cursor) {
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(Long userId, OrderCursorRequestDto cursor) {
         List<Order> orders = orderReader.readByUserWithCursor(userId, cursor);
         Map<Long, StoreSummaryResponseDto> storeSummaries = loadStoreSummaries(orders);
 
@@ -63,9 +63,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getStoreOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
-        Store store = storeReader.getStoreAccessibleByOwner(userId, storeId, role);
+        Store store = storeReader.readWithNotDeletedWithPermission(userId, storeId, role);
         List<Order> orders = orderReader.readByStoreWithCursor(storeId, cursor);
 
         return pageAssembler.assemble(
@@ -78,21 +78,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
+    public OrderResponseDto getUserOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.readWithUserPermission(orderId, userId, role);
         return buildOrderResponse(order);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
+    public OrderResponseDto getStoreOwnerOrder(Long userId, UserRole role, Long orderId) {
         Order order = orderReader.readWithStorePermission(orderId, userId, role);
         return buildOrderResponse(order);
     }
 
     @Override
     @Transactional
-    public void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
+    public void changeStoreOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
         Order order = orderReader.readWithStorePermission(orderId, userId, role);
         policy.validateChange(order.getOrderStatus(), newStatus, role);
         order.changeStatus(newStatus);
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
+    public void changeUserOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus) {
         Order order = orderReader.readWithUserPermission(orderId, userId, role);
         policy.validateChange(order.getOrderStatus(), newStatus, role);
         order.changeStatus(newStatus);

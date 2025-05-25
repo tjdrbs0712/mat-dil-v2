@@ -16,17 +16,17 @@ public interface OrderService {
     OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime
             , String requestNote, List<OrderItem> orderItems);
 
-    SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
+    SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(
             Long userId, OrderCursorRequestDto cursor);
 
-    OrderResponseDto getOrder(Long userId, UserRole role, Long orderId);
+    OrderResponseDto getUserOrder(Long userId, UserRole role, Long orderId);
 
-    OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId);
+    OrderResponseDto getStoreOwnerOrder(Long userId, UserRole role, Long orderId);
 
-    SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+    SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getStoreOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId);
 
-    void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
+    void changeStoreOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
 
-    void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
+    void changeUserOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
 }

@@ -23,8 +23,8 @@ public class OrderFacade {
     private final OrderCreateProcessor orderCreateProcessor;
     private final StoreReader storeReader;
 
-    public OrderResponseDto createOrder(Long userId, UserRole role, OrderCreateRequestDto dto) {
-        Store store = storeReader.getOpenStoreVisibleToUser(dto.getStoreId());
+    public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
+        Store store = storeReader.readWithOpen(dto.getStoreId());
 
         MenuValidator.validateNoDuplicateMenuIds(dto.getOrderItems());
         List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.getOrderItems(), dto.getStoreId());
@@ -33,30 +33,30 @@ public class OrderFacade {
                 dto.getRequestNote(), orderItems);
     }
 
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(
             Long userId, OrderCursorRequestDto cursor) {
 
-        return orderService.getOrders(userId, cursor);
+        return orderService.getUserOrders(userId, cursor);
     }
 
-    public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
-        return orderService.getOrder(userId, role, orderId);
+    public OrderResponseDto getUserOrder(Long userId, UserRole role, Long orderId) {
+        return orderService.getUserOrder(userId, role, orderId);
     }
 
-    public OrderResponseDto getOwnerOrder(Long userId, UserRole role, Long orderId) {
-        return orderService.getOwnerOrder(userId, role, orderId);
+    public OrderResponseDto getStoreOwnerOrder(Long userId, UserRole role, Long orderId) {
+        return orderService.getStoreOwnerOrder(userId, role, orderId);
     }
 
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOwnerOrders(
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getStoreOwnerOrders(
             Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
-        return orderService.getOwnerOrders(userId, role, cursor, storeId);
+        return orderService.getStoreOwnerOrders(userId, role, cursor, storeId);
     }
 
-    public void changeOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
-        orderService.changeOwnerOrderStatus(userId, role, orderId, status);
+    public void changeStoreOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeStoreOwnerOrderStatus(userId, role, orderId, status);
     }
 
-    public void changeOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
-        orderService.changeOrderStatus(userId, role, orderId, status);
+    public void changeUserOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeUserOrderStatus(userId, role, orderId, status);
     }
 }
