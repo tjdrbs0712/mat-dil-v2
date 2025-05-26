@@ -7,10 +7,7 @@ import hello.matdil.domain.favorite.service.FavoriteService;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/favorites")
@@ -26,6 +23,16 @@ public class FavoriteController {
             @RequestBody FavoriteRequestDto request
     ) {
         favoriteService.addFavorite(loginUser.getUserId(), loginUser.getRole(), request.storeId());
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+    // 즐겨찾기 취소
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<SuccessResponse<Void>> removeFavorite(
+            @LoginUser AuthUser loginUser,
+            @PathVariable Long storeId
+    ) {
+        favoriteService.removeFavorite(loginUser.getUserId(), loginUser.getRole(), storeId);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 

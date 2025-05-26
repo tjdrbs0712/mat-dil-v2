@@ -6,4 +6,5 @@ public interface FavoriteService {
 
     void addFavorite(Long userId, UserRole role, Long storeId);
 
+    void removeFavorite(Long userId, UserRole role, Long storeId);
 }
