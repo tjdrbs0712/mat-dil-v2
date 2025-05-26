@@ -7,6 +7,7 @@ import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
+import hello.matdil.domain.order.event.OrderEventProducer;
 import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.policy.OrderStatusChangePolicy;
 import hello.matdil.domain.order.reader.OrderReader;
@@ -38,12 +39,17 @@ public class OrderServiceImpl implements OrderService {
     private final StoreSummaryLoader storeSummaryLoader;
     private final OrderStatusChangePolicy policy;
 
+    private final OrderEventProducer orderEventProducer;
+
     @Override
     @Transactional
     public OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
                                         String requestNote, List<OrderItem> orderItems) {
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
         Order savedOrder = orderRepository.save(order);
+
+        orderEventProducer.sendOrderCreatedEvent(savedOrder);
+
         return buildOrderResponse(savedOrder);
     }
 

@@ -1,4 +1,4 @@
-package hello.matdil.domain.userorderstatus;
+package hello.matdil.domain.userorderstatus.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,6 +35,14 @@ public class UserOrderStats {
         this.storeId = storeId;
         this.orderCount = orderCount;
         this.lastOrderedAt = lastOrderedAt;
+    }
+
+    public static UserOrderStats create(Long userId, Long storeId, LocalDateTime orderedAt){
+        return UserOrderStats.builder()
+                .userId(userId)
+                .storeId(storeId)
+                .lastOrderedAt(orderedAt)
+                .build();
     }
 
     public void incrementOrderCount() {
