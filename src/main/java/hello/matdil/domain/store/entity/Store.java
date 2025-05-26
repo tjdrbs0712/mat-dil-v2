@@ -98,18 +98,6 @@ public class Store extends BaseTimeEntity {
         menu.assignStore(this);
     }
 
-    public void updateInfo(String name, String phoneNumber, Address address,
-                           LocalTime openTime, LocalTime closeTime,
-                           int minOrderPrice, int deliveryTimeEstimate) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-        this.minOrderPrice = minOrderPrice;
-        this.deliveryTimeEstimate = deliveryTimeEstimate;
-    }
-
     public void validateVisibleTo(UserRole role, Long userId) {
         if(!this.status.isVisibleTo(role, userId, this.ownerId)){
             throw new StoreException(StoreErrorCode.NO_PERMISSION);

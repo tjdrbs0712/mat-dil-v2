@@ -30,4 +30,11 @@ public class Favorite extends BaseTimeEntity {
         this.userId = userId;
         this.storeId = storeId;
     }
+
+    public static Favorite create(Long userId, Long storeId) {
+        return Favorite.builder()
+                .userId(userId)
+                .storeId(storeId)
+                .build();
+    }
 }
