@@ -6,13 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+
 @RequiredArgsConstructor
 @Component
 public class UserOrderStatsConsumer {
 
     private final UserOrderStatsService userOrderStatsService;
 
-    @KafkaListener(topics = "order.created", groupId = "user-order-stats-group")
+    @KafkaListener(topics = "order-created", groupId = "user-order-stats-group")
     public void consume(OrderCreatedEvent event) {
         userOrderStatsService.increaseOrderCount(event.getUserId(), event.getStoreId(), event.getOrderedAt());
     }
