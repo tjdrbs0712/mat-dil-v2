@@ -51,38 +51,6 @@ public class OrderController {
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
-    @GetMapping("/owner/store/{storeId}")
-    public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getStoreOwnerOrders(
-            @LoginUser AuthUser authUser,
-            @ModelAttribute OrderCursorRequestDto cursor,
-            @PathVariable Long storeId
-    ) {
-
-        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> response =
-                orderFacade.getStoreOwnerOrders(authUser.getUserId(), authUser.getRole(), cursor ,storeId);
-
-        return ResponseEntity.ok(SuccessResponse.success(response));
-    }
-
-    @GetMapping("/owner/{orderId}")
-    public ResponseEntity<SuccessResponse<OrderResponseDto>> getStoreOwnerOrder(
-            @LoginUser AuthUser authUser,
-            @PathVariable Long orderId
-    ) {
-        OrderResponseDto response = orderFacade.getStoreOwnerOrder(authUser.getUserId(), authUser.getRole(), orderId);
-        return ResponseEntity.ok(SuccessResponse.success(response));
-    }
-
-    @PatchMapping("/owner/{orderId}/status")
-    public ResponseEntity<SuccessResponse<Void>> changeStoreOwnerOrderStatus(
-            @PathVariable Long orderId,
-            @LoginUser AuthUser authUser,
-            @RequestBody @Valid OrderStatusUpdateRequestDto request
-    ) {
-        orderFacade.changeStoreOwnerOrderStatus(authUser.getUserId(), authUser.getRole(), orderId, request.toEnum());
-        return ResponseEntity.ok(SuccessResponse.success(null));
-    }
-
     @PatchMapping("/{orderId}/status")
     public ResponseEntity<SuccessResponse<Void>> changeUserOrderStatus(
             @PathVariable Long orderId,
