@@ -36,4 +36,6 @@ public class FavoriteController {
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
+
+
 }

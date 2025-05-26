@@ -2,6 +2,7 @@ package hello.matdil.config;
 
 import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.sort.*;
+import hello.matdil.global.sort.SortStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

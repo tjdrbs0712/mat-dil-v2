@@ -11,7 +11,7 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.query.StorePredicateBuilder;
-import hello.matdil.domain.store.sort.SortStrategy;
+import hello.matdil.global.sort.SortStrategy;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

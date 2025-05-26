@@ -3,6 +3,7 @@ package hello.matdil.domain.store.sort;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hello.matdil.domain.store.entity.QStore;
+import hello.matdil.global.sort.SortStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

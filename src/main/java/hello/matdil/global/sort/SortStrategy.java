@@ -1,4 +1,4 @@
-package hello.matdil.domain.store.sort;
+package hello.matdil.global.sort;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
