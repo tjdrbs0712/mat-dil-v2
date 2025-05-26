@@ -3,16 +3,16 @@ package hello.matdil.domain.store.sort;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hello.matdil.domain.store.entity.QStore;
-import hello.matdil.global.sort.SortStrategy;
+import hello.matdil.global.sort.StoreSortStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NameSortStrategyTest {
+class ReviewStoreSortStrategyTest {
 
-    private final SortStrategy strategy = new NameSortStrategy();
+    private final StoreSortStrategy strategy = new ReviewStoreSortStrategy();
     private final QStore store = QStore.store;
 
     @Test
@@ -22,25 +22,25 @@ class NameSortStrategyTest {
 
         // then
         assertThat(orderSpecifiers).hasSize(2);
-        assertThat(orderSpecifiers[0].toString()).contains("store.name ASC");
-        assertThat(orderSpecifiers[1].toString()).contains("store.id ASC");
+        assertThat(orderSpecifiers[0].toString()).contains("store.reviewCount DESC");
+        assertThat(orderSpecifiers[1].toString()).contains("store.id DESC");
     }
 
     @Test
     void 커서_조건이_정상적일_경우(){
         //given
-        Map<String, Object> cursor = Map.of("lastName", "김밥", "lastStoreId", 123L);
+        Map<String, Object> cursor = Map.of("lastReviewCount", 15, "lastStoreId", 123L);
         // when
         BooleanExpression expression = strategy.buildCursorPredicate(store,cursor);
         //then
         String actual = expression.toString();
-        assertThat(actual).contains("store.name >").contains("store.name =").contains("store.id >");
+        assertThat(actual).contains("store.reviewCount <").contains("store.reviewCount =").contains("store.id <");
     }
 
     @Test
     void 커서_조건이_정상적이지_않을_경우(){
         //given
-        Map<String, Object> cursor = Map.of("lastName", "김밥");
+        Map<String, Object> cursor = Map.of("lastReviewCount", 15);
         // when
         BooleanExpression expression = strategy.buildCursorPredicate(store,cursor);
         //then

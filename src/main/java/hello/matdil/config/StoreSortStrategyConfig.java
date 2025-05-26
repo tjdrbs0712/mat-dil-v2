@@ -2,7 +2,7 @@ package hello.matdil.config;
 
 import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.sort.*;
-import hello.matdil.global.sort.SortStrategy;
+import hello.matdil.global.sort.StoreSortStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,14 +13,14 @@ import java.util.Map;
 public class StoreSortStrategyConfig {
 
     @Bean
-    public Map<StoreSortType, SortStrategy> storeSortStrategyMap() {
-        Map<StoreSortType, SortStrategy> strategyMap = new EnumMap<>(StoreSortType.class);
+    public Map<StoreSortType, StoreSortStrategy> storeSortStrategyMap() {
+        Map<StoreSortType, StoreSortStrategy> strategyMap = new EnumMap<>(StoreSortType.class);
 
-        strategyMap.put(StoreSortType.RATING, new RatingSortStrategy());
-        strategyMap.put(StoreSortType.REVIEW, new ReviewSortStrategy());
-        strategyMap.put(StoreSortType.DELIVERY_TIME, new DeliveryTimeSortStrategy());
-        strategyMap.put(StoreSortType.NAME, new NameSortStrategy());
-        strategyMap.put(StoreSortType.ID, new IdSortStrategy());
+        strategyMap.put(StoreSortType.RATING, new RatingStoreSortStrategy());
+        strategyMap.put(StoreSortType.REVIEW, new ReviewStoreSortStrategy());
+        strategyMap.put(StoreSortType.DELIVERY_TIME, new DeliveryTimeStoreSortStrategy());
+        strategyMap.put(StoreSortType.NAME, new NameStoreSortStrategy());
+        strategyMap.put(StoreSortType.ID, new IdStoreSortStrategy());
 
         return strategyMap;
     }

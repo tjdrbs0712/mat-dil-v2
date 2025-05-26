@@ -11,7 +11,7 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.query.StorePredicateBuilder;
-import hello.matdil.global.sort.SortStrategy;
+import hello.matdil.global.sort.StoreSortStrategy;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class StoreQueryRepositoryImpl implements StoreQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final Map<StoreSortType, SortStrategy> sortStrategyMap;
+    private final Map<StoreSortType, StoreSortStrategy> sortStrategyMap;
 
     @Override
     public List<Store> findStoresByCondition(Long userId, UserRole role, StoreSearchRequestDto request) {
@@ -36,7 +36,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 userId, role, request.getAddress(), request.getName(), store
         );
 
-        SortStrategy strategy = sortStrategyMap.get(request.toEnum());
+        StoreSortStrategy strategy = sortStrategyMap.get(request.toEnum());
 
         OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());

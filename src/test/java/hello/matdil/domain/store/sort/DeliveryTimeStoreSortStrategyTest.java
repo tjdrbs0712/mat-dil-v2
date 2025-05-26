@@ -3,16 +3,15 @@ package hello.matdil.domain.store.sort;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hello.matdil.domain.store.entity.QStore;
-import hello.matdil.global.sort.SortStrategy;
+import hello.matdil.global.sort.StoreSortStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IdSortStrategyTest {
-
-    private final SortStrategy strategy = new IdSortStrategy();
+class DeliveryTimeStoreSortStrategyTest {
+    private final StoreSortStrategy strategy = new DeliveryTimeStoreSortStrategy();
     private final QStore store = QStore.store;
 
     @Test
@@ -21,19 +20,22 @@ class IdSortStrategyTest {
         OrderSpecifier<?>[] orderSpecifiers = strategy.getOrderSpecifiers(store);
 
         // then
-        assertThat(orderSpecifiers).hasSize(1);
-        assertThat(orderSpecifiers[0].toString()).contains("store.id DESC");
+        assertThat(orderSpecifiers).hasSize(2);
+        assertThat(orderSpecifiers[0].toString()).contains("store.deliveryTimeEstimate ASC");
+        assertThat(orderSpecifiers[1].toString()).contains("store.id ASC");
     }
 
     @Test
     void 커서_조건이_정상적일_경우(){
         //given
-        Map<String, Object> cursor = Map.of("lastStoreId", 123L);
+        Map<String, Object> cursor = Map.of("lastDeliveryTime", 15, "lastStoreId", 123L);
         // when
         BooleanExpression expression = strategy.buildCursorPredicate(store,cursor);
         //then
         String actual = expression.toString();
-        assertThat(actual).contains("store.id <");
+        assertThat(actual).contains("store.deliveryTimeEstimate >")
+                .contains("store.deliveryTimeEstimate =")
+                .contains("store.id >");
     }
 
     @Test
@@ -45,5 +47,4 @@ class IdSortStrategyTest {
         //then
         assertThat(expression).isNull();
     }
-
 }

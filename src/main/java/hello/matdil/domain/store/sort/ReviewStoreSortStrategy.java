@@ -3,7 +3,7 @@ package hello.matdil.domain.store.sort;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hello.matdil.domain.store.entity.QStore;
-import hello.matdil.global.sort.SortStrategy;
+import hello.matdil.global.sort.StoreSortStrategy;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -12,7 +12,7 @@ import static hello.matdil.global.util.CursorKey.LAST_REVIEW_COUNT;
 import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
 
 @Component
-public class ReviewSortStrategy implements SortStrategy {
+public class ReviewStoreSortStrategy implements StoreSortStrategy {
     @Override
     public OrderSpecifier<?>[] getOrderSpecifiers(QStore store) {
         return new OrderSpecifier[]{store.reviewCount.desc(), store.id.desc()};
