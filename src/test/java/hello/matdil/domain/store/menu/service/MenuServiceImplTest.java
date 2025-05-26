@@ -69,7 +69,7 @@ class MenuServiceImplTest {
 
     @Test
     void 메뉴_등록_성공(){
-        given(storeRepository.findById(1L)).willReturn(Optional.ofNullable(store));
+        given(storeReader.readByIdWithPermission(1L, 1L, UserRole.OWNER)).willReturn(store);
         given(menuFactory.createMenu(any())).willReturn(menu);
 
         MenuResponseDto result = menuService.createMenu(1L, UserRole.OWNER, 1L, requestDto);
@@ -79,7 +79,7 @@ class MenuServiceImplTest {
 
     @Test
     void 메뉴_등록_권한이_없는_경우(){
-        given(storeRepository.findById(1L)).willReturn(Optional.ofNullable(store));
+        given(storeReader.readByIdWithPermission(1L, 1L, UserRole.USER)).willReturn(store);
 
         assertThatThrownBy(() ->
                 menuService.createMenu(1L, UserRole.USER, 1L, requestDto))
