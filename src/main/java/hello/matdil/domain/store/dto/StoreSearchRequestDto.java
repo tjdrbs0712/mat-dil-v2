@@ -1,7 +1,11 @@
 package hello.matdil.domain.store.dto;
 
 import hello.matdil.domain.store.entity.StoreSortType;
-import jakarta.validation.constraints.*;
+import hello.matdil.global.validator.EnumValid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,19 +26,12 @@ public class StoreSearchRequestDto {
     @Size(max = 50, message = "가게 이름은 최대 50자까지 입력할 수 있습니다.")
     private String name;
 
-    @Pattern(
-            regexp = "rating|name|review|delivery_time",
-            flags = Pattern.Flag.CASE_INSENSITIVE,
-            message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다."
-    )
-    @NotNull(message = "정렬 기준은 필수입니다.")
-    private StoreSortType sort = StoreSortType.RATING;
+    @EnumValid(message = "정렬 기준은 rating, name, review, delivery_time 중 하나여야 합니다.", enumClass = StoreSortType.class)
+    private String sort = String.valueOf(StoreSortType.RATING);
 
     @Min(value = 1, message = "최소 1개 이상 조회해야 합니다.")
     @Max(value = 100, message = "최대 100개까지 조회할 수 있습니다.")
     private int size = 10;
-
-    // 커서 파라미터들 (nullable 가능성 있음)
 
     @DecimalMin(value = "0.0", inclusive = true, message = "평점은 0 이상이어야 합니다.")
     private Double lastRating;
@@ -59,5 +56,9 @@ public class StoreSearchRequestDto {
         if (lastReviewCount != null) map.put(LAST_REVIEW_COUNT, lastReviewCount);
         if (lastStoreId != null) map.put(LAST_STORE_ID, lastStoreId);
         return map;
+    }
+
+    public StoreSortType toEnum() {
+        return StoreSortType.valueOf(sort.toUpperCase());
     }
 }

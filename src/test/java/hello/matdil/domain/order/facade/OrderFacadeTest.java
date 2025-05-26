@@ -3,16 +3,12 @@ package hello.matdil.domain.order.facade;
 import hello.matdil.domain.order.dto.OrderCreateRequestDto;
 import hello.matdil.domain.order.dto.OrderItemRequestDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
-import hello.matdil.domain.order.entity.Order;
+import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.service.OrderCreateProcessor;
 import hello.matdil.domain.order.service.OrderService;
-import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.menu.entity.Menu;
-import hello.matdil.domain.store.menu.reader.MenuReader;
 import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.test.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,28 +37,22 @@ class OrderFacadeTest {
     private StoreReader storeReader;
 
     @Mock
-    private MenuReader menuReader;
+    private OrderCreateProcessor orderCreateProcessor;
 
     @Mock
     private OrderService orderService;
-
-    @Mock
-    private StoreSummaryLoader storeSummaryLoader;
 
     @Test
     void 주문_생성_퍼싸드_흐름_성공() {
         Long userId = 1L;
         Long storeId = 10L;
-        UserRole role = UserRole.USER;
-        Menu menu = TestData.setUpMenu();
         Store store = mock(Store.class);
-        Order order = mock(Order.class);
+        OrderResponseDto responseDto = mock(OrderResponseDto.class);
+        OrderItem orderItem = mock(OrderItem.class);
 
         OrderItemRequestDto OrderItemRequestDto = new OrderItemRequestDto();
         ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
         ReflectionTestUtils.setField(OrderItemRequestDto, "quantity", 2);
-
-        StoreSummaryResponseDto storeInfoDto = new StoreSummaryResponseDto();
 
         OrderCreateRequestDto requestDto = new OrderCreateRequestDto();
         ReflectionTestUtils.setField(requestDto, "storeId", storeId);
@@ -72,20 +61,18 @@ class OrderFacadeTest {
         ReflectionTestUtils.setField(requestDto, "orderItems", List.of(OrderItemRequestDto));
 
         given(store.getId()).willReturn(storeId);
-        given(storeReader.getStoreWithPermission(userId, storeId, role)).willReturn(store);
-        given(menuReader.getMenuWithStoreValidation(1L, storeId)).willReturn(menu);
-        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(order);
-        given(order.getStoreId()).willReturn(storeId);
-        given(storeSummaryLoader.loadWithCacheFallback(List.of(storeId)))
-                .willReturn(Map.of(storeId, storeInfoDto));
+        given(storeReader.readWithOpen(storeId)).willReturn(store);
+        given(orderCreateProcessor.toOrderItems(
+                requestDto.getOrderItems(), requestDto.getStoreId())).willReturn(List.of(orderItem));
+        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
-        OrderResponseDto response = orderFacade.createOrder(userId, role, requestDto);
+        OrderResponseDto result = orderFacade.createOrder(userId, requestDto);
 
         // then
-        assertThat(response).isNotNull();
-        verify(storeReader).getStoreWithPermission(userId, storeId, role);
-        verify(menuReader).getMenuWithStoreValidation(1L, storeId);
+        assertThat(result).isNotNull();
+        verify(storeReader).readWithOpen(storeId);
+        verify(orderCreateProcessor).toOrderItems(requestDto.getOrderItems(), storeId);
         verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
 
     }

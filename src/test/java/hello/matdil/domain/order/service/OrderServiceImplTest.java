@@ -2,6 +2,7 @@ package hello.matdil.domain.order.service;
 
 import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.dto.OrderCursorResponseDto;
+import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
@@ -9,6 +10,7 @@ import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
+import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -54,7 +56,9 @@ class OrderServiceImplTest {
     @Test
     void 주문_생성에_성공() {
         // given
+        Store store = TestData.setUpStore();
         Order order = TestData.setOrder();
+        StoreSummaryResponseDto responseDto = StoreSummaryResponseDto.from(store);
 
         given(orderFactory.create(
                 order.getUserId(),
@@ -64,9 +68,11 @@ class OrderServiceImplTest {
                 order.getOrderItems()))
                 .willReturn(order);
         given(orderRepository.save(order)).willReturn(order);
+        given(storeSummaryLoader.loadWithCacheFallback(
+                List.of(order.getStoreId()))).willReturn(Map.of(order.getStoreId(), responseDto));
 
         // when
-        Order result = orderService.createOrder(order.getUserId(),
+        OrderResponseDto result = orderService.createOrder(order.getUserId(),
                 order.getStoreId(),
                 order.getExpectedDeliveryTime(),
                 order.getRequestNote(),
@@ -126,7 +132,7 @@ class OrderServiceImplTest {
                 );
 
         // stubbing
-        given(orderReader.getOrdersByUserIdWithCursor(userId, cursor)).willReturn(orders);
+        given(orderReader.readByUserWithCursor(userId, cursor)).willReturn(orders);
         given(storeSummaryLoader.loadWithCacheFallback(List.of(1L, 2L))).willReturn(storeSummaryMap);
         given(pageAssembler.assemble(
                 any(),
@@ -136,12 +142,12 @@ class OrderServiceImplTest {
                 .willReturn(expectedResponse);
 
         // when
-        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> result = orderService.getOrders(userId, cursor);
+        SliceResponse<OrderSummaryDto, OrderCursorResponseDto> result = orderService.getUserOrders(userId, cursor);
 
         // then
         assertThat(result.getContent()).hasSize(2);
 
-        verify(orderReader).getOrdersByUserIdWithCursor(userId, cursor);
+        verify(orderReader).readByUserWithCursor(userId, cursor);
         verify(storeSummaryLoader).loadWithCacheFallback(List.of(1L, 2L));
         verify(pageAssembler).assemble(any(), anyInt(), any(Function.class), any(Function.class));
     }

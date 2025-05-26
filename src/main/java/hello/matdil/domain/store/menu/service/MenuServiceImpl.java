@@ -25,7 +25,6 @@ import java.util.List;
 public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
     private final MenuFactory menuFactory;
     private final PageAssembler pageAssembler;
     private final StoreReader storeReader;
@@ -33,8 +32,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public MenuResponseDto createMenu(Long userId, UserRole role, Long storeId, MenuCreateRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        Store store = storeReader.readByIdWithPermission(userId, storeId, role);
 
         Menu menu = menuFactory.createMenu(requestDto);
         store.addMenu(menu, userId, role);
@@ -48,7 +46,7 @@ public class MenuServiceImpl implements MenuService {
     public SliceResponse<MenuResponseDto, MenuCursorResponseDto> getMenus(
             Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor) {
 
-        storeReader.getStoreWithPermission(userId, storeId, role);
+        storeReader.readByIdWithPermission(userId, storeId, role);
 
         List<Menu> menus = menuRepository.findMenusByCursor(userId, role, storeId, cursor);
         int pageSize = cursor.pageSize();
@@ -78,7 +76,7 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         menu.update(requestDto);
         return MenuResponseDto.from(menu);
     }
@@ -89,12 +87,12 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = getMenuWithStoreOrThrow(menuId, storeId);
         Store store = menu.getStore();
 
-        store.validateModifiableBy(userId, role);
+        store.validateAccessibleTo(userId, role);
         menu.delete();
     }
 
     private Menu getMenuWithStoreOrThrow(Long menuId, Long storeId) {
-        return menuRepository.findByIdWithStore(menuId, storeId)
+        return menuRepository.findByIdWithStoreFetchJoinNotDeleted(menuId, storeId)
                 .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
     }
 }

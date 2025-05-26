@@ -26,29 +26,39 @@ public class OrderController {
             @LoginUser AuthUser authUser,
             @RequestBody @Valid OrderCreateRequestDto requestDto) {
 
-        OrderResponseDto response = orderFacade.createOrder(authUser.getUserId(), authUser.getRole(), requestDto);
+        OrderResponseDto response = orderFacade.createOrder(authUser.getUserId(), requestDto);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getOrders(
+    public ResponseEntity<SuccessResponse<SliceResponse<OrderSummaryDto, OrderCursorResponseDto>>> getUserOrders(
             @LoginUser AuthUser authUser,
-            @ModelAttribute OrderCursorRequestDto requestDto
+            @ModelAttribute OrderCursorRequestDto cursor
             ) {
 
         SliceResponse<OrderSummaryDto, OrderCursorResponseDto> response =
-                orderFacade.getOrders(authUser.getUserId(), requestDto);
+                orderFacade.getUserOrders(authUser.getUserId(), cursor);
 
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<SuccessResponse<OrderResponseDto>> getOrder(
+    public ResponseEntity<SuccessResponse<OrderResponseDto>> getUserOrder(
             @LoginUser AuthUser authUser,
             @PathVariable Long orderId
     ) {
-        OrderResponseDto response = orderFacade.getOrder(authUser.getUserId(), authUser.getRole(), orderId);
+        OrderResponseDto response = orderFacade.getUserOrder(authUser.getUserId(), authUser.getRole(), orderId);
         return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<SuccessResponse<Void>> changeUserOrderStatus(
+            @PathVariable Long orderId,
+            @LoginUser AuthUser authUser,
+            @RequestBody @Valid  OrderStatusUpdateRequestDto request
+    ) {
+        orderFacade.changeUserOrderStatus(authUser.getUserId(), authUser.getRole(), orderId, request.toEnum());
+        return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
 }

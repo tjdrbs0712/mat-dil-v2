@@ -14,11 +14,23 @@ public class StoreReader {
 
     private final StoreRepository storeRepository;
 
-    public Store getStoreWithPermission(Long userId, Long storeId, UserRole role) {
+    public Store readByIdWithPermission(Long userId, Long storeId, UserRole role) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-
         store.validateVisibleTo(role, userId);
         return store;
     }
+
+    public Store readWithOpen(Long storeId) {
+        return storeRepository.findByIdWithOpen(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+    }
+
+    public Store readWithNotDeletedWithPermission(Long userId, Long storeId, UserRole role) {
+        Store store = storeRepository.findByIdWithNotDeleted(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+        store.validateAccessibleTo(userId, role);
+        return store;
+    }
+
 }

@@ -1,70 +1,62 @@
 package hello.matdil.domain.order.facade;
 
 import hello.matdil.domain.order.dto.*;
-import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
+import hello.matdil.domain.order.entity.OrderStatus;
+import hello.matdil.domain.order.service.OrderCreateProcessor;
 import hello.matdil.domain.order.service.OrderService;
-import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.menu.entity.Menu;
-import hello.matdil.domain.store.menu.reader.MenuReader;
 import hello.matdil.domain.store.menu.util.MenuValidator;
 import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
 
     private final OrderService orderService;
+    private final OrderCreateProcessor orderCreateProcessor;
     private final StoreReader storeReader;
-    private final MenuReader menuReader;
-    private final StoreSummaryLoader storeSummaryLoader;
 
-    public OrderResponseDto createOrder(Long userId, UserRole role, OrderCreateRequestDto dto) {
-        Store store = storeReader.getStoreWithPermission(userId, dto.getStoreId(), role);
+    public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
+        Store store = storeReader.readWithOpen(dto.getStoreId());
 
         MenuValidator.validateNoDuplicateMenuIds(dto.getOrderItems());
+        List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.getOrderItems(), dto.getStoreId());
 
-        List<OrderItem> orderItems = toOrderItems(dto.getOrderItems(), dto.getStoreId());
-        Order order = orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
+        return orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
                 dto.getRequestNote(), orderItems);
-
-        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
-        return OrderResponseDto.from(order, responseDto);
     }
 
-    private List<OrderItem> toOrderItems(List<OrderItemRequestDto> itemDtos, Long storeId) {
-        return itemDtos.stream()
-                .map(itemDto -> {
-                    Menu menu = menuReader.getMenuWithStoreValidation(itemDto.getMenuId(), storeId);
-                    return OrderItem.of(menu, itemDto.getQuantity());
-                })
-                .toList();
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(
+            Long userId, OrderCursorRequestDto cursor) {
+
+        return orderService.getUserOrders(userId, cursor);
     }
 
-    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getOrders(
-            Long userId, OrderCursorRequestDto requestDto) {
-
-        return orderService.getOrders(userId, requestDto);
+    public OrderResponseDto getUserOrder(Long userId, UserRole role, Long orderId) {
+        return orderService.getUserOrder(userId, role, orderId);
     }
 
-    public OrderResponseDto getOrder(Long userId, UserRole role, Long orderId) {
-        Order order = orderService.getOrder(orderId, userId, role);
-        StoreSummaryResponseDto responseDto = getStoreSummaryDto(order);
-        return OrderResponseDto.from(order, responseDto);
+    public OrderResponseDto getStoreOwnerOrder(Long userId, UserRole role, Long orderId) {
+        return orderService.getStoreOwnerOrder(userId, role, orderId);
     }
 
-    private StoreSummaryResponseDto getStoreSummaryDto(Order order) {
-        Map<Long, StoreSummaryResponseDto> storeSummaryMap = storeSummaryLoader.loadWithCacheFallback(List.of(order.getStoreId()));
-        return storeSummaryMap.get(order.getStoreId());
+    public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getStoreOwnerOrders(
+            Long userId, UserRole role, OrderCursorRequestDto cursor, Long storeId) {
+        return orderService.getStoreOwnerOrders(userId, role, cursor, storeId);
     }
 
+    public void changeStoreOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeStoreOwnerOrderStatus(userId, role, orderId, status);
+    }
+
+    public void changeUserOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus status) {
+        orderService.changeUserOrderStatus(userId, role, orderId, status);
+    }
 }

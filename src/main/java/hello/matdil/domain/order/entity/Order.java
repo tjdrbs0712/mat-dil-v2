@@ -67,4 +67,9 @@ public class Order extends BaseTimeEntity {
             throw new OrderException(OrderErrorCode.NO_PERMISSION);
         }
     }
+
+    public void changeStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
+    }
+
 }

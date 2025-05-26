@@ -1,12 +1,11 @@
 package hello.matdil.domain.store.service;
 
-import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
-import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.policy.StoreCreatePolicy;
+import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
@@ -19,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -26,8 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StoreServiceImplTest {
@@ -39,13 +38,16 @@ class StoreServiceImplTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private StoreFactory storeFactory;
-
-    @Mock
     private PageAssembler pageAssembler;
 
     @Mock
     private StoreCreatePolicy storeCreatePolicy;
+
+    @Mock
+    private StoreSummaryLoader storeSummaryLoader;
+
+    @Mock
+    private StoreSummaryCacheService cacheService;
 
     private Store store;
 
@@ -74,6 +76,8 @@ class StoreServiceImplTest {
 
 
         given(storeRepository.findStoresByCondition(any(), any(), any())).willReturn(List.of(store));
+        given(storeSummaryLoader.loadWithCacheFallback(
+                List.of(store.getId()))).willReturn(Map.of(store.getId(), responseDto));
 
         SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> fakeSlice = SliceResponse.of(
                 List.of(responseDto),
@@ -98,14 +102,6 @@ class StoreServiceImplTest {
         assertThat(response.getContent().get(0).getName()).isEqualTo(store.getName());
     }
 
-    private Store createStore(Long id, double rating) {
-        Store store = mock(Store.class);
-        given(store.getId()).willReturn(id);
-        given(store.getRating()).willReturn(rating);
-        given(store.getAddress()).willReturn(mock(Address.class));
-        return store;
-    }
-
     @Test
     void 가게_수정_성공() {
         // given
@@ -118,6 +114,7 @@ class StoreServiceImplTest {
 
         // then
         assertThat(result.getName()).isEqualTo(dto.getName());
+        verify(cacheService).evict(store.getId());
     }
 
     @Test

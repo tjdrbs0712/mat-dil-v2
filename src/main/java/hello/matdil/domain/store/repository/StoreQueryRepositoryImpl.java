@@ -9,6 +9,7 @@ import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.entity.QStore;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
+import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.query.StorePredicateBuilder;
 import hello.matdil.domain.store.sort.SortStrategy;
 import hello.matdil.domain.user.entity.UserRole;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -34,7 +36,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 userId, role, request.getAddress(), request.getName(), store
         );
 
-        SortStrategy strategy = sortStrategyMap.get(request.getSort());
+        SortStrategy strategy = sortStrategyMap.get(request.toEnum());
 
         OrderSpecifier<?>[] sortConditions = strategy.getOrderSpecifiers(store);
         BooleanExpression cursorPredicate = strategy.buildCursorPredicate(store, request.toCursorParamMap());
@@ -63,7 +65,34 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                         Store::getId,
                         StoreSummaryResponseDto::from
                 ));
+    }
 
+    @Override
+    public Optional<Store> findByIdWithNotDeleted(Long storeId) {
+        QStore store = QStore.store;
+
+        Store result = queryFactory.selectFrom(store)
+                .where(
+                        store.id.eq(storeId),
+                        store.status.ne(StoreStatus.DELETED)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<Store> findByIdWithOpen(Long storeId) {
+        QStore store = QStore.store;
+
+        Store result = queryFactory.selectFrom(store)
+                .where(
+                        store.id.eq(storeId),
+                        store.status.eq(StoreStatus.OPEN)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }
 

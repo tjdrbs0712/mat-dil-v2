@@ -17,7 +17,7 @@ class StorePredicateBuilderTest {
                 null, UserRole.USER, null, null, store
         );
 
-        assertThat(builder.toString()).contains("store.status != INACTIVE");
+        assertThat(builder.toString()).contains("store.status not in [INACTIVE, DELETED]");
     }
 
     @Test
