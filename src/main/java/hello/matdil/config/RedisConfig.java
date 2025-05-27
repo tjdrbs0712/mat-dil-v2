@@ -8,9 +8,11 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
 @EnableCaching
+@EnableScheduling
 public class RedisConfig {
 
     @Bean
@@ -24,9 +26,18 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
 
         // 직렬화 설정
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        StringRedisSerializer stringSerializer = new StringRedisSerializer();
+        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
 
+        // 키 직렬화
+        template.setKeySerializer(stringSerializer);
+        template.setHashKeySerializer(stringSerializer);
+
+        // 값 직렬화 (JSON)
+        template.setValueSerializer(jsonSerializer);
+        template.setHashValueSerializer(jsonSerializer);
+
+        template.afterPropertiesSet();
         return template;
     }
 }

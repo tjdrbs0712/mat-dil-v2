@@ -49,4 +49,12 @@ public class UserOrderStats {
         this.orderCount += 1;
         this.lastOrderedAt = LocalDateTime.now();
     }
+
+    public void updateOrderCount(int orderCount) {
+        this.orderCount = orderCount;
+    }
+
+    public void updateOrderedAt(LocalDateTime lastOrderedAt) {
+        this.lastOrderedAt = lastOrderedAt;
+    }
 }

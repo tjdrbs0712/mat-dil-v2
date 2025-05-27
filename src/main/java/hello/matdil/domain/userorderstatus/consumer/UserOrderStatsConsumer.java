@@ -13,7 +13,7 @@ public class UserOrderStatsConsumer {
 
     private final UserOrderStatsService userOrderStatsService;
 
-    @KafkaListener(topics = "order-created", groupId = "user-order-stats-group")
+    @KafkaListener(topics = "order-topic")
     public void consume(OrderCreatedEvent event) {
         userOrderStatsService.increaseOrderCount(event.getUserId(), event.getStoreId(), event.getOrderedAt());
     }

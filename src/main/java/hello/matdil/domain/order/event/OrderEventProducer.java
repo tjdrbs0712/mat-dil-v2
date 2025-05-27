@@ -2,6 +2,7 @@ package hello.matdil.domain.order.event;
 
 import hello.matdil.domain.order.entity.Order;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class OrderEventProducer {
     private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
 
     public void sendOrderCreatedEvent(Order order) {
-        kafkaTemplate.send("order-created", UUID.randomUUID().toString(), OrderCreatedEvent.from(order));
+        kafkaTemplate.send("order-topic", UUID.randomUUID().toString(), OrderCreatedEvent.from(order));
     }
 }
 

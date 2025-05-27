@@ -1,6 +1,6 @@
 package hello.matdil.domain.userorderstatus.service;
 
-import hello.matdil.domain.userorderstatus.entity.UserOrderStats;
+import hello.matdil.domain.userorderstatus.cache.UserOrderStatsCache;
 import hello.matdil.domain.userorderstatus.repository.UserOrderStatsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,10 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserOrderStatsServiceImpl implements UserOrderStatsService{
 
-    private final UserOrderStatsRepository statsRepository;
+    private final UserOrderStatsCache userOrderStatsCache;
 
     @Transactional
     public void increaseOrderCount(Long userId, Long storeId, LocalDateTime orderedAt) {
-        UserOrderStats stats = statsRepository.findByUserIdAndStoreId(userId, storeId)
-                .orElseGet(() -> UserOrderStats.create(userId, storeId, orderedAt));
-
-        stats.incrementOrderCount();
-
-        statsRepository.save(stats);
+        userOrderStatsCache.increaseOrderCount(userId, storeId, orderedAt);
     }
 }
