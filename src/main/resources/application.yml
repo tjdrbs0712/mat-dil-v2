@@ -37,18 +37,25 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 127.0.0.1
       port: ${REDIS_PORT}
     cache:
       type: redis
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 127.0.0.1:9092
 
     admin:
       auto-create: true
 
     producer:
+      acks: all  # or 'all' (높은 안정성 필요 시), 속도는 '1'이 더 빠름
+      properties:
+        linger.ms: 10  # 배치 타이밍 (ms), 짧게 묶어서 한 번에 보내기
+      batch-size: 16384  # 전송 묶음 크기 (bytes)
+      buffer-memory: 33554432  # 내부 버퍼 크기 (32MB)
+      compression-type: snappy  # 빠르고 효율적인 압축
+      retries: 3  # 실패 시 재시도
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
@@ -61,8 +68,8 @@ spring:
         spring.json.trusted.packages: "*"
 
     listener:
-      ack-mode: record
-      concurrency: 3
+      ack-mode: batch
+      concurrency: 5
 
 jwt:
   secret: ${JWT_SECRET_KEY}
@@ -81,5 +88,7 @@ logging:
   level:
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
-    org.hibernate.SQL: debug             # SQL 출력
-    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
+    org.apache.kafka.clients.producer: DEBUG
+    org.springframework.kafka.core.DefaultKafkaProducerFactory: DEBUG
+#    org.hibernate.SQL: debug             # SQL 출력
+#    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
