@@ -4,6 +4,7 @@ spring:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,13 +13,16 @@ spring:
         show_sql: false
         format_sql: false
         use_sql_comments: false
+
 #  flyway:
 #    enabled: true
 #    locations: classpath:db/migration
+
   security:
     user:
       name: none
       password: none
+
   mail:
     host: smtp.gmail.com
     port: ${MAIL_PORT}
@@ -30,14 +34,19 @@ spring:
           auth: true
           starttls:
             enable: true
+
   data:
     redis:
       host: localhost
-      port: ${REDIS_PROT}
+      port: ${REDIS_PORT}
     cache:
       type: redis
+
   kafka:
     bootstrap-servers: localhost:9092
+
+    admin:
+      auto-create: true
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -55,21 +64,22 @@ spring:
       ack-mode: record
       concurrency: 3
 
-
-
-#logging:
-#  level:
-#    org.hibernate.SQL: debug             # SQL 출력
-#    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
-
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000
   refreshExpirationMillis: 36000000
+
 server:
   port: ${SERVER_PORT}
 
 decorator:
   datasource:
     p6spy:
-      enable-logging: true
+      enable-logging: false
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: debug             # SQL 출력
+    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
