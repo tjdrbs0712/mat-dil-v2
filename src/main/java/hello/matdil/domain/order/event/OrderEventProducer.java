@@ -2,7 +2,6 @@ package hello.matdil.domain.order.event;
 
 import hello.matdil.domain.order.entity.Order;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
