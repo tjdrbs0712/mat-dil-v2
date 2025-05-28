@@ -1,7 +1,7 @@
 package hello.matdil.domain.userorderstatus.consumer;
 
 import hello.matdil.domain.order.event.OrderCreatedEvent;
-import hello.matdil.domain.userorderstatus.service.UserOrderStatsService;
+import hello.matdil.domain.userorderstatus.service.UserOrderStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class UserOrderStatsConsumer {
+public class UserOrderStatusConsumer {
 
-    private final UserOrderStatsService userOrderStatsService;
+    private final UserOrderStatusService userOrderStatusService;
 
     @KafkaListener(topics = "order-topic")
     public void consume(OrderCreatedEvent event) {
-        userOrderStatsService.increaseOrderCount(event.getUserId(), event.getStoreId(), event.getOrderedAt());
+        userOrderStatusService.increaseOrderCount(event.getUserId(), event.getStoreId(), event.getOrderedAt());
     }
 }

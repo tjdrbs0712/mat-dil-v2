@@ -1,8 +1,8 @@
 package hello.matdil.domain.userorderstatus.service;
 
-import hello.matdil.domain.userorderstatus.dto.UserOrderStatsSyncContextDto;
-import hello.matdil.domain.userorderstatus.entity.UserOrderStats;
-import hello.matdil.domain.userorderstatus.repository.UserOrderStatsRepository;
+import hello.matdil.domain.userorderstatus.dto.UserOrderStatusSyncContextDto;
+import hello.matdil.domain.userorderstatus.entity.UserOrderStatus;
+import hello.matdil.domain.userorderstatus.repository.UserOrderStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,21 +13,21 @@ import static hello.matdil.global.constant.RedisUserOrderStatsKeys.FIELD_ORDER_C
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserOrderStatsSyncService {
+public class UserOrderStatusSyncService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final UserOrderStatsRepository statsRepository;
+    private final UserOrderStatusRepository statusRepository;
 
-    public void syncToDatabase(UserOrderStatsSyncContextDto dto) {
+    public void syncToDatabase(UserOrderStatusSyncContextDto dto) {
         try {
-            UserOrderStats stats = statsRepository.findByUserIdAndStoreId(dto.userId(), dto.storeId())
-                    .orElseGet(() -> UserOrderStats.create(dto.userId(), dto.storeId(), dto.lastOrderedAt()));
+            UserOrderStatus stats = statusRepository.findByUserIdAndStoreId(dto.userId(), dto.storeId())
+                    .orElseGet(() -> UserOrderStatus.create(dto.userId(), dto.storeId(), dto.lastOrderedAt()));
 
             int updatedCount = stats.getOrderCount() + dto.orderDelta();
             stats.updateOrderCount(updatedCount);
             stats.updateOrderedAt(dto.lastOrderedAt());
 
-            statsRepository.save(stats);
+            statusRepository.save(stats);
             redisTemplate.opsForHash().put(dto.redisKey(), FIELD_ORDER_COUNT, 0);
 
             log.info("동기화 완료: userId={}, storeId={}, 누적 count={}", dto.userId(), dto.storeId(), updatedCount);

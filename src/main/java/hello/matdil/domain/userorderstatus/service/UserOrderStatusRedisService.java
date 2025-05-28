@@ -1,6 +1,6 @@
 package hello.matdil.domain.userorderstatus.service;
 
-import hello.matdil.domain.userorderstatus.dto.UserOrderStatsDto;
+import hello.matdil.domain.userorderstatus.dto.UserOrderStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,7 +14,7 @@ import static hello.matdil.global.constant.RedisUserOrderStatsKeys.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserOrderStatsRedisService {
+public class UserOrderStatusRedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -30,14 +30,14 @@ public class UserOrderStatsRedisService {
         hashOps.put(key, FIELD_LAST_ORDERED_AT, orderedAt.toString());
     }
 
-    public Optional<UserOrderStatsDto> getStats(Long userId, Long storeId) {
+    public Optional<UserOrderStatusDto> getStats(Long userId, Long storeId) {
         String key = getKey(userId, storeId);
         Map<Object, Object> hash = redisTemplate.opsForHash().entries(key);
 
         if (hash.isEmpty()) return Optional.empty();
 
         try {
-            return Optional.of(UserOrderStatsDto.from(hash));
+            return Optional.of(UserOrderStatusDto.from(hash));
         } catch (Exception e) {
             return Optional.empty();
         }

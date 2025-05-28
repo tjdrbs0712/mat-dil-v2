@@ -2,7 +2,7 @@ package hello.matdil.domain.userorderstatus.dto;
 
 import java.time.LocalDateTime;
 
-public record UserOrderStatsSyncContextDto(
+public record UserOrderStatusSyncContextDto(
         Long userId,
         Long storeId,
         int orderDelta,

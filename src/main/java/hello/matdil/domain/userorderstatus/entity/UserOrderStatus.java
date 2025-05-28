@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_order_stats")
-public class UserOrderStats {
+public class UserOrderStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +30,15 @@ public class UserOrderStats {
     private LocalDateTime lastOrderedAt;
 
     @Builder
-    private UserOrderStats(Long userId, Long storeId, int orderCount, LocalDateTime lastOrderedAt) {
+    private UserOrderStatus(Long userId, Long storeId, int orderCount, LocalDateTime lastOrderedAt) {
         this.userId = userId;
         this.storeId = storeId;
         this.orderCount = orderCount;
         this.lastOrderedAt = lastOrderedAt;
     }
 
-    public static UserOrderStats create(Long userId, Long storeId, LocalDateTime orderedAt){
-        return UserOrderStats.builder()
+    public static UserOrderStatus create(Long userId, Long storeId, LocalDateTime orderedAt){
+        return UserOrderStatus.builder()
                 .userId(userId)
                 .storeId(storeId)
                 .lastOrderedAt(orderedAt)

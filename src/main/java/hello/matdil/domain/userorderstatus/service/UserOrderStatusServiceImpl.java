@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class UserOrderStatsServiceImpl implements UserOrderStatsService{
+public class UserOrderStatusServiceImpl implements UserOrderStatusService {
 
-    private final UserOrderStatsRedisService userOrderStatsRedisService;
+    private final UserOrderStatusRedisService statusRedisService;
 
     @Transactional
     public void increaseOrderCount(Long userId, Long storeId, LocalDateTime orderedAt) {
-        userOrderStatsRedisService.increaseOrderCount(userId, storeId, orderedAt);
+        statusRedisService.increaseOrderCount(userId, storeId, orderedAt);
     }
 }

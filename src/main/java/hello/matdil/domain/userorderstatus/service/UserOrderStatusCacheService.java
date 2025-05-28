@@ -1,6 +1,6 @@
 package hello.matdil.domain.userorderstatus.service;
 
-import hello.matdil.domain.userorderstatus.dto.UserOrderStatsSyncContextDto;
+import hello.matdil.domain.userorderstatus.dto.UserOrderStatusSyncContextDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,7 +16,7 @@ import static hello.matdil.global.constant.RedisUserOrderStatsKeys.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserOrderStatsCacheService {
+public class UserOrderStatusCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -24,7 +24,7 @@ public class UserOrderStatsCacheService {
         return redisTemplate.keys(KEY_PREFIX + ":*");
     }
 
-    public Optional<UserOrderStatsSyncContextDto> buildSyncContext(String key) {
+    public Optional<UserOrderStatusSyncContextDto> buildSyncContext(String key) {
         try {
             Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
             if (map.isEmpty()) return Optional.empty();
@@ -36,7 +36,7 @@ public class UserOrderStatsCacheService {
             int delta = Integer.parseInt(map.get(FIELD_ORDER_COUNT).toString());
             LocalDateTime lastOrderedAt = LocalDateTime.parse(map.get(FIELD_LAST_ORDERED_AT).toString());
 
-            return Optional.of(new UserOrderStatsSyncContextDto(userId, storeId, delta, lastOrderedAt, key));
+            return Optional.of(new UserOrderStatusSyncContextDto(userId, storeId, delta, lastOrderedAt, key));
         } catch (Exception e) {
             log.warn("Redis 통계 키 파싱 실패: key={}, error={}", key, e.getMessage());
             return Optional.empty();
