@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+import static hello.matdil.global.constant.CursorKey.LAST_STORE_ID;
 
 @Component
 public class IdStoreSortStrategy implements StoreSortStrategy {

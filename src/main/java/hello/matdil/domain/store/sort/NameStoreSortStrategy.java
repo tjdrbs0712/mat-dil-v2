@@ -8,8 +8,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
-import static hello.matdil.global.util.CursorKey.LAST_NAME;
-import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+import static hello.matdil.global.constant.CursorKey.LAST_NAME;
+import static hello.matdil.global.constant.CursorKey.LAST_STORE_ID;
 
 @Component
 public class NameStoreSortStrategy implements StoreSortStrategy {

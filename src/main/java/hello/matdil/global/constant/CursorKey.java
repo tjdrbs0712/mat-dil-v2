@@ -1,4 +1,4 @@
-package hello.matdil.global.util;
+package hello.matdil.global.constant;
 
 public final class CursorKey {
 

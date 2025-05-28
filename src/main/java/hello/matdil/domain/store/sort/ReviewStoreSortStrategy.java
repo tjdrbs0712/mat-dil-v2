@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static hello.matdil.global.util.CursorKey.LAST_REVIEW_COUNT;
-import static hello.matdil.global.util.CursorKey.LAST_STORE_ID;
+import static hello.matdil.global.constant.CursorKey.LAST_REVIEW_COUNT;
+import static hello.matdil.global.constant.CursorKey.LAST_STORE_ID;
 
 @Component
 public class ReviewStoreSortStrategy implements StoreSortStrategy {
