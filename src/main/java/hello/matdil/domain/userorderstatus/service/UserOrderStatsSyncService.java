@@ -18,21 +18,21 @@ public class UserOrderStatsSyncService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserOrderStatsRepository statsRepository;
 
-    public void syncToDatabase(UserOrderStatsSyncContextDto ctx) {
+    public void syncToDatabase(UserOrderStatsSyncContextDto dto) {
         try {
-            UserOrderStats stats = statsRepository.findByUserIdAndStoreId(ctx.userId(), ctx.storeId())
-                    .orElseGet(() -> UserOrderStats.create(ctx.userId(), ctx.storeId(), ctx.lastOrderedAt()));
+            UserOrderStats stats = statsRepository.findByUserIdAndStoreId(dto.userId(), dto.storeId())
+                    .orElseGet(() -> UserOrderStats.create(dto.userId(), dto.storeId(), dto.lastOrderedAt()));
 
-            int updatedCount = stats.getOrderCount() + ctx.orderDelta();
+            int updatedCount = stats.getOrderCount() + dto.orderDelta();
             stats.updateOrderCount(updatedCount);
-            stats.updateOrderedAt(ctx.lastOrderedAt());
+            stats.updateOrderedAt(dto.lastOrderedAt());
 
             statsRepository.save(stats);
-            redisTemplate.opsForHash().put(ctx.redisKey(), FIELD_ORDER_COUNT, 0);
+            redisTemplate.opsForHash().put(dto.redisKey(), FIELD_ORDER_COUNT, 0);
 
-            log.info("동기화 완료: userId={}, storeId={}, 누적 count={}", ctx.userId(), ctx.storeId(), updatedCount);
+            log.info("동기화 완료: userId={}, storeId={}, 누적 count={}", dto.userId(), dto.storeId(), updatedCount);
         } catch (Exception e) {
-            log.error("DB 저장 실패: userId={}, storeId={}, error={}", ctx.userId(), ctx.storeId(), e.getMessage(), e);
+            log.error("DB 저장 실패: userId={}, storeId={}, error={}", dto.userId(), dto.storeId(), e.getMessage(), e);
         }
     }
 }
