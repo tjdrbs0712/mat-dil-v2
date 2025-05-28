@@ -1,8 +1,8 @@
 package hello.matdil.global.constant;
 
-public final class CursorKey {
+public final class CursorStoreKey {
 
-    private CursorKey() {}
+    private CursorStoreKey() {}
 
     public static final String LAST_RATING = "lastRating";
     public static final String LAST_REVIEW_COUNT = "lastReviewCount";

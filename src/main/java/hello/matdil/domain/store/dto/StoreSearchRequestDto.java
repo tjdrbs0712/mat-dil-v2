@@ -13,7 +13,7 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static hello.matdil.global.constant.CursorKey.*;
+import static hello.matdil.global.constant.CursorStoreKey.*;
 
 @Getter
 @Setter
