@@ -1,9 +1,7 @@
 package hello.matdil.domain.store.dto;
 
-import hello.matdil.domain.store.entity.StoreSortType;
 import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.global.validator.EnumValid;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

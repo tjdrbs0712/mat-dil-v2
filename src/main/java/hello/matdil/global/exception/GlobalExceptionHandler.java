@@ -4,6 +4,7 @@ import hello.matdil.global.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,5 +48,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(code.getHttpStatusCode())
                 .body(ErrorResponse.of(code));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDenied(AuthorizationDeniedException e) {
+        log.warn("권한 없음 예외 발생", e);
+        return ResponseEntity
+                .status(CommonErrorCode.FORBIDDEN.getHttpStatusCode())
+                .body(ErrorResponse.of(CommonErrorCode.FORBIDDEN));
     }
 }

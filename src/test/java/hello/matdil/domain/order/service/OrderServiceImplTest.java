@@ -6,6 +6,7 @@ import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
+import hello.matdil.domain.order.event.OrderEventProducer;
 import hello.matdil.domain.order.factory.OrderFactory;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.order.repository.OrderRepository;
@@ -53,6 +54,9 @@ class OrderServiceImplTest {
     @Mock
     private PageAssembler pageAssembler;
 
+    @Mock
+    private OrderEventProducer orderEventProducer;
+
     @Test
     void 주문_생성에_성공() {
         // given
@@ -71,6 +75,7 @@ class OrderServiceImplTest {
         given(storeSummaryLoader.loadWithCacheFallback(
                 List.of(order.getStoreId()))).willReturn(Map.of(order.getStoreId(), responseDto));
 
+
         // when
         OrderResponseDto result = orderService.createOrder(order.getUserId(),
                 order.getStoreId(),
@@ -83,6 +88,7 @@ class OrderServiceImplTest {
         assertThat(result.getStoreId()).isEqualTo(order.getStoreId());
         assertThat(result.getOrderItems()).hasSize(2);
         assertThat(result.getTotalPrice()).isEqualTo(25000);
+        verify(orderEventProducer).sendOrderCreatedEvent(order);
     }
 
     @Test

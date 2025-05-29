@@ -38,7 +38,6 @@ public class StoreController {
             @LoginUser(required = false) AuthUser authUser,
             @ModelAttribute StoreSearchRequestDto request
     ) {
-        log.error("{} !@#!@#", request.getName());
         SliceResponse<StoreSummaryResponseDto, StoreCursorResponseDto> response = storeService.getStores(
                 authUser.getUserId(), authUser.getRole(), request);
         return ResponseEntity.ok(SuccessResponse.success(response));

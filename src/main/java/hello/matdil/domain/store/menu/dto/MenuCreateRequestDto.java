@@ -1,6 +1,5 @@
 package hello.matdil.domain.store.menu.dto;
 
-import hello.matdil.domain.store.entity.StoreStatus;
 import hello.matdil.domain.store.menu.entity.MenuCategory;
 import hello.matdil.domain.store.menu.entity.MenuStatus;
 import hello.matdil.global.validator.EnumValid;

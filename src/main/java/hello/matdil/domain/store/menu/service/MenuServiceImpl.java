@@ -1,8 +1,6 @@
 package hello.matdil.domain.store.menu.service;
 
 import hello.matdil.domain.store.entity.Store;
-import hello.matdil.domain.store.exception.StoreErrorCode;
-import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.menu.dto.*;
 import hello.matdil.domain.store.menu.entity.Menu;
 import hello.matdil.domain.store.menu.exception.MenuErrorCode;
@@ -10,7 +8,6 @@ import hello.matdil.domain.store.menu.exception.MenuException;
 import hello.matdil.domain.store.menu.factory.MenuFactory;
 import hello.matdil.domain.store.menu.repository.MenuRepository;
 import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;

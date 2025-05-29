@@ -1,6 +1,9 @@
 #env.properties 설정
 /src/main/resources/properties/env.properties
 
+#.env 설정
+/.env
+
 HELP.md
 .gradle
 build/

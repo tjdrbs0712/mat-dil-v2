@@ -8,7 +8,6 @@ import hello.matdil.domain.order.service.OrderCreateProcessor;
 import hello.matdil.domain.order.service.OrderService;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.user.entity.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -4,21 +4,25 @@ spring:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
-        format_sql: true
-        use_sql_comments: true
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
+        format_sql: false
+        use_sql_comments: false
+
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+
   security:
     user:
       name: none
       password: none
+
   mail:
     host: smtp.gmail.com
     port: ${MAIL_PORT}
@@ -30,25 +34,61 @@ spring:
           auth: true
           starttls:
             enable: true
+
   data:
     redis:
-      host: localhost
-      port: ${REDIS_PROT}
+      host: 127.0.0.1
+      port: ${REDIS_PORT}
     cache:
       type: redis
-logging:
-  level:
-    org.hibernate.SQL: debug             # SQL 출력
-    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
+
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+
+    admin:
+      auto-create: true
+
+    producer:
+      acks: all  # or 'all' (높은 안정성 필요 시), 속도는 '1'이 더 빠름
+      properties:
+        linger.ms: 10  # 배치 타이밍 (ms), 짧게 묶어서 한 번에 보내기
+      batch-size: 16384  # 전송 묶음 크기 (bytes)
+      buffer-memory: 33554432  # 내부 버퍼 크기 (32MB)
+      compression-type: snappy  # 빠르고 효율적인 압축
+      retries: 3  # 실패 시 재시도
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: my-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    listener:
+      ack-mode: batch
+      concurrency: 5
 
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000
   refreshExpirationMillis: 36000000
+
 server:
   port: ${SERVER_PORT}
 
 decorator:
   datasource:
     p6spy:
-      enable-logging: true
+      enable-logging: false
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
+    org.apache.kafka.clients.producer: DEBUG
+    org.springframework.kafka.core.DefaultKafkaProducerFactory: DEBUG
+#    org.hibernate.SQL: debug             # SQL 출력
+#    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
