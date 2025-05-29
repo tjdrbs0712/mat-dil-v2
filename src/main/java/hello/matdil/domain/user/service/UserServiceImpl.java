@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public UserRegisterResponseDto register(UserRegisterRequestDto requestDto) {
-
         User user = userFactory.createUser(requestDto);
         UserRegisterResponseDto responseDto;
         try {

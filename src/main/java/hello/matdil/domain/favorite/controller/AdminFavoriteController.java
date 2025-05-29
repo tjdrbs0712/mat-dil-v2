@@ -1,0 +1,32 @@
+package hello.matdil.domain.favorite.controller;
+
+import hello.matdil.auth.annotation.LoginUser;
+import hello.matdil.auth.model.AuthUser;
+import hello.matdil.domain.favorite.dto.AdminFavoriteRequestDto;
+import hello.matdil.domain.favorite.service.AdminFavoriteService;
+import hello.matdil.global.response.SuccessResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v2/admin/favorites")
+@RequiredArgsConstructor
+public class AdminFavoriteController {
+
+    private final AdminFavoriteService adminFavoriteService;
+
+    @PostMapping
+    public ResponseEntity<SuccessResponse<Void>> addFavorite(
+            @LoginUser AuthUser loginUser,
+            @RequestBody @Valid AdminFavoriteRequestDto request
+    ) {
+        adminFavoriteService.addFavorite(loginUser.getUserId(), loginUser.getRole(), request);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+}

@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
 
+    private final FavoriteCommand favoriteCommand;
     private final FavoriteRepository favoriteRepository;
     private final FavoriteCacheService favoriteCacheService;
     private final StoreReader storeReader;
@@ -30,17 +31,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     @Transactional
     public void addFavorite(Long userId, UserRole role, Long storeId) {
-        storeReader.readByIdWithPermission(userId, storeId, role);
-        validateCanAdd(userId, storeId);
-        Favorite favorite = Favorite.create(userId, storeId);
-        favoriteRepository.save(favorite);
-        favoriteCacheService.deleteAll(userId);
-    }
-
-    private void validateCanAdd(Long userId, Long storeId) {
-        if (favoriteRepository.existsByUserIdAndStoreId(userId, storeId)) {
-            throw new FavoriteException(FavoriteErrorCode.ALREADY_FAVORITE);
-        }
+        favoriteCommand.addFavorite(userId, role, storeId);
     }
 
     @Override

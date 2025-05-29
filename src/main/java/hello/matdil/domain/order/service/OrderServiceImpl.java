@@ -17,7 +17,6 @@ import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.user.entity.UserRole;
-import hello.matdil.domain.userorderstatus.service.UserOrderStatusService;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.util.pagination.PageAssembler;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusChangePolicy policy;
 
     private final OrderEventProducer orderEventProducer;
-    private final UserOrderStatusService userOrderStatusService;
 
     @Override
     @Transactional
@@ -50,8 +48,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
         Order savedOrder = orderRepository.save(order);
 
-//        orderEventProducer.sendOrderCreatedEvent(savedOrder);
-        userOrderStatusService.increaseOrderCount(userId, storeId, savedOrder.getCreatedAt());
+        orderEventProducer.sendOrderCreatedEvent(savedOrder);
 
         return buildOrderResponse(savedOrder);
     }
