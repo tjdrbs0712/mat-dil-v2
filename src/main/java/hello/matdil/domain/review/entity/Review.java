@@ -2,10 +2,15 @@ package hello.matdil.domain.review.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,11 +31,19 @@ public class Review extends BaseTimeEntity {
     @Column(nullable = false)
     private Long storeId;
 
+    @Min(1)
+    @Max(5)
     @Column(nullable = false)
     private int rating;
 
-    @Column
+    @Column(length = 1000)
     private String comment;
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> images = new ArrayList<>();
 
     @Builder
     public Review(Long userId, Long orderId, Long storeId, int rating, String comment) {
@@ -40,4 +53,6 @@ public class Review extends BaseTimeEntity {
         this.rating = rating;
         this.comment = comment;
     }
+
+
 }
