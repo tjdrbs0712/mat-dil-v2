@@ -1,6 +1,7 @@
 package hello.matdil.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RedisCacheHelper {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -20,6 +23,9 @@ public class RedisCacheHelper {
         Object value = redisTemplate.opsForValue().get(key);
         if (clazz.isInstance(value)) {
             return Optional.of(clazz.cast(value));
+        }
+        else{
+            log.warn("Redis 역직렬화 실패. key={}, value class={}", key, value != null ? value.getClass().getName() : "null");
         }
         return Optional.empty();
     }
@@ -49,6 +55,15 @@ public class RedisCacheHelper {
 
         return result;
     }
+
+    public <T> T getOrLoad(String key, Class<T> clazz, Supplier<T> dbLoader, Duration ttl) {
+        return get(key, clazz).orElseGet(() -> {
+            T value = dbLoader.get();
+            put(key, value, ttl);
+            return value;
+        });
+    }
+
 
 }
 

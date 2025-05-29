@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
+public interface FavoriteRepository extends JpaRepository<Favorite, Long>, FavoriteQueryRepository {
     boolean existsByUserIdAndStoreId(Long userId, Long storeId);
 
     Optional<Favorite> findByUserIdAndStoreId(Long userId, Long storeId);

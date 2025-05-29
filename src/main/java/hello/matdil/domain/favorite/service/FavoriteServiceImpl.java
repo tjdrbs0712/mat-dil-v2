@@ -1,21 +1,31 @@
 package hello.matdil.domain.favorite.service;
 
+import hello.matdil.domain.favorite.dto.FavoriteCursorRequestDto;
+import hello.matdil.domain.favorite.dto.FavoriteCursorResponseDto;
+import hello.matdil.domain.favorite.dto.FavoriteStoreSummaryDto;
 import hello.matdil.domain.favorite.entity.Favorite;
 import hello.matdil.domain.favorite.execption.FavoriteErrorCode;
 import hello.matdil.domain.favorite.execption.FavoriteException;
 import hello.matdil.domain.favorite.repository.FavoriteRepository;
+import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.SliceResponse;
+import hello.matdil.global.util.pagination.PageAssembler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-public class FavoriteServiceImpl implements FavoriteService{
+public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
+    private final FavoriteCacheService favoriteCacheService;
     private final StoreReader storeReader;
+    private final PageAssembler pageAssembler;
 
     @Override
     @Transactional
@@ -24,6 +34,7 @@ public class FavoriteServiceImpl implements FavoriteService{
         validateCanAdd(userId, storeId);
         Favorite favorite = Favorite.create(userId, storeId);
         favoriteRepository.save(favorite);
+        favoriteCacheService.deleteAll(userId);
     }
 
     private void validateCanAdd(Long userId, Long storeId) {
@@ -39,6 +50,27 @@ public class FavoriteServiceImpl implements FavoriteService{
                 .orElseThrow(() -> new FavoriteException(FavoriteErrorCode.FAVORITE_NOT_FOUND));
 
         favoriteRepository.delete(favorite);
+        favoriteCacheService.deleteAll(userId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<StoreSummaryResponseDto, FavoriteCursorResponseDto> getFavoriteStores(
+            Long userId, UserRole role, FavoriteCursorRequestDto request) {
+
+        boolean isFirstPage = request.lastStoreId() == null;
+
+        List<FavoriteStoreSummaryDto> storeSummaryList = isFirstPage
+                ? favoriteCacheService.getFavoriteStores(userId, request)
+                : favoriteRepository.loadFavoriteStoreSummaries(userId, request);
+
+        int size = request.pageSize();
+
+        return pageAssembler.assemble(
+                storeSummaryList,
+                size,
+                last -> FavoriteCursorResponseDto.from(last, request.getSortType(), size),
+                FavoriteStoreSummaryDto::getSummary
+        );
+    }
 }
