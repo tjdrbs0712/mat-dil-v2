@@ -1,6 +1,7 @@
-package hello.matdil.domain.favorite.service;
+package hello.matdil.domain.favorite.service.admin;
 
 import hello.matdil.domain.favorite.dto.AdminFavoriteRequestDto;
+import hello.matdil.domain.favorite.service.FavoriteCommand;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,11 @@ public class AdminFavoriteServiceImpl implements AdminFavoriteService{
     @Transactional
     public void addFavorite(UserRole role, AdminFavoriteRequestDto requestDto) {
         favoriteCommand.addFavorite(requestDto.userId(), role, requestDto.storeId());
+    }
+
+    @Override
+    @Transactional
+    public void removeFavorite(UserRole role, AdminFavoriteRequestDto request) {
+        favoriteCommand.removeFavorite(request.userId(), role, request.storeId());
     }
 }

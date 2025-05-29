@@ -30,4 +30,12 @@ public class FavoriteCommand {
         favoriteCacheService.deleteAll(userId);
     }
 
+    public void removeFavorite(Long userId, UserRole role, Long storeId) {
+        Favorite favorite = favoriteRepository.findByUserIdAndStoreId(userId, storeId)
+                .orElseThrow(() -> new FavoriteException(FavoriteErrorCode.FAVORITE_NOT_FOUND));
+
+        favoriteRepository.delete(favorite);
+        favoriteCacheService.deleteAll(userId);
+    }
+
 }
