@@ -1,25 +1,29 @@
 package hello.matdil.domain.favorite.service;
 
+import hello.matdil.domain.favorite.dto.FavoriteCursorRequestDto;
+import hello.matdil.domain.favorite.dto.FavoriteStoreSummaryDto;
 import hello.matdil.domain.favorite.entity.Favorite;
+import hello.matdil.domain.favorite.entity.FavoriteSortType;
 import hello.matdil.domain.favorite.execption.FavoriteErrorCode;
 import hello.matdil.domain.favorite.execption.FavoriteException;
 import hello.matdil.domain.favorite.repository.FavoriteRepository;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.util.pagination.PageAssembler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FavoriteServiceImplTest {
@@ -29,6 +33,12 @@ class FavoriteServiceImplTest {
 
     @Mock
     private FavoriteRepository favoriteRepository;
+
+    @Mock
+    private FavoriteCacheService favoriteCacheService;
+
+    @Mock
+    private PageAssembler pageAssembler;
 
     @Mock
     private StoreReader storeReader;
@@ -51,12 +61,22 @@ class FavoriteServiceImplTest {
         verify(favoriteRepository).save(any(Favorite.class));
     }
 
+    private final Long userId = 1L;
+    private final UserRole role = UserRole.USER;
+    private final FavoriteCursorRequestDto firstPageRequest =
+            new FavoriteCursorRequestDto(null, 10, null, null, null);
+    private final FavoriteCursorRequestDto nextPageRequest =
+            new FavoriteCursorRequestDto(
+                    FavoriteSortType.MOST_ORDERED.toString(),
+                    10,
+                    null,
+                    1,
+                    1L);
+
     @Test
     void 즐겨찾기_중복_예외() {
         // given
-        Long userId = 1L;
         Long storeId = 10L;
-        UserRole role = UserRole.USER;
         Store store = mock(Store.class);
 
         given(storeReader.readByIdWithPermission(userId, storeId, role)).willReturn(store);
@@ -71,9 +91,7 @@ class FavoriteServiceImplTest {
     @Test
     void 즐겨찾기_정상_삭제() {
         // given
-        Long userId = 1L;
         Long storeId = 10L;
-        UserRole role = UserRole.USER;
         Favorite favorite = Favorite.create(userId, storeId);
 
         given(favoriteRepository.findByUserIdAndStoreId(userId, storeId))
@@ -100,5 +118,35 @@ class FavoriteServiceImplTest {
         assertThatThrownBy(() -> favoriteService.removeFavorite(userId, role, storeId))
                 .isInstanceOf(FavoriteException.class)
                 .hasMessage(FavoriteErrorCode.FAVORITE_NOT_FOUND.getErrorMessage());
+    }
+
+    @Test
+    void 첫_페이지_요청_캐시에서_조회() {
+        // given
+        List<FavoriteStoreSummaryDto> cachedList = List.of(mock(FavoriteStoreSummaryDto.class));
+        given(favoriteCacheService.getFavoriteStores(userId, firstPageRequest)).willReturn(cachedList);
+
+        // when
+        favoriteService.getFavoriteStores(userId, role, firstPageRequest);
+
+        // then
+        verify(favoriteCacheService).getFavoriteStores(userId, firstPageRequest);
+        verify(favoriteRepository, never()).loadFavoriteStoreSummaries(any(), any());
+        verify(pageAssembler).assemble(any(), eq(10), any(), any());
+    }
+
+    @Test
+    void 두_번째_페이지_부터_DB_조회() {
+        //given
+        List<FavoriteStoreSummaryDto> dbList = List.of(mock(FavoriteStoreSummaryDto.class));
+        given(favoriteRepository.loadFavoriteStoreSummaries(userId, nextPageRequest)).willReturn(dbList);
+
+        // when
+        favoriteService.getFavoriteStores(userId, role, nextPageRequest);
+
+        // then
+        verify(favoriteCacheService, never()).getFavoriteStores(any(), any());
+        verify(favoriteRepository).loadFavoriteStoreSummaries(userId, nextPageRequest);
+        verify(pageAssembler).assemble(any(), eq(10), any(), any());
     }
 }
