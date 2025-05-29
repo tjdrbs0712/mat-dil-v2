@@ -27,7 +27,6 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_KRAFT_CLUSTER_ID: ${CLUSTER_ID}
       KAFKA_CFG_NODE_ID: 1
       KAFKA_CFG_PROCESS_ROLES: broker,controller
       KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
