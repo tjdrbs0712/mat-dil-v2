@@ -8,6 +8,7 @@ import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v2/admin/favorites")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminFavoriteController {
 
     private final AdminFavoriteService adminFavoriteService;
@@ -25,7 +27,7 @@ public class AdminFavoriteController {
             @LoginUser AuthUser loginUser,
             @RequestBody @Valid AdminFavoriteRequestDto request
     ) {
-        adminFavoriteService.addFavorite(loginUser.getUserId(), loginUser.getRole(), request);
+        adminFavoriteService.addFavorite(loginUser.getRole(), request);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 

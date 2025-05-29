@@ -7,6 +7,7 @@ import hello.matdil.domain.favorite.repository.FavoriteRepository;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,16 +20,14 @@ public class FavoriteCommand {
 
     public void addFavorite(Long userId, UserRole role, Long storeId) {
         storeReader.readByIdWithPermission(userId, storeId, role);
-        validateCanAdd(userId, storeId);
-        Favorite favorite = Favorite.create(userId, storeId);
-        favoriteRepository.save(favorite);
-        favoriteCacheService.deleteAll(userId);
-    }
 
-    private void validateCanAdd(Long userId, Long storeId) {
-        if (favoriteRepository.existsByUserIdAndStoreId(userId, storeId)) {
+        try {
+            favoriteRepository.save(Favorite.create(userId, storeId));
+        } catch (DataIntegrityViolationException e) {
             throw new FavoriteException(FavoriteErrorCode.ALREADY_FAVORITE);
         }
+
+        favoriteCacheService.deleteAll(userId);
     }
 
 }

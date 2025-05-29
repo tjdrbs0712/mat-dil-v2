@@ -107,12 +107,6 @@ public class User extends BaseTimeEntity {
         }
     }
 
-    public void adminChecker(UserRole role){
-        if(role != UserRole.ADMIN){
-            throw new UserException(UserErrorCode.NO_PERMISSION);
-        }
-    }
-
     public void verifyEmail(){
         this.userStatus = UserStatus.ACTIVE;
     }
