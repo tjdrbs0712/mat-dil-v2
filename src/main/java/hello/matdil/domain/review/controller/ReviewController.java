@@ -2,10 +2,9 @@ package hello.matdil.domain.review.controller;
 
 import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
-import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
-import hello.matdil.domain.review.dto.ReviewResponseDto;
-import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
+import hello.matdil.domain.review.dto.*;
 import hello.matdil.domain.review.service.ReviewService;
+import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +41,19 @@ public class ReviewController {
                 loginUser.getUserId(), loginUser.getRole(), reviewId, requestDto);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
+
+    @GetMapping("/stores/{storeId}/reviews")
+    public ResponseEntity<SuccessResponse<SliceResponse<ReviewResponseDto, ReviewCursorResponseDto>>> getReviews(
+            @LoginUser(required = false) AuthUser authUser,
+            @PathVariable Long storeId,
+            @ModelAttribute @Valid ReviewCursorRequestDto request
+    ) {
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> response = reviewService.getReviews(
+                authUser.getUserId(), authUser.getRole(), storeId, request
+        );
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
 
 
 }

@@ -5,12 +5,14 @@ import hello.matdil.domain.review.entity.ReviewImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ReviewResponseDto {
 
@@ -20,7 +22,6 @@ public class ReviewResponseDto {
     private Long storeId;
     private int rating;
     private String comment;
-    private boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<String> imageUrls;
@@ -33,7 +34,6 @@ public class ReviewResponseDto {
                 .storeId(review.getStoreId())
                 .rating(review.getRating())
                 .comment(review.getComment())
-//                .isDeleted(review.isDeleted())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .imageUrls(review.getImages().stream()
