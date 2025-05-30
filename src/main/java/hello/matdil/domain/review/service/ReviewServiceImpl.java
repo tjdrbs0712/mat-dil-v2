@@ -4,7 +4,9 @@ import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
 import hello.matdil.domain.review.dto.ReviewResponseDto;
+import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
 import hello.matdil.domain.review.entity.Review;
+import hello.matdil.domain.review.entity.ReviewImage;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
 import hello.matdil.domain.review.factory.ReviewFactory;
@@ -16,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,20 @@ public class ReviewServiceImpl implements ReviewService {
         } catch (DataIntegrityViolationException e) {
             throw new ReviewException(ReviewErrorCode.ALREADY_REVIEW);
         }
+
+        return ReviewResponseDto.from(review);
+    }
+
+    @Override
+    @Transactional
+    public ReviewResponseDto updateReview(Long userId, UserRole role, Long reviewId, ReviewUpdateRequestDto requestDto) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        review.validateAccessibleTo(userId, role);
+        review.validateIsDeleted();
+
+        review.updateContent(requestDto.rating(), requestDto.comment(), requestDto.imageUrls());
 
         return ReviewResponseDto.from(review);
     }

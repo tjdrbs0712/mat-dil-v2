@@ -21,8 +21,9 @@ public class ReviewFactory {
                 .build();
 
         List<ReviewImage> images = dto.imageUrls().stream()
-                .map(url -> ReviewImage.builder().imageUrl(url).review(review).build())
+                .map(url -> ReviewImage.create(url, review))
                 .toList();
+
 
         review.getImages().addAll(images);
 

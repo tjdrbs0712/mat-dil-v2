@@ -4,16 +4,14 @@ import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
 import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
 import hello.matdil.domain.review.dto.ReviewResponseDto;
+import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
 import hello.matdil.domain.review.service.ReviewService;
 import hello.matdil.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +31,17 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponse.success(response));
     }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<SuccessResponse<ReviewResponseDto>> updateReview(
+            @LoginUser AuthUser loginUser,
+            @PathVariable Long reviewId,
+            @RequestBody @Valid ReviewUpdateRequestDto requestDto
+    ) {
+        ReviewResponseDto response = reviewService.updateReview(
+                loginUser.getUserId(), loginUser.getRole(), reviewId, requestDto);
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
 
 }

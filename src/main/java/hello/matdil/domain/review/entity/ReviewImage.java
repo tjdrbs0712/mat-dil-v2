@@ -30,4 +30,8 @@ public class ReviewImage extends BaseTimeEntity {
         this.review = review;
     }
 
+    public static ReviewImage create(String url, Review review) {
+        return ReviewImage.builder().imageUrl(url).review(review).build();
+    }
+
 }
