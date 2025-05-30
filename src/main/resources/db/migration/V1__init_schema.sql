@@ -15,8 +15,8 @@ CREATE TABLE users
     user_status            VARCHAR(50)  NOT NULL, -- ENUM: ACTIVE, INACTIVE, WITHDRAWN, BANNED
     withdrawn_at           DATETIME,
     last_login_at          DATETIME,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL,
+    created_at             DATETIME     NOT NULL,
+    updated_at             DATETIME     NOT NULL,
     CONSTRAINT UK_user_email UNIQUE (email),
     CONSTRAINT UK_user_phone_number UNIQUE (phone_number)
 );
@@ -32,16 +32,17 @@ CREATE TABLE stores
     address_detail_address VARCHAR(255),
     name                   VARCHAR(255) NOT NULL,
     owner_id               BIGINT       NOT NULL,
+    image_url              VARCHAR(500),
     phone_number           VARCHAR(255) NOT NULL,
     open_time              TIME         NOT NULL,
     close_time             TIME         NOT NULL,
     status                 VARCHAR(50)  NOT NULL, -- ENUM: OPEN, CLOSED, INACTIVE
     min_order_price        INT          NOT NULL,
     delivery_time_estimate INT          NOT NULL,
-    rating DOUBLE NOT NULL,
+    rating                 DOUBLE       NOT NULL,
     review_count           INT          NOT NULL,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL
+    created_at             DATETIME     NOT NULL,
+    updated_at             DATETIME     NOT NULL
 );
 
 CREATE INDEX idx_store_rating_id ON stores (rating DESC, id DESC);
@@ -63,8 +64,8 @@ CREATE TABLE menus
     order_index INT          NOT NULL,
     category    VARCHAR(100),          -- ENUM: MAIN, SIDE, DRINK
     menu_status VARCHAR(20)  NOT NULL, -- ENUM: AVAILABLE, SOLD_OUT, HIDDEN, DELETE
-    created_at  DATETIME NOT NULL,
-    updated_at  DATETIME NOT NULL,
+    created_at  DATETIME     NOT NULL,
+    updated_at  DATETIME     NOT NULL,
     CONSTRAINT FK_menu_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
 );
 
@@ -76,14 +77,32 @@ CREATE INDEX idx_menu_store_status_order ON menus (store_id, menu_status, order_
 CREATE TABLE reviews
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id    BIGINT NOT NULL,
-    order_id   BIGINT NOT NULL,
-    store_id   BIGINT NOT NULL,
-    rating     INT    NOT NULL,
-    comment    TEXT,
+    user_id    BIGINT   NOT NULL,
+    order_id   BIGINT   NOT NULL,
+    store_id   BIGINT   NOT NULL,
+    rating     INT      NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment    VARCHAR(1000),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    updated_at DATETIME NOT NULL,
+    CONSTRAINT UK_review_user_store UNIQUE (user_id, store_id)
 );
+
+-- ======================================
+-- review_images TABLE
+-- ======================================
+CREATE TABLE review_images
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    image_url  VARCHAR(255) NOT NULL,
+    review_id  BIGINT       NOT NULL,
+    created_at DATETIME     NOT NULL,
+    updated_at DATETIME     NOT NULL,
+    CONSTRAINT FK_review_image_review
+        FOREIGN KEY (review_id) REFERENCES reviews (id)
+            ON DELETE CASCADE
+);
+
 
 -- ======================================
 -- REVIEW_REPLIES TABLE
@@ -91,8 +110,8 @@ CREATE TABLE reviews
 CREATE TABLE review_replies
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    review_id  BIGINT NOT NULL,
-    reply_text TEXT   NOT NULL,
+    review_id  BIGINT   NOT NULL,
+    reply_text TEXT     NOT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
 );
@@ -107,8 +126,8 @@ CREATE TABLE payments
     method     VARCHAR(50) NOT NULL, -- ENUM: CARD, CASH, NAVER_PAY, KAKAO_PAY, TOSS_PAY
     amount     INT         NOT NULL,
     is_paid    BOOLEAN     NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    created_at DATETIME    NOT NULL,
+    updated_at DATETIME    NOT NULL
 );
 
 -- ======================================
@@ -123,9 +142,8 @@ CREATE TABLE orders
     total_price            INT         NOT NULL,
     request_note           VARCHAR(500),
     expected_delivery_time DATETIME    NOT NULL,
-    is_paid                BOOLEAN     NOT NULL,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL
+    created_at             DATETIME    NOT NULL,
+    updated_at             DATETIME    NOT NULL
 );
 
 -- ======================================
@@ -142,6 +160,21 @@ CREATE TABLE order_items
 );
 
 -- ======================================
+-- user_order_stats TABLE
+-- ======================================
+CREATE TABLE user_order_stats
+(
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id         BIGINT NOT NULL,
+    store_id        BIGINT NOT NULL,
+    order_count     INT    NOT NULL DEFAULT 0,
+    last_ordered_at DATETIME,
+
+    INDEX idx_user_store (user_id, store_id)
+);
+
+
+-- ======================================
 -- NOTIFICATIONS TABLE
 -- ======================================
 CREATE TABLE notifications
@@ -153,8 +186,8 @@ CREATE TABLE notifications
     is_read      BOOLEAN     NOT NULL,
     scheduled_at DATETIME,
     status       VARCHAR(50) NOT NULL, -- ENUM: WAITING, SENDING, SENT, FAILED, CANCELLED
-    created_at   DATETIME NOT NULL,
-    updated_at   DATETIME NOT NULL
+    created_at   DATETIME    NOT NULL,
+    updated_at   DATETIME    NOT NULL
 );
 
 -- ======================================
@@ -170,6 +203,9 @@ CREATE TABLE favorites
     CONSTRAINT UK_favorite_user_store UNIQUE (user_id, store_id)
 );
 
+CREATE INDEX idx_favorite_user_id ON favorites (user_id);
+CREATE INDEX idx_favorite_store_id ON favorites (store_id);
+
 -- ======================================
 -- DELIVERIES TABLE
 -- ======================================
@@ -181,9 +217,9 @@ CREATE TABLE deliveries
     address_street         VARCHAR(255) NOT NULL,
     address_detail_address VARCHAR(255) NOT NULL,
     delivery_status        VARCHAR(50)  NOT NULL, -- ENUM: READY, PICKED_UP, IN_TRANSIT, DELIVERED, FAILED, CANCELED
-    assigned_time          DATETIME NOT NULL,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL
+    assigned_time          DATETIME     NOT NULL,
+    created_at             DATETIME     NOT NULL,
+    updated_at             DATETIME     NOT NULL
 );
 
 -- ======================================
@@ -196,8 +232,8 @@ CREATE TABLE coupons
     code            VARCHAR(255) NOT NULL UNIQUE,
     discount_amount INT          NOT NULL,
     expires_at      DATETIME     NOT NULL,
-    created_at      DATETIME NOT NULL,
-    updated_at      DATETIME NOT NULL
+    created_at      DATETIME     NOT NULL,
+    updated_at      DATETIME     NOT NULL
 );
 
 -- ======================================
@@ -205,10 +241,10 @@ CREATE TABLE coupons
 -- ======================================
 CREATE TABLE refresh_tokens
 (
-    user_id BIGINT PRIMARY KEY,
-    token   VARCHAR(512) NOT NULL,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL
+    user_id    BIGINT PRIMARY KEY,
+    token      VARCHAR(512) NOT NULL,
+    created_at DATETIME     NOT NULL,
+    updated_at DATETIME     NOT NULL
 );
 
 -- ======================================
@@ -219,6 +255,6 @@ CREATE TABLE email_tokens
     token      VARCHAR(255) PRIMARY KEY,
     email      VARCHAR(255) NOT NULL,
     expires_at DATETIME     NOT NULL,
-    created_at             DATETIME NOT NULL,
-    updated_at             DATETIME NOT NULL
+    created_at DATETIME     NOT NULL,
+    updated_at DATETIME     NOT NULL
 );
