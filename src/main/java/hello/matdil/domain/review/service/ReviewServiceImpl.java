@@ -55,6 +55,8 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
+        storeReader.readByIdWithPermission(userId, review.getStoreId(), role);
+
         review.validateAccessibleTo(userId, role);
         review.validateIsDeleted();
 
