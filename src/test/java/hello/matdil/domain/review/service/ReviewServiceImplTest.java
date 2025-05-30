@@ -4,6 +4,7 @@ import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
 import hello.matdil.domain.review.dto.ReviewResponseDto;
+import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
 import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -115,4 +117,80 @@ class ReviewServiceImplTest {
 
         verify(reviewRepository).save(review);
     }
+
+    @Test
+    void 리뷰_수정_성공(){
+        // given
+        Long userId = 1L;
+        Long reviewId = 1L;
+        UserRole role = UserRole.USER;
+        Review review = Review.builder()
+                .rating(4)
+                .comment("리뷰 작성")
+                .userId(1L)
+                .orderId(1L)
+                .storeId(1L)
+                .build();
+
+        ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5, "리뷰 수정", List.of("이미지"));
+
+        given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review));
+
+        // when
+        ReviewResponseDto result = reviewService.updateReview(userId, role, reviewId, requestDto);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getComment()).isEqualTo("리뷰 수정");
+    }
+
+    @Test
+    void 리뷰_수정_권한_없는_경우(){
+        // given
+        Long userId = 2L;
+        Long reviewId = 1L;
+        UserRole role = UserRole.USER;
+        Review review = Review.builder()
+                .rating(4)
+                .comment("리뷰 작성")
+                .userId(1L)
+                .orderId(1L)
+                .storeId(1L)
+                .build();
+
+        ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5, "리뷰 수정", List.of("이미지"));
+
+        given(reviewRepository.findById(reviewId)).willReturn(Optional.ofNullable(review));
+
+        // when & then
+        assertThatThrownBy(() -> reviewService.updateReview(userId, role, reviewId, requestDto))
+                .isInstanceOf(ReviewException.class)
+                .hasMessageContaining(ReviewErrorCode.NO_PERMISSION.getErrorMessage());
+    }
+
+    @Test
+    void 삭제된_리뷰를_수정한_경우(){
+        // given
+        Long userId = 1L;
+        Long reviewId = 1L;
+        UserRole role = UserRole.USER;
+        Review review = Review.builder()
+                .rating(4)
+                .comment("리뷰 작성")
+                .userId(1L)
+                .orderId(1L)
+                .storeId(1L)
+                .build();
+        review.isDeleted();
+
+        ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(5, "리뷰 수정", List.of("이미지"));
+
+        given(reviewRepository.findById(reviewId)).willReturn(Optional.of(review));
+
+
+        // when & then
+        assertThatThrownBy(() -> reviewService.updateReview(userId, role, reviewId, requestDto))
+                .isInstanceOf(ReviewException.class)
+                .hasMessageContaining(ReviewErrorCode.REVIEW_NOT_FOUND.getErrorMessage());
+    }
+
 }

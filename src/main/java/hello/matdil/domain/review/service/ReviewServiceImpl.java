@@ -6,7 +6,6 @@ import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
 import hello.matdil.domain.review.dto.ReviewResponseDto;
 import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
 import hello.matdil.domain.review.entity.Review;
-import hello.matdil.domain.review.entity.ReviewImage;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
 import hello.matdil.domain.review.factory.ReviewFactory;
@@ -18,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +57,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.validateAccessibleTo(userId, role);
         review.validateIsDeleted();
 
-        review.updateContent(requestDto.rating(), requestDto.comment(), requestDto.imageUrls());
+        review.updateReview(requestDto.rating(), requestDto.comment(), requestDto.imageUrls());
 
         return ReviewResponseDto.from(review);
     }

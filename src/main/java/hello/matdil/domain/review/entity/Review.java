@@ -3,8 +3,6 @@ package hello.matdil.domain.review.entity;
 import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
-import hello.matdil.domain.store.exception.StoreErrorCode;
-import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.user.entity.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -62,7 +60,7 @@ public class Review extends BaseTimeEntity {
         this.comment = comment;
     }
 
-    public void updateContent(int rating, String comment, List<String> imageUrls) {
+    public void updateReview(int rating, String comment, List<String> imageUrls) {
         this.rating = rating;
         this.comment = comment;
         this.images.clear();
@@ -92,5 +90,8 @@ public class Review extends BaseTimeEntity {
         }
     }
 
+    public void isDeleted(){
+        this.isDeleted = true;
+    }
 
 }
