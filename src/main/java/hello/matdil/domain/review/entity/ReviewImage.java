@@ -1,5 +1,6 @@
 package hello.matdil.domain.review.entity;
 
+import hello.matdil.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "review_images")
-public class ReviewImage {
+public class ReviewImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,4 @@ public class ReviewImage {
         this.review = review;
     }
 
-    public void assignReview(Review review) {
-        this.review = review;
-    }
 }

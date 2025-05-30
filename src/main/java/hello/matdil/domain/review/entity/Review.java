@@ -15,7 +15,10 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reviews")
+@Table(
+        name = "reviews",
+        uniqueConstraints = @UniqueConstraint(name = "UK_review_user_store", columnNames = {"user_id", "store_id"})
+)
 public class Review extends BaseTimeEntity {
 
     @Id
@@ -53,6 +56,5 @@ public class Review extends BaseTimeEntity {
         this.rating = rating;
         this.comment = comment;
     }
-
 
 }

@@ -72,4 +72,10 @@ public class Order extends BaseTimeEntity {
         this.orderStatus = newStatus;
     }
 
+    public void isCompleted(){
+        if(this.orderStatus != OrderStatus.COMPLETED){
+            throw new OrderException(OrderErrorCode.ORDER_NOT_COMPLETED);
+        }
+    }
+
 }
