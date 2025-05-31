@@ -11,17 +11,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class StoreSummaryLoader {
 
-    private final StoreSummaryCacheService storeCacheService;
+    private final StoreSummaryCacheService cacheService;
     private final StoreRepository storeRepository;
 
     public Map<Long, StoreSummaryResponseDto> loadWithCacheFallback(List<Long> storeIds) {
-        Map<Long, StoreSummaryResponseDto> cached = storeCacheService.getBatch(storeIds);
+        Map<Long, StoreSummaryResponseDto> cached = cacheService.getBatch(storeIds);
 
         List<Long> missingIds = storeIds.stream()
                 .filter(id -> !cached.containsKey(id))
@@ -29,7 +28,7 @@ public class StoreSummaryLoader {
 
         if (!missingIds.isEmpty()) {
             Map<Long, StoreSummaryResponseDto> loaded = storeRepository.findStoreSummariesByIds(missingIds);
-            loaded.forEach(storeCacheService::put);
+            loaded.forEach(cacheService::put);
             cached.putAll(loaded);
         }
 
@@ -37,18 +36,13 @@ public class StoreSummaryLoader {
     }
 
     public StoreSummaryResponseDto loadWithCacheFallback(Long storeId) {
-        Optional<StoreSummaryResponseDto> cached = storeCacheService.get(storeId);
-
-        if(cached.isPresent()){
-            return cached.get();
-        }
-
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
-
-        StoreSummaryResponseDto loaded = StoreSummaryResponseDto.from(store);
-        storeCacheService.put(storeId, loaded);
-
-        return loaded;
+        return cacheService.get(storeId)
+                .orElseGet(() -> {
+                    Store store = storeRepository.findById(storeId)
+                            .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
+                    StoreSummaryResponseDto dto = StoreSummaryResponseDto.from(store);
+                    cacheService.put(storeId, dto);
+                    return dto;
+                });
     }
 }

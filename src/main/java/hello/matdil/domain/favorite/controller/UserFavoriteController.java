@@ -5,7 +5,7 @@ import hello.matdil.auth.model.AuthUser;
 import hello.matdil.domain.favorite.dto.FavoriteCursorRequestDto;
 import hello.matdil.domain.favorite.dto.FavoriteCursorResponseDto;
 import hello.matdil.domain.favorite.dto.FavoriteRequestDto;
-import hello.matdil.domain.favorite.service.FavoriteService;
+import hello.matdil.domain.favorite.service.user.UserFavoriteService;
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
 import hello.matdil.global.response.SliceResponse;
 import hello.matdil.global.response.SuccessResponse;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v2/favorites")
 @RequiredArgsConstructor
-public class FavoriteController {
+public class UserFavoriteController {
 
-    private final FavoriteService favoriteService;
+    private final UserFavoriteService userFavoriteService;
 
     // 즐겨찾기 등록
     @PostMapping
@@ -27,7 +27,7 @@ public class FavoriteController {
             @LoginUser AuthUser loginUser,
             @RequestBody @Valid FavoriteRequestDto request
     ) {
-        favoriteService.addFavorite(loginUser.getUserId(), loginUser.getRole(), request.storeId());
+        userFavoriteService.addFavorite(loginUser.getUserId(), request.storeId());
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
@@ -37,7 +37,7 @@ public class FavoriteController {
             @LoginUser AuthUser loginUser,
             @PathVariable Long storeId
     ) {
-        favoriteService.removeFavorite(loginUser.getUserId(), loginUser.getRole(), storeId);
+        userFavoriteService.removeFavorite(loginUser.getUserId(), storeId);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
@@ -46,8 +46,8 @@ public class FavoriteController {
             @LoginUser AuthUser authUser,
             @ModelAttribute FavoriteCursorRequestDto request
     ) {
-        SliceResponse<StoreSummaryResponseDto, FavoriteCursorResponseDto> response = favoriteService.getFavoriteStores(
-                authUser.getUserId(), authUser.getRole(), request);
+        SliceResponse<StoreSummaryResponseDto, FavoriteCursorResponseDto> response = userFavoriteService.getFavoriteStores(
+                authUser.getUserId(), request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
