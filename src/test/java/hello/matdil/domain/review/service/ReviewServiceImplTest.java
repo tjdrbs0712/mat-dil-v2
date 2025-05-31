@@ -2,9 +2,7 @@ package hello.matdil.domain.review.service;
 
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
-import hello.matdil.domain.review.dto.ReviewCreateRequestDto;
-import hello.matdil.domain.review.dto.ReviewResponseDto;
-import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
+import hello.matdil.domain.review.dto.*;
 import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
@@ -13,6 +11,8 @@ import hello.matdil.domain.review.repository.ReviewImageRepository;
 import hello.matdil.domain.review.repository.ReviewRepository;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.global.response.SliceResponse;
+import hello.matdil.global.util.pagination.PageAssembler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,14 +20,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceImplTest {
@@ -37,6 +40,12 @@ class ReviewServiceImplTest {
 
     @Mock
     private ReviewRepository reviewRepository;
+
+    @Mock
+    private ReviewCacheService reviewCacheService;
+
+    @Mock
+    private PageAssembler pageAssembler;
 
     @Mock
     private ReviewImageRepository reviewImageRepository;
@@ -191,6 +200,82 @@ class ReviewServiceImplTest {
         assertThatThrownBy(() -> reviewService.updateReview(userId, role, reviewId, requestDto))
                 .isInstanceOf(ReviewException.class)
                 .hasMessageContaining(ReviewErrorCode.REVIEW_NOT_FOUND.getErrorMessage());
+    }
+
+    @Test
+    void 첫_페이지일_경우_캐시에서_리뷰_조회() {
+        // given
+        Long userId = 1L;
+        UserRole role = UserRole.USER;
+        Long storeId = 100L;
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        ReviewCursorRequestDto request = new ReviewCursorRequestDto(
+                30, null, null, null, "LATEST");
+        ReviewCursorResponseDto response = mock(ReviewCursorResponseDto.class);
+
+        List<ReviewResponseDto> cachedReviews = List.of(
+                ReviewResponseDto.builder().id(1L).build(),
+                ReviewResponseDto.builder().id(2L).build()
+        );
+        given(reviewCacheService.getReviews(storeId, request)).willReturn(cachedReviews);
+
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> expectedSlice =
+                SliceResponse.of(cachedReviews, false, response);
+
+        given(pageAssembler.assemble(
+                eq(cachedReviews),
+                eq(30),
+                any(Function.class),
+                any(Function.class)))
+                .willReturn(expectedSlice);
+
+        // when
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> result = reviewService.getReviews(userId, role, storeId, request);
+
+        // then
+        assertThat(result).isEqualTo(expectedSlice);
+        verify(reviewCacheService).getReviews(storeId, request);
+        verify(reviewRepository, never()).loadReviewsByCursor(any(), any());
+    }
+
+    @Test
+    void 커서가_있는_경우_DB에서_리뷰_조회() {
+        // given
+        Long userId = 1L;
+        UserRole role = UserRole.USER;
+        Long storeId = 100L;
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        ReviewCursorRequestDto request = new ReviewCursorRequestDto(
+                10, null, localDateTime, 2L, "LATEST");
+        ReviewCursorResponseDto response = mock(ReviewCursorResponseDto.class);
+
+        List<ReviewResponseDto> dbReviews = List.of(
+                ReviewResponseDto.builder().id(3L).build(),
+                ReviewResponseDto.builder().id(4L).build()
+        );
+
+        given(reviewRepository.loadReviewsByCursor(storeId, request)).willReturn(dbReviews);
+
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> expectedSlice =
+                SliceResponse.of(dbReviews, true, response);
+
+        given(pageAssembler.assemble(
+                eq(dbReviews),
+                eq(10),
+                any(Function.class),
+                any(Function.class)))
+                .willReturn(expectedSlice);
+
+        // when
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> result =
+                reviewService.getReviews(userId, role, storeId, request);
+
+        // then
+        assertThat(result).isEqualTo(expectedSlice);
+        verify(reviewCacheService, never()).getReviews(any(), any());
+        verify(reviewRepository).loadReviewsByCursor(storeId, request);
     }
 
 }
