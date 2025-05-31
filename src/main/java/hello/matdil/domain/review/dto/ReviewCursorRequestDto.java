@@ -66,7 +66,6 @@ public record ReviewCursorRequestDto(
                 cursor.put(LAST_REVIEW_ID, lastReviewId);
             }
         }
-
         return cursor;
     }
 

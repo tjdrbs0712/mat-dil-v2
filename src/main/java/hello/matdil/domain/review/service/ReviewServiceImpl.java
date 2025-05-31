@@ -37,7 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
         storeReader.readByIdWithPermission(userId, requestDto.storeId(), role);
         Order order = orderReader.readWithUserPermission(requestDto.orderId(), userId, role);
 
-        order.isCompleted();
+        order.validateIsCompleted();
         Review review = reviewFactory.create(userId, requestDto);
 
         try {
@@ -103,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.validateAccessibleTo(userId, role);
         review.validateIsDeleted();
 
-        review.isDeleted();
+        review.markAsDeleted();
         reviewCacheService.deleteAll(review.getStoreId());
     }
 }

@@ -86,7 +86,7 @@ public class Review extends BaseTimeEntity {
         }
     }
 
-    public void isDeleted(){
+    public void markAsDeleted(){
         this.isDeleted = true;
     }
 
