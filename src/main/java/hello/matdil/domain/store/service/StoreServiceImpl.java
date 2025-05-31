@@ -109,6 +109,7 @@ public class StoreServiceImpl implements StoreService{
         Store store = getStoreOrThrow(storeId);
         store.validateAccessibleTo(userId, role);
         store.changeStoreStatus(storeStatus);
+        cacheService.evict(storeId);
     }
 
     private Store getStoreOrThrow(Long storeId) {

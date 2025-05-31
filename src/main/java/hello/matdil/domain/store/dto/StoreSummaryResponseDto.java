@@ -11,6 +11,7 @@ import lombok.*;
 public class StoreSummaryResponseDto {
 
     private Long id;
+    private Long ownerId;
     private String name;
     private String phoneNumber;
     private String imageUrl;
@@ -24,6 +25,7 @@ public class StoreSummaryResponseDto {
     public static StoreSummaryResponseDto from(Store store) {
         return StoreSummaryResponseDto.builder()
                 .id(store.getId())
+                .ownerId(store.getOwnerId())
                 .name(store.getName())
                 .phoneNumber(store.getPhoneNumber())
                 .imageUrl(store.getImageUrl())
