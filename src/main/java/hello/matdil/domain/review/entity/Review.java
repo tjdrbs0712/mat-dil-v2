@@ -71,10 +71,6 @@ public class Review extends BaseTimeEntity {
         this.images.addAll(newImages);
     }
 
-    public void clearImages() {
-        this.images.clear();
-    }
-
     public void validateAccessibleTo(Long userId, UserRole role){
         boolean isAdmin = role == UserRole.ADMIN;
         boolean isUser = this.userId.equals(userId);

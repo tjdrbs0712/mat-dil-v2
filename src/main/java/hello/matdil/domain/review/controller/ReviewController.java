@@ -54,6 +54,16 @@ public class ReviewController {
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<SuccessResponse<Void>> deleteReview(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long reviewId
+    ) {
+        reviewService.deleteReview(authUser.getUserId(), authUser.getRole(), reviewId);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
+
+
 
 
 }

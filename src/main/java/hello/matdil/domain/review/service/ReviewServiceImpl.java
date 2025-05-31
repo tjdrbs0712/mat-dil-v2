@@ -92,4 +92,18 @@ public class ReviewServiceImpl implements ReviewService {
 
     }
 
+    @Override
+    @Transactional
+    public void deleteReview(Long userId, UserRole role, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        storeReader.readByIdWithPermission(userId, review.getStoreId(), role);
+
+        review.validateAccessibleTo(userId, role);
+        review.validateIsDeleted();
+
+        review.isDeleted();
+        reviewCacheService.deleteAll(review.getStoreId());
+    }
 }

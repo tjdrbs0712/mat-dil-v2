@@ -13,4 +13,6 @@ public interface ReviewService {
     SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> getReviews(
             Long userId, UserRole role, Long storeId, ReviewCursorRequestDto request);
 
+    void deleteReview(Long userId, UserRole role, Long reviewId);
+
 }
