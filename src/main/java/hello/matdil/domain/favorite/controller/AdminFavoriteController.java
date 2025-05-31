@@ -24,7 +24,7 @@ public class AdminFavoriteController {
             @LoginUser AuthUser loginUser,
             @RequestBody @Valid AdminFavoriteRequestDto request
     ) {
-        adminFavoriteService.addFavorite(loginUser.getRole(), request);
+        adminFavoriteService.addFavorite(request);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 
@@ -33,7 +33,7 @@ public class AdminFavoriteController {
             @LoginUser AuthUser loginUser,
             @RequestBody @Valid AdminFavoriteRequestDto request
     ) {
-        adminFavoriteService.removeFavorite(loginUser.getRole(), request);
+        adminFavoriteService.removeFavorite(request);
         return ResponseEntity.ok(SuccessResponse.success(null));
     }
 

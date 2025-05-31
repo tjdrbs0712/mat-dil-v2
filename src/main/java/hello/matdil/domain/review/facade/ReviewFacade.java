@@ -7,6 +7,7 @@ import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.service.ReviewCommandService;
 import hello.matdil.domain.review.service.ReviewQueryService;
 import hello.matdil.domain.store.reader.StoreReader;
+import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ReviewFacade {
     private final OrderReader orderReader;
     private final ReviewCommandService commandService;
     private final ReviewQueryService queryService;
+    private final StoreValidator storeValidator;
 
     public ReviewResponseDto createReview(Long userId, UserRole role, ReviewCreateRequestDto dto) {
         storeReader.readByIdWithPermission(userId, dto.storeId(), role);

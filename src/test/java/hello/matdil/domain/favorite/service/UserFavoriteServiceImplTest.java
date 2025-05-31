@@ -4,6 +4,7 @@ import hello.matdil.domain.favorite.dto.FavoriteCursorRequestDto;
 import hello.matdil.domain.favorite.dto.FavoriteStoreSummaryDto;
 import hello.matdil.domain.favorite.entity.FavoriteSortType;
 import hello.matdil.domain.favorite.repository.FavoriteRepository;
+import hello.matdil.domain.favorite.service.user.UserFavoriteServiceImpl;
 import hello.matdil.domain.store.reader.StoreReader;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.util.pagination.PageAssembler;
@@ -20,10 +21,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class FavoriteServiceImplTest {
+class UserFavoriteServiceImplTest {
 
     @InjectMocks
-    private FavoriteServiceImpl favoriteService;
+    private UserFavoriteServiceImpl favoriteService;
 
     @Mock
     private FavoriteRepository favoriteRepository;
@@ -122,7 +123,7 @@ class FavoriteServiceImplTest {
         given(favoriteCacheService.getFavoriteStores(userId, firstPageRequest)).willReturn(cachedList);
 
         // when
-        favoriteService.getFavoriteStores(userId, role, firstPageRequest);
+        favoriteService.getFavoriteStores(userId, firstPageRequest);
 
         // then
         verify(favoriteCacheService).getFavoriteStores(userId, firstPageRequest);
@@ -137,7 +138,7 @@ class FavoriteServiceImplTest {
         given(favoriteRepository.loadFavoriteStoreSummaries(userId, nextPageRequest)).willReturn(dbList);
 
         // when
-        favoriteService.getFavoriteStores(userId, role, nextPageRequest);
+        favoriteService.getFavoriteStores(userId, nextPageRequest);
 
         // then
         verify(favoriteCacheService, never()).getFavoriteStores(any(), any());
