@@ -7,6 +7,7 @@ import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.service.ReviewCommandService;
 import hello.matdil.domain.review.service.ReviewQueryService;
 import hello.matdil.domain.store.reader.StoreReader;
+import hello.matdil.domain.store.validator.StoreExistenceValidatorStrategy;
 import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
@@ -17,14 +18,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReviewFacade {
 
-    private final StoreReader storeReader;
     private final OrderReader orderReader;
     private final ReviewCommandService commandService;
     private final ReviewQueryService queryService;
-    private final StoreValidator storeValidator;
+    private final StoreExistenceValidatorStrategy validatorStrategy;
 
     public ReviewResponseDto createReview(Long userId, UserRole role, ReviewCreateRequestDto dto) {
-        storeReader.readByIdWithPermission(userId, dto.storeId(), role);
+        validatorStrategy.validate(role, dto.storeId());
         Order order = orderReader.readWithUserPermission(dto.orderId(), userId, role);
         order.validateIsCompleted();
 

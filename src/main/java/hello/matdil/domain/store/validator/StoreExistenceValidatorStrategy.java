@@ -6,26 +6,27 @@ import hello.matdil.domain.user.entity.UserRole;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @Component
 public class StoreExistenceValidatorStrategy {
 
-    private final Map<UserRole, BiConsumer<Long, Long>> validatorMap;
+    private final Map<UserRole, Consumer<Long>> validatorMap;
 
-    public StoreExistenceValidatorStrategy(StoreValidator validator) {
+    public StoreExistenceValidatorStrategy(StoreValidator storeValidator) {
         this.validatorMap = Map.of(
-                UserRole.USER,   (userId, storeId) -> validator.validateUserExists(storeId),
-                UserRole.OWNER,  (userId, storeId) -> validator.validateOwnerAccessible(storeId, userId),
-                UserRole.ADMIN,  (userId, storeId) -> validator.validateAdminExists(storeId)
+                UserRole.USER, storeValidator::validateUserExists,
+                UserRole.OWNER, storeValidator::validateUserExists,
+                UserRole.ADMIN, storeValidator::validateAdminExists
         );
     }
 
-    public void validate(UserRole role, Long userId, Long storeId) {
-        BiConsumer<Long, Long> validator = validatorMap.get(role);
+    public void validate(UserRole role, Long storeId) {
+        Consumer<Long> validator = validatorMap.get(role);
         if (validator == null) {
             throw new StoreException(StoreErrorCode.NO_PERMISSION);
         }
-        validator.accept(userId, storeId);
+        validator.accept(storeId);
     }
 }
+
