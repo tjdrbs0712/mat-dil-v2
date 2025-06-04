@@ -5,10 +5,8 @@ import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.review.dto.*;
 import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.service.ReviewCommandService;
-import hello.matdil.domain.review.service.ReviewQueryService;
-import hello.matdil.domain.store.reader.StoreReader;
+import hello.matdil.domain.review.service.ReviewSearchService;
 import hello.matdil.domain.store.validator.StoreExistenceValidatorStrategy;
-import hello.matdil.domain.store.validator.StoreValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import hello.matdil.global.response.SliceResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class ReviewFacade {
 
     private final OrderReader orderReader;
     private final ReviewCommandService commandService;
-    private final ReviewQueryService queryService;
+    private final ReviewSearchService searchService;
     private final StoreExistenceValidatorStrategy validatorStrategy;
 
     public ReviewResponseDto createReview(Long userId, UserRole role, ReviewCreateRequestDto dto) {
@@ -32,16 +30,18 @@ public class ReviewFacade {
     }
 
     public ReviewResponseDto updateReview(Long userId, UserRole role, Long reviewId, ReviewUpdateRequestDto dto) {
-        Review review = commandService.getAccessibleReview(userId, role, reviewId);
+        Review review = commandService.getReviewByIdDeletedFalse(reviewId, userId);
+        validatorStrategy.validate(role, review.getStoreId());
         return commandService.update(review, dto);
     }
 
     public void deleteReview(Long userId, UserRole role, Long reviewId) {
-        Review review = commandService.getAccessibleReview(userId, role, reviewId);
+        Review review = commandService.getReviewByIdDeletedFalse(reviewId, userId);
+        validatorStrategy.validate(role, review.getStoreId());
         commandService.delete(review);
     }
 
-    public SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> getReviews(Long userId, UserRole role, Long storeId, ReviewCursorRequestDto request) {
-        return queryService.getReviews(storeId, request);
+    public SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> getReviews(Long storeId, ReviewCursorRequestDto request) {
+        return searchService.getReviews(storeId, request);
     }
 }

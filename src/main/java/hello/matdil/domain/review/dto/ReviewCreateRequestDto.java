@@ -22,4 +22,14 @@ public record ReviewCreateRequestDto(
         String comment,
 
         List<String> imageUrls
-) {}
+) {
+        public static ReviewCreateRequestDto from(AdminReviewCreateRequestDto adminDto) {
+                return new ReviewCreateRequestDto(
+                        adminDto.orderId(),
+                        adminDto.storeId(),
+                        adminDto.rating(),
+                        adminDto.comment(),
+                        adminDto.imageUrls()
+                );
+        }
+}

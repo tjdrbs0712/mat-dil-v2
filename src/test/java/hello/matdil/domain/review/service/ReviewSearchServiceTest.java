@@ -23,10 +23,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ReviewQueryServiceTest {
+class ReviewSearchServiceTest {
 
     @InjectMocks
-    private ReviewQueryService reviewQueryService;
+    private ReviewSearchService reviewSearchService;
 
     @Mock
     private ReviewRepository reviewRepository;
@@ -64,7 +64,7 @@ class ReviewQueryServiceTest {
                 .willReturn(expectedSlice);
 
         // when
-        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> result = reviewQueryService.getReviews(storeId, request);
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> result = reviewSearchService.getReviews(storeId, request);
 
         // then
         assertThat(result).isEqualTo(expectedSlice);
@@ -101,7 +101,7 @@ class ReviewQueryServiceTest {
 
         // when
         SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> result =
-                reviewQueryService.getReviews(storeId, request);
+                reviewSearchService.getReviews(storeId, request);
 
         // then
         assertThat(result).isEqualTo(expectedSlice);

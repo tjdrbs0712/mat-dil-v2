@@ -41,6 +41,32 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
                 .limit(requestDto.pageSize() + 1)
                 .fetch();
 
+        return getReviewResponseDtos(reviewIds, review, image, strategy);
+    }
+
+    @Override
+    public List<ReviewResponseDto> loadAllReviewsByCursor(Long storeId, ReviewCursorRequestDto requestDto) {
+        QReview review = QReview.review;
+        QReviewImage image = QReviewImage.reviewImage;
+
+        ReviewSortType sortType = requestDto.getSortType();
+        ReviewSortStrategy strategy = strategyFactory.getStrategy(sortType);
+
+        List<Long> reviewIds = queryFactory
+                .select(review.id)
+                .from(review)
+                .where(
+                        review.storeId.eq(storeId),
+                        strategy.buildCursorPredicate(review, requestDto.toCursorParamMap())
+                )
+                .orderBy(strategy.getOrderSpecifiers(review))
+                .limit(requestDto.pageSize() + 1)
+                .fetch();
+
+        return getReviewResponseDtos(reviewIds, review, image, strategy);
+    }
+
+    private List<ReviewResponseDto> getReviewResponseDtos(List<Long> reviewIds, QReview review, QReviewImage image, ReviewSortStrategy strategy) {
         if (reviewIds.isEmpty()) {
             return List.of();
         }

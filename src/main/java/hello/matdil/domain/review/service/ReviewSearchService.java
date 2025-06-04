@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewQueryService {
+public class ReviewSearchService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewCacheService reviewCacheService;
@@ -28,6 +28,19 @@ public class ReviewQueryService {
         List<ReviewResponseDto> reviews = isFirstPage
                 ? reviewCacheService.getReviews(storeId, request)
                 : reviewRepository.loadReviewsByCursor(storeId, request);
+
+        int size = request.pageSize();
+        return pageAssembler.assemble(
+                reviews,
+                size,
+                last -> ReviewCursorResponseDto.from(size, request.getSortType(), last),
+                Function.identity()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> getAllStoreReviewsForAdmin(Long storeId, ReviewCursorRequestDto request) {
+        List<ReviewResponseDto> reviews = reviewRepository.loadAllReviewsByCursor(storeId, request);
 
         int size = request.pageSize();
         return pageAssembler.assemble(

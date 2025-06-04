@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ReviewQueryRepository {
     List<ReviewResponseDto> loadReviewsByCursor(Long storeId, ReviewCursorRequestDto requestDto);
+    List<ReviewResponseDto> loadAllReviewsByCursor(Long storeId, ReviewCursorRequestDto requestDto);
 }

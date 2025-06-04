@@ -2,11 +2,15 @@ package hello.matdil.domain.review.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-public record ReviewUpdateRequestDto(
+public record AdminReviewUpdateRequestDto(
+        @NotNull(message = "유저 ID는 필수입니다.")
+        Long userId,
+
         @Min(value = 1, message = "별점은 1 이상이어야 합니다.")
         @Max(value = 5, message = "별점은 5 이하여야 합니다.")
         int rating,
@@ -16,11 +20,4 @@ public record ReviewUpdateRequestDto(
 
         List<String> imageUrls
 ) {
-        public static ReviewUpdateRequestDto from(AdminReviewUpdateRequestDto adminDto) {
-                return new ReviewUpdateRequestDto(
-                        adminDto.rating(),
-                        adminDto.comment(),
-                        adminDto.imageUrls()
-                );
-        }
 }

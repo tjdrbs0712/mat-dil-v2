@@ -46,12 +46,10 @@ public class ReviewController {
     // 3. 리뷰 조회 (슬라이스)
     @GetMapping("/stores/{storeId}/reviews")
     public ResponseEntity<SuccessResponse<SliceResponse<ReviewResponseDto, ReviewCursorResponseDto>>> getReviews(
-            @LoginUser(required = false) AuthUser authUser,
             @PathVariable Long storeId,
             @ModelAttribute @Valid ReviewCursorRequestDto request
     ) {
-        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> response = reviewFacade.getReviews(
-                authUser.getUserId(), authUser.getRole(), storeId, request);
+        SliceResponse<ReviewResponseDto, ReviewCursorResponseDto> response = reviewFacade.getReviews(storeId, request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 

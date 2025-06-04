@@ -8,8 +8,6 @@ import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
 import hello.matdil.domain.review.factory.ReviewFactory;
 import hello.matdil.domain.review.repository.ReviewRepository;
-import hello.matdil.domain.store.reader.StoreReader;
-import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ public class ReviewCommandService {
     private final ReviewRepository reviewRepository;
     private final ReviewFactory reviewFactory;
     private final ReviewCacheService reviewCacheService;
-    private final StoreReader storeReader;
 
     @Transactional
     public ReviewResponseDto create(Long userId, ReviewCreateRequestDto dto) {
@@ -54,11 +51,15 @@ public class ReviewCommandService {
     }
 
     @Transactional(readOnly = true)
-    public Review getAccessibleReview(Long userId, UserRole role, Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
+    public Review getReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
-        storeReader.readByIdWithPermission(userId, review.getStoreId(), role);
-        review.validateAccessibleTo(userId, role);
-        return review;
     }
+
+    @Transactional(readOnly = true)
+    public Review getReviewByIdDeletedFalse(Long reviewId, Long userId) {
+        return reviewRepository.findByIdAndUserIdAndIsDeletedFalse(reviewId, userId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+    }
+
 }
