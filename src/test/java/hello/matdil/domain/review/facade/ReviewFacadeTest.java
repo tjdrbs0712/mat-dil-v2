@@ -108,7 +108,7 @@ class ReviewFacadeTest {
         ReviewUpdateRequestDto dto = new ReviewUpdateRequestDto(4, "수정", List.of());
         ReviewResponseDto expected = ReviewResponseDto.builder().id(reviewId).comment("수정").build();
 
-        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
+        given(reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId)).willReturn(review);
         given(commandService.update(review, dto)).willReturn(expected);
 
         // when
@@ -126,7 +126,7 @@ class ReviewFacadeTest {
         Long reviewId = 1L;
         ReviewUpdateRequestDto dto = new ReviewUpdateRequestDto(4, "수정", List.of());
 
-        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         // when & then
@@ -143,13 +143,13 @@ class ReviewFacadeTest {
         Long reviewId = 1L;
         Review review = mock(Review.class);
 
-        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
+        given(reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId)).willReturn(review);
 
         // when
         reviewFacade.deleteReview(userId, role, reviewId);
 
         // then
-        verify(reviewReader).getReviewByIdDeletedFalse(reviewId, userId);
+        verify(reviewReader).getReviewByIAndUserIdAndDeletedFalse(reviewId, userId);
         verify(commandService).delete(review);
     }
 
@@ -160,7 +160,7 @@ class ReviewFacadeTest {
         UserRole role = UserRole.USER;
         Long reviewId = 1L;
 
-        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.NO_PERMISSION));
 
         // when & then
@@ -176,7 +176,7 @@ class ReviewFacadeTest {
         UserRole role = UserRole.USER;
         Long reviewId = 1L;
 
-        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         // when & then

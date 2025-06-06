@@ -38,6 +38,14 @@ public class ReviewReply extends BaseTimeEntity {
         this.replyText = replyText;
     }
 
+    public static ReviewReply create(Long ownerId, Review review, String replyText){
+        return ReviewReply.builder()
+                .ownerId(ownerId)
+                .review(review)
+                .replyText(replyText)
+                .build();
+    }
+
     public void updateReplyText(String newText) {
         this.replyText = newText;
     }

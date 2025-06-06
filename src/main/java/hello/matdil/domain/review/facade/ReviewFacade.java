@@ -32,13 +32,13 @@ public class ReviewFacade {
     }
 
     public ReviewResponseDto updateReview(Long userId, UserRole role, Long reviewId, ReviewUpdateRequestDto dto) {
-        Review review = reviewReader.getReviewByIdDeletedFalse(reviewId, userId);
+        Review review = reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId);
         validatorStrategy.validate(role, review.getStoreId());
         return commandService.update(review, dto);
     }
 
     public void deleteReview(Long userId, UserRole role, Long reviewId) {
-        Review review = reviewReader.getReviewByIdDeletedFalse(reviewId, userId);
+        Review review = reviewReader.getReviewByIAndUserIdAndDeletedFalse(reviewId, userId);
         validatorStrategy.validate(role, review.getStoreId());
         commandService.delete(review);
     }

@@ -21,8 +21,14 @@ public class ReviewReader {
     }
 
     @Transactional(readOnly = true)
-    public Review getReviewByIdDeletedFalse(Long reviewId, Long userId) {
+    public Review getReviewByIAndUserIdAndDeletedFalse(Long reviewId, Long userId) {
         return reviewRepository.findByIdAndUserIdAndIsDeletedFalse(reviewId, userId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Review getReviewByIdAndDeletedFalse(Long reviewId){
+        return reviewRepository.findByIdAndIsDeletedFalse(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
     }
 
