@@ -4,7 +4,11 @@ import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.reader.ReviewReader;
 import hello.matdil.domain.review.reviewreply.dto.ReviewReplyCreateRequestDto;
 import hello.matdil.domain.review.reviewreply.dto.ReviewReplyResponseDto;
+import hello.matdil.domain.review.reviewreply.dto.ReviewReplyUpdateRequestDto;
 import hello.matdil.domain.review.reviewreply.entity.ReviewReply;
+import hello.matdil.domain.review.reviewreply.exception.ReviewReplyErrorCode;
+import hello.matdil.domain.review.reviewreply.exception.ReviewReplyException;
+import hello.matdil.domain.review.reviewreply.reader.ReviewReplyReader;
 import hello.matdil.domain.review.reviewreply.service.ReviewReplyService;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
@@ -25,6 +29,9 @@ class ReviewReplyFacadeTest {
 
     @InjectMocks
     private ReviewReplyFacade reviewReplyFacade;
+
+    @Mock
+    private ReviewReplyReader reviewReplyReader;
 
     @Mock
     private ReviewReader reviewReader;
@@ -85,5 +92,50 @@ class ReviewReplyFacadeTest {
                 .isInstanceOf(StoreException.class);
 
         then(reviewReplyService).should(never()).createReply(any(), any(), any());
+    }
+
+    @Test
+    void 퍼사드_리뷰_답글_수정_성공() {
+        // given
+        Long ownerId = 1L;
+        Long replyId = 2L;
+        Long storeId = 10L;
+        ReviewReplyUpdateRequestDto requestDto = new ReviewReplyUpdateRequestDto("수정된 답글!");
+
+        Review mockReview = mock(Review.class);
+        ReviewReply mockReply = mock(ReviewReply.class);
+
+        given(reviewReplyReader.getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId)).willReturn(mockReply);
+        given(mockReply.getReview()).willReturn(mockReview);
+        given(mockReview.getStoreId()).willReturn(storeId);
+        given(reviewReplyService.updateReply(storeId, mockReply, requestDto.replyText())).willReturn(mockReply);
+
+        // when
+        ReviewReplyResponseDto responseDto = reviewReplyFacade.updateReply(ownerId, replyId, requestDto);
+
+        // then
+        assertThat(responseDto).isNotNull();
+
+        then(reviewReplyReader).should().getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId);
+        then(storeValidator).should().validateOwnerOf(storeId, ownerId);
+        then(reviewReplyService).should().updateReply(storeId, mockReply, requestDto.replyText());
+    }
+
+    @Test
+    void 리뷰_답글_수정_실패_수정할_답글이_없음() {
+        // given
+        Long ownerId = 1L;
+        Long replyId = 999L;
+        ReviewReplyUpdateRequestDto requestDto = new ReviewReplyUpdateRequestDto("수정된 답글!");
+
+        given(reviewReplyReader.getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId))
+                .willThrow(new ReviewReplyException(ReviewReplyErrorCode.REVIEW_REPLY_NOT_FOUND));
+
+        // when & then
+        assertThatThrownBy(() -> reviewReplyFacade.updateReply(ownerId, replyId, requestDto))
+                .isInstanceOf(ReviewReplyException.class);
+
+        then(storeValidator).should(never()).validateOwnerOf(anyLong(), anyLong());
+        then(reviewReplyService).should(never()).updateReply(anyLong(), any(), anyString());
     }
 }

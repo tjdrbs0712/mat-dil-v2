@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,5 +72,21 @@ class ReviewReplyServiceTest {
                 .hasMessageContaining(ReviewReplyErrorCode.ALREADY_REVIEW_REPLY.getErrorMessage());
 
         then(reviewCacheService).should(never()).deleteAll(any(Long.class));
+    }
+
+    @Test
+    void 리뷰_답글_수정_성공() {
+        // given
+        Long storeId = 10L;
+        String newReplyText = "수정된 답글입니다.";
+
+        ReviewReply mockReviewReply = mock(ReviewReply.class);
+
+        // when
+        reviewReplyService.updateReply(storeId, mockReviewReply, newReplyText);
+
+        // then
+        then(mockReviewReply).should().updateReplyText(newReplyText);
+        then(reviewCacheService).should().deleteAll(storeId);
     }
 }
