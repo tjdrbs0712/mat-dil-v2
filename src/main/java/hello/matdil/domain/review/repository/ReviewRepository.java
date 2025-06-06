@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewQueryRepository {
     Optional<Review> findByIdAndUserIdAndIsDeletedFalse(Long reviewId, Long userId);
 
+    Optional<Review> findByIdAndIsDeletedFalse(Long reviewId);
+
 }

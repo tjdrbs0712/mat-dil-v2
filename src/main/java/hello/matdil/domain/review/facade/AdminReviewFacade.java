@@ -2,6 +2,7 @@ package hello.matdil.domain.review.facade;
 
 import hello.matdil.domain.review.dto.*;
 import hello.matdil.domain.review.entity.Review;
+import hello.matdil.domain.review.reader.ReviewReader;
 import hello.matdil.domain.review.service.ReviewCommandService;
 import hello.matdil.domain.review.service.ReviewSearchService;
 import hello.matdil.domain.store.validator.StoreExistenceValidatorStrategy;
@@ -17,6 +18,7 @@ public class AdminReviewFacade {
 
     private final ReviewCommandService commandService;
     private final ReviewSearchService searchService;
+    private final ReviewReader reviewReader;
     private final StoreExistenceValidatorStrategy validatorStrategy;
 
     public ReviewResponseDto createReview(UserRole role, AdminReviewCreateRequestDto adminDto) {
@@ -26,7 +28,7 @@ public class AdminReviewFacade {
     }
 
     public void deleteReview(UserRole role, Long reviewId) {
-        Review review = commandService.getReviewById(reviewId);
+        Review review = reviewReader.getReviewById(reviewId);
         validatorStrategy.validate(role, review.getStoreId());
         commandService.delete(review);
     }
@@ -39,7 +41,7 @@ public class AdminReviewFacade {
 
     public ReviewResponseDto updateReview(UserRole role, Long reviewId, AdminReviewUpdateRequestDto adminDto) {
         ReviewUpdateRequestDto dto = ReviewUpdateRequestDto.from(adminDto);
-        Review review = commandService.getReviewById(reviewId);
+        Review review = reviewReader.getReviewById(reviewId);
         validatorStrategy.validate(role, review.getStoreId());
         return commandService.update(review, dto);
     }

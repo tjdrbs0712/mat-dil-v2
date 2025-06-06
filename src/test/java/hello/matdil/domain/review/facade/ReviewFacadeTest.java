@@ -10,6 +10,7 @@ import hello.matdil.domain.review.dto.ReviewUpdateRequestDto;
 import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.review.exception.ReviewErrorCode;
 import hello.matdil.domain.review.exception.ReviewException;
+import hello.matdil.domain.review.reader.ReviewReader;
 import hello.matdil.domain.review.service.ReviewCommandService;
 import hello.matdil.domain.review.service.ReviewSearchService;
 import hello.matdil.domain.store.exception.StoreErrorCode;
@@ -32,10 +33,17 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class ReviewFacadeTest {
 
-    @Mock private OrderReader orderReader;
-    @Mock private ReviewCommandService commandService;
-    @Mock private ReviewSearchService searchService;
-    @Mock private StoreExistenceValidatorStrategy validatorStrategy;
+    @Mock
+    private OrderReader orderReader;
+
+    @Mock
+    private ReviewReader reviewReader;
+
+    @Mock
+    private ReviewCommandService commandService;
+
+    @Mock
+    private StoreExistenceValidatorStrategy validatorStrategy;
 
     @InjectMocks
     private ReviewFacade reviewFacade;
@@ -93,7 +101,7 @@ class ReviewFacadeTest {
         ReviewUpdateRequestDto dto = new ReviewUpdateRequestDto(4, "수정", List.of());
         ReviewResponseDto expected = ReviewResponseDto.builder().id(reviewId).comment("수정").build();
 
-        given(commandService.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
+        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
         given(commandService.update(review, dto)).willReturn(expected);
 
         ReviewResponseDto response = reviewFacade.updateReview(userId, role, reviewId, dto);
@@ -108,7 +116,7 @@ class ReviewFacadeTest {
         Long reviewId = 1L;
         ReviewUpdateRequestDto dto = new ReviewUpdateRequestDto(4, "수정", List.of());
 
-        given(commandService.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         assertThatThrownBy(() -> reviewFacade.updateReview(userId, role, reviewId, dto))
@@ -123,7 +131,7 @@ class ReviewFacadeTest {
         Long reviewId = 1L;
         Review review = mock(Review.class);
 
-        given(commandService.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
+        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId)).willReturn(review);
 
         verify(reviewFacade).deleteReview(userId, role, reviewId);
     }
@@ -134,7 +142,7 @@ class ReviewFacadeTest {
         UserRole role = UserRole.USER;
         Long reviewId = 1L;
 
-        given(commandService.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.NO_PERMISSION));
 
         assertThatThrownBy(() -> reviewFacade.deleteReview(userId, role, reviewId))
@@ -148,7 +156,7 @@ class ReviewFacadeTest {
         UserRole role = UserRole.USER;
         Long reviewId = 1L;
 
-        given(commandService.getReviewByIdDeletedFalse(reviewId, userId))
+        given(reviewReader.getReviewByIdDeletedFalse(reviewId, userId))
                 .willThrow(new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         assertThatThrownBy(() -> reviewFacade.deleteReview(userId, role, reviewId))
