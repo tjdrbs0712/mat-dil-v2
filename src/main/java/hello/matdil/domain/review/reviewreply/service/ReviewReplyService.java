@@ -6,6 +6,8 @@ import hello.matdil.domain.review.reviewreply.exception.ReviewReplyErrorCode;
 import hello.matdil.domain.review.reviewreply.exception.ReviewReplyException;
 import hello.matdil.domain.review.reviewreply.repository.ReviewReplyRepository;
 import hello.matdil.domain.review.service.ReviewCacheService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,13 @@ public class ReviewReplyService {
         }
 
         reviewCacheService.deleteAll(review.getStoreId());
+        return reviewReply;
+    }
+
+    @Transactional
+    public ReviewReply updateReply(Long storeId, ReviewReply reviewReply, String replyText) {
+        reviewReply.updateReplyText(replyText);
+        reviewCacheService.deleteAll(storeId);
         return reviewReply;
     }
 }
