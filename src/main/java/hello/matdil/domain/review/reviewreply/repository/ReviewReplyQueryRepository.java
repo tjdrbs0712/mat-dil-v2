@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface ReviewReplyQueryRepository {
     Optional<ReviewReply> findByIdAndOwnerWithReviewAndIsDeletedFalse(Long replyId, Long ownerId);
+
+    Optional<ReviewReply> findByIdWithReview(Long replyId);
 }

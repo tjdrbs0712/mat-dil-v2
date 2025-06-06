@@ -2,6 +2,8 @@ package hello.matdil.domain.review.reviewreply.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.review.entity.Review;
+import hello.matdil.domain.review.reviewreply.exception.ReviewReplyErrorCode;
+import hello.matdil.domain.review.reviewreply.exception.ReviewReplyException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,6 +53,9 @@ public class ReviewReply extends BaseTimeEntity {
     }
 
     public void markAsDeleted() {
+        if(this.isDeleted){
+            throw new ReviewReplyException(ReviewReplyErrorCode.ALREADY_DELETED_REVIEW_REPLY);
+        }
         this.isDeleted = true;
     }
 

@@ -33,4 +33,21 @@ public class ReviewReplyQueryRepositoryImpl implements ReviewReplyQueryRepositor
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<ReviewReply> findByIdWithReview(Long replyId) {
+
+        QReview review = QReview.review;
+        QReviewReply reviewReply = QReviewReply.reviewReply;
+
+        ReviewReply result = jpaQueryFactory
+                .selectFrom(reviewReply)
+                .join(reviewReply.review, review).fetchJoin()
+                .where(
+                        reviewReply.id.eq(replyId)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
 }
