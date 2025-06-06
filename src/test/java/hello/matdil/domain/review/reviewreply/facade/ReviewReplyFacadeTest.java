@@ -105,7 +105,7 @@ class ReviewReplyFacadeTest {
         Review mockReview = mock(Review.class);
         ReviewReply mockReply = mock(ReviewReply.class);
 
-        given(reviewReplyReader.getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId)).willReturn(mockReply);
+        given(reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId)).willReturn(mockReply);
         given(mockReply.getReview()).willReturn(mockReview);
         given(mockReview.getStoreId()).willReturn(storeId);
         given(reviewReplyService.updateReply(storeId, mockReply, requestDto.replyText())).willReturn(mockReply);
@@ -116,7 +116,7 @@ class ReviewReplyFacadeTest {
         // then
         assertThat(responseDto).isNotNull();
 
-        then(reviewReplyReader).should().getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId);
+        then(reviewReplyReader).should().getDeletableReplyForOwner(replyId, ownerId);
         then(storeValidator).should().validateOwnerOf(storeId, ownerId);
         then(reviewReplyService).should().updateReply(storeId, mockReply, requestDto.replyText());
     }
@@ -128,7 +128,7 @@ class ReviewReplyFacadeTest {
         Long replyId = 999L;
         ReviewReplyUpdateRequestDto requestDto = new ReviewReplyUpdateRequestDto("수정된 답글!");
 
-        given(reviewReplyReader.getFindByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId))
+        given(reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId))
                 .willThrow(new ReviewReplyException(ReviewReplyErrorCode.REVIEW_REPLY_NOT_FOUND));
 
         // when & then

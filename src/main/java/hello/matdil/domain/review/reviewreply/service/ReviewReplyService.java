@@ -40,4 +40,10 @@ public class ReviewReplyService {
         reviewCacheService.deleteAll(storeId);
         return reviewReply;
     }
+
+    @Transactional
+    public void deleteReply(Long storeId, ReviewReply reviewReply) {
+        reviewReply.markAsDeleted();
+        reviewCacheService.deleteAll(storeId);
+    }
 }

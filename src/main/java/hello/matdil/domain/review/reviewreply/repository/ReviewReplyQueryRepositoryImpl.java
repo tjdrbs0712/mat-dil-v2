@@ -16,7 +16,7 @@ public class ReviewReplyQueryRepositoryImpl implements ReviewReplyQueryRepositor
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Optional<ReviewReply> findByIdAndOwnerWithReviewAndIsDeletedFalse(Long id, Long ownerId) {
+    public Optional<ReviewReply> findByIdAndOwnerWithReviewAndIsDeletedFalse(Long replyId, Long ownerId) {
 
         QReview review = QReview.review;
         QReviewReply reviewReply = QReviewReply.reviewReply;
@@ -25,7 +25,7 @@ public class ReviewReplyQueryRepositoryImpl implements ReviewReplyQueryRepositor
                 .selectFrom(reviewReply)
                 .join(reviewReply.review, review).fetchJoin()
                 .where(
-                        reviewReply.id.eq(id),
+                        reviewReply.id.eq(replyId),
                         reviewReply.ownerId.eq(ownerId),
                         reviewReply.isDeleted.isFalse()
                 )

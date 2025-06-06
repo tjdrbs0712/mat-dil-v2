@@ -15,8 +15,8 @@ public class ReviewReplyReader {
     private final ReviewReplyRepository reviewReplyRepository;
 
     @Transactional(readOnly = true)
-    public ReviewReply getFindByIdAndOwnerWithReviewAndIsDeletedFalse (Long reviewId, Long ownerId){
-        return reviewReplyRepository.findByIdAndOwnerWithReviewAndIsDeletedFalse(reviewId, ownerId)
+    public ReviewReply getDeletableReplyForOwner(Long replyId, Long ownerId){
+        return reviewReplyRepository.findByIdAndOwnerWithReviewAndIsDeletedFalse(replyId, ownerId)
                 .orElseThrow(() -> new ReviewReplyException(ReviewReplyErrorCode.REVIEW_REPLY_NOT_FOUND));
     }
 

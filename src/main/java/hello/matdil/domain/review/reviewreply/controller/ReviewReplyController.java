@@ -40,5 +40,14 @@ public class ReviewReplyController {
         ReviewReplyResponseDto responseDto = reviewReplyFacade.updateReply(loginUser.getUserId(), replyId, requestDto);
         return ResponseEntity.ok(SuccessResponse.success(responseDto));
     }
+
+    @DeleteMapping("/reply/{replyId}")
+    public ResponseEntity<SuccessResponse<Void>> deleteReply(
+            @LoginUser AuthUser loginUser,
+            @PathVariable Long replyId
+    ) {
+        reviewReplyFacade.deleteReply(loginUser.getUserId(), replyId);
+        return ResponseEntity.ok(SuccessResponse.success(null));
+    }
 }
 

@@ -9,7 +9,6 @@ import hello.matdil.domain.review.reviewreply.entity.ReviewReply;
 import hello.matdil.domain.review.reviewreply.reader.ReviewReplyReader;
 import hello.matdil.domain.review.reviewreply.service.ReviewReplyService;
 import hello.matdil.domain.store.validator.StoreValidator;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +29,19 @@ public class ReviewReplyFacade {
         return ReviewReplyResponseDto.from(reply);
     }
 
-    public ReviewReplyResponseDto updateReply(Long ownerId, Long reviewId, ReviewReplyUpdateRequestDto dto) {
-        ReviewReply reviewReply = reviewReplyReader.getFindByIdAndOwnerWithReviewAndIsDeletedFalse(reviewId, ownerId);
+    public ReviewReplyResponseDto updateReply(Long ownerId, Long replyId, ReviewReplyUpdateRequestDto dto) {
+        ReviewReply reviewReply = reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId);
         Long storeId = reviewReply.getReview().getStoreId();
         storeValidator.validateOwnerOf(storeId, ownerId);
         ReviewReply updateReply = reviewReplyService.updateReply(storeId, reviewReply, dto.replyText());
 
         return ReviewReplyResponseDto.from(updateReply);
+    }
+
+    public void deleteReply(Long ownerId, Long replyId) {
+        ReviewReply reviewReply = reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId);
+        Long storeId = reviewReply.getReview().getStoreId();
+        storeValidator.validateOwnerOf(storeId, ownerId);
+        reviewReplyService.deleteReply(storeId, reviewReply);
     }
 }
