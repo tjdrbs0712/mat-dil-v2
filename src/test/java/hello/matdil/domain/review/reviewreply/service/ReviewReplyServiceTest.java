@@ -89,4 +89,18 @@ class ReviewReplyServiceTest {
         then(mockReviewReply).should().updateReplyText(newReplyText);
         then(reviewCacheService).should().deleteAll(storeId);
     }
+
+    @Test
+    void 리뷰_답글_삭제_성공() {
+        // given
+        Long storeId = 10L;
+        ReviewReply mockReviewReply = mock(ReviewReply.class);
+
+        // when
+        reviewReplyService.deleteReply(storeId, mockReviewReply);
+
+        // then
+        then(mockReviewReply).should().markAsDeleted();
+        then(reviewCacheService).should().deleteAll(storeId);
+    }
 }

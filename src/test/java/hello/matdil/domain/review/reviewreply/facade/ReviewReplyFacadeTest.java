@@ -138,4 +138,44 @@ class ReviewReplyFacadeTest {
         then(storeValidator).should(never()).validateOwnerOf(anyLong(), anyLong());
         then(reviewReplyService).should(never()).updateReply(anyLong(), any(), anyString());
     }
+
+    @Test
+    void 퍼사드_리뷰_답글_삭제_성공() {
+        // given
+        Long ownerId = 1L;
+        Long replyId = 2L;
+        Long storeId = 10L;
+
+        Review mockReview = mock(Review.class);
+        ReviewReply mockReply = mock(ReviewReply.class);
+
+        given(reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId)).willReturn(mockReply);
+        given(mockReply.getReview()).willReturn(mockReview);
+        given(mockReview.getStoreId()).willReturn(storeId);
+
+        // when
+        reviewReplyFacade.deleteReply(ownerId, replyId);
+
+        // then
+        then(reviewReplyReader).should().getDeletableReplyForOwner(replyId, ownerId);
+        then(storeValidator).should().validateOwnerOf(storeId, ownerId);
+        then(reviewReplyService).should().deleteReply(storeId, mockReply);
+    }
+
+    @Test
+    void 리뷰_답글_삭제_실패_삭제할_답글이_없음() {
+        // given
+        Long ownerId = 1L;
+        Long replyId = 999L;
+
+        given(reviewReplyReader.getDeletableReplyForOwner(replyId, ownerId))
+                .willThrow(new ReviewReplyException(ReviewReplyErrorCode.REVIEW_REPLY_NOT_FOUND));
+
+        // when & then
+        assertThatThrownBy(() -> reviewReplyFacade.deleteReply(ownerId, replyId))
+                .isInstanceOf(ReviewReplyException.class);
+
+        then(storeValidator).should(never()).validateOwnerOf(anyLong(), anyLong());
+        then(reviewReplyService).should(never()).deleteReply(anyLong(), any());
+    }
 }
