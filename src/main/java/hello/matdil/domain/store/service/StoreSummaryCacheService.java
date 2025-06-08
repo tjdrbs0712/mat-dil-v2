@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 public class StoreSummaryCacheService {
 
     private final RedisCacheHelper redisCacheHelper;
-    private static final Duration TTL = Duration.ofDays(1);
+    private static final String STORE_SUMMARY_KEY_PREFIX = "store:summary:";
+    private static final Duration TTL = Duration.ofMinutes(10);
 
     private String getKey(Long storeId) {
-        return "store:summary:" + storeId;
+        return STORE_SUMMARY_KEY_PREFIX + storeId;
     }
 
     public Optional<StoreSummaryResponseDto> get(Long storeId) {
@@ -44,7 +45,7 @@ public class StoreSummaryCacheService {
         return result.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry ->
-                                Long.parseLong(entry.getKey().replace("store:summary:", "")),
+                                Long.parseLong(entry.getKey().replace(STORE_SUMMARY_KEY_PREFIX, "")),
                         Map.Entry::getValue
                 ));
     }

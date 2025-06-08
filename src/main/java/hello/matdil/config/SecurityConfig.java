@@ -56,7 +56,11 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/auth/verify-email"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/stores", "/api/stores/**").permitAll()
+                        .requestMatchers(HttpMethod.GET
+                                , "/api/stores"
+                                , "/api/stores/**",
+                                "/api/v2/stores/*/reviews")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

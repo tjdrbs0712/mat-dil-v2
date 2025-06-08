@@ -2,7 +2,7 @@ package hello.matdil.domain.favorite.service.admin;
 
 import hello.matdil.domain.favorite.dto.AdminFavoriteRequestDto;
 import hello.matdil.domain.favorite.service.FavoriteCommand;
-import hello.matdil.domain.user.entity.UserRole;
+import hello.matdil.domain.store.validator.StoreValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminFavoriteServiceImpl implements AdminFavoriteService{
 
     private final FavoriteCommand favoriteCommand;
+    private final StoreValidator storeValidator;
 
     @Override
     @Transactional
-    public void addFavorite(UserRole role, AdminFavoriteRequestDto requestDto) {
-        favoriteCommand.addFavorite(requestDto.userId(), role, requestDto.storeId());
+    public void addFavorite(AdminFavoriteRequestDto request) {
+        storeValidator.validateAdminExists(request.storeId());
+        favoriteCommand.addFavorite(request.userId(), request.storeId());
     }
 
     @Override
     @Transactional
-    public void removeFavorite(UserRole role, AdminFavoriteRequestDto request) {
-        favoriteCommand.removeFavorite(request.userId(), role, request.storeId());
+    public void removeFavorite(AdminFavoriteRequestDto request) {
+        storeValidator.validateAdminExists(request.storeId());
+        favoriteCommand.removeFavorite(request.userId(), request.storeId());
     }
 }

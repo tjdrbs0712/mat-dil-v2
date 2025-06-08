@@ -47,10 +47,9 @@ class FavoriteCommandTest {
                 .willReturn(Favorite.create(userId, storeId));
 
         // when
-        favoriteCommand.addFavorite(userId, role, storeId);
+        favoriteCommand.addFavorite(userId, storeId);
 
         // then
-        verify(storeReader).readByIdWithPermission(userId, storeId, role);
         verify(favoriteRepository).save(any(Favorite.class));
         verify(favoriteCacheService).deleteAll(userId);
     }
@@ -62,7 +61,7 @@ class FavoriteCommandTest {
                 .willThrow(DataIntegrityViolationException.class);
 
         // when & then
-        assertThatThrownBy(() -> favoriteCommand.addFavorite(userId, role, storeId))
+        assertThatThrownBy(() -> favoriteCommand.addFavorite(userId, storeId))
                 .isInstanceOf(FavoriteException.class)
                 .hasMessageContaining(FavoriteErrorCode.ALREADY_FAVORITE.getErrorMessage());
 
@@ -77,7 +76,7 @@ class FavoriteCommandTest {
                 .willReturn(Optional.of(favorite));
 
         // when
-        favoriteCommand.removeFavorite(userId, role, storeId);
+        favoriteCommand.removeFavorite(userId, storeId);
 
         // then
         verify(favoriteRepository).delete(favorite);
@@ -91,7 +90,7 @@ class FavoriteCommandTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> favoriteCommand.removeFavorite(userId, role, storeId))
+        assertThatThrownBy(() -> favoriteCommand.removeFavorite(userId, storeId))
                 .isInstanceOf(FavoriteException.class)
                 .hasMessageContaining(FavoriteErrorCode.FAVORITE_NOT_FOUND.getErrorMessage());
 

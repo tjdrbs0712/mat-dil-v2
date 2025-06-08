@@ -1,2 +1,0 @@
-ALTER TABLE orders
-DROP COLUMN is_paid;

@@ -21,15 +21,20 @@ public class RedisCacheHelper {
 
     public <T> Optional<T> get(String key, Class<T> clazz) {
         Object value = redisTemplate.opsForValue().get(key);
+
+        if (value == null) {
+            return Optional.empty();
+        }
+
         if (clazz.isInstance(value)) {
             return Optional.of(clazz.cast(value));
         }
-        else{
-            log.warn("Redis 역직렬화 실패. key={}, value class={}", key, value != null ? value.getClass().getName() : "null");
-        }
+
+        log.error("Redis 데이터 타입 불일치! key={}, expectedType={}, actualType={}",
+                key, clazz.getName(), value.getClass().getName());
+
         return Optional.empty();
     }
-
     public void put(String key, Object value, Duration ttl) {
         redisTemplate.opsForValue().set(key, value, ttl);
     }

@@ -119,6 +119,12 @@ public class Store extends BaseTimeEntity {
         }
     }
 
+    public void validateOwnerId(Long ownerId){
+        if(!this.ownerId.equals(ownerId)){
+            throw new StoreException(StoreErrorCode.NO_PERMISSION);
+        }
+    }
+
     public void changeStoreStatus(StoreStatus newStatus) {
         if (this.status == newStatus) {
             throw new StoreException(StoreErrorCode.STORE_STATUS_UNCHANGED);

@@ -4,6 +4,7 @@ import hello.matdil.domain.address.Address;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
+import hello.matdil.domain.review.entity.Review;
 import hello.matdil.domain.store.dto.StoreSearchRequestDto;
 import hello.matdil.domain.store.dto.StoreUpdateRequestDto;
 import hello.matdil.domain.store.entity.Store;
@@ -113,6 +114,16 @@ public class TestData {
         expectedOrder.setTotalPrice(25000);
 
         return expectedOrder;
+    }
+
+    public static Review setReview(){
+        return Review.builder()
+                .storeId(1L)
+                .rating(5)
+                .orderId(1L)
+                .comment("댓글 1")
+                .userId(1L)
+                .build();
     }
 
 }

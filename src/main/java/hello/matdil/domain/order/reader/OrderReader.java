@@ -12,6 +12,7 @@ import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,12 +23,14 @@ public class OrderReader {
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
 
+    @Transactional(readOnly = true)
     public Order readWithUserPermission(Long orderId, Long userId, UserRole role) {
         Order order = readById(orderId);
         order.validateAccessibleTo(userId, role);
         return order;
     }
 
+    @Transactional(readOnly = true)
     public Order readWithStorePermission(Long orderId, Long userId, UserRole role) {
         Order order = readById(orderId);
         Store store = readStoreWithNotDeleted(order.getStoreId());
@@ -35,10 +38,12 @@ public class OrderReader {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public List<Order> readByUserWithCursor(Long userId, OrderCursorRequestDto cursor) {
         return orderRepository.findOrdersByUserIdWithCursor(userId, cursor);
     }
 
+    @Transactional(readOnly = true)
     public List<Order> readByStoreWithCursor(
             Long storeId, OrderCursorRequestDto cursor) {
         return orderRepository.findOrdersByStoreIdWithCursor(storeId, cursor);
