@@ -30,6 +30,10 @@ ext {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+//    // 포트원 v2 SDK
+//    implementation 'com.siot.IamportRestClient:iamport-rest-client-java:2.2.2'
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
