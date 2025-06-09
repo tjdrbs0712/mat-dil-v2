@@ -1,88 +1,136 @@
 package hello.matdil.domain.payment.service;
 
+import hello.matdil.config.PortOneProperties;
+import hello.matdil.domain.order.entity.Order;
+import hello.matdil.domain.order.repository.OrderRepository;
+import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
+import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
+import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
+import hello.matdil.domain.payment.dto.PaymentPreparationResponse;
+import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
+import hello.matdil.domain.payment.dto.portone.PortonePaymentResponseWrapper;
+import hello.matdil.domain.payment.dto.portone.PortoneTokenRequest;
+import hello.matdil.domain.payment.dto.portone.PortoneTokenResponse;
+import hello.matdil.domain.payment.entity.Payment;
+import hello.matdil.domain.payment.entity.PaymentMethod;
+import hello.matdil.domain.payment.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class PaymentService {
 
-    private final PortoneTokenService tokenService;
+    private final PortOneProperties portOneProperties;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
     private final WebClient webClient;
 
-    public PaymentService(PortoneTokenService tokenService, @Value("${portone.base-url}") String baseUrl) {
-        this.tokenService = tokenService;
-        this.webClient = WebClient.builder().baseUrl(baseUrl).build();
+    /**
+     * 결제 준비
+     */
+    @Transactional
+    public PaymentPreparationResponse preparePayment(PaymentPreparationRequest request) {
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
+
+//        if (paymentRepository.existsByOrderIdAndStatus(orderId, PaymentStatus.COMPLETED)) {
+//            throw new IllegalStateException("이미 결제 완료된 주문입니다.");
+//        }
+
+        // ✨ 클라이언트에서 받은 문자열(예: "kakao_pay")을 Enum으로 변환하여 저장
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(request.method().toUpperCase(Locale.ROOT));
+
+        Payment payment = Payment.builder()
+                .orderId(order.getId())
+                .amount(BigDecimal.valueOf(order.getTotalPrice()))
+                .method(paymentMethod)
+                .build();
+
+        paymentRepository.save(payment);
+
+        // pgProvider를 동적으로 생성하여 반환
+        String pgProvider = determinePgProvider(paymentMethod);
+
+        return PaymentPreparationResponse.from(payment, pgProvider, portOneProperties);
     }
 
-    // 1. 사전 검증: 결제 준비
-    public Mono<Map<String, Object>> preparePayment(String orderId) {
-        // 실제로는 DB에서 주문 ID로 주문 정보를 조회해야 합니다.
-        // 여기서는 포트폴리오용으로 고정된 값을 사용합니다.
-        BigDecimal amountToPay = new BigDecimal("1000"); // DB에서 조회한 실제 결제해야 할 금액
-        String merchantUid = UUID.randomUUID().toString();
-
-        log.info("주문번호 {} 에 대한 결제를 준비합니다. 결제금액: {}", merchantUid, amountToPay);
-        // TODO: 실제 프로젝트에서는 이 merchantUid와 금액을 DB의 주문 정보에 저장해두어야 합니다.
-
-        return tokenService.getAccessToken().flatMap(token ->
-                webClient.post()
-                        .uri("/v2/payments/prepare")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                        .bodyValue(Map.of(
-                                "merchant_uid", merchantUid,
-                                "amount", amountToPay
-                        ))
-                        .retrieve()
-                        .bodyToMono(Map.class) // 포트원 응답은 현재 비어있음. 성공 여부만 확인.
-                        .doOnSuccess(response -> log.info("포트원 사전 등록 성공: {}", response))
-                        .thenReturn(Map.of( // 프론트엔드에 전달할 정보
-                                "merchantUid", merchantUid,
-                                "amount", amountToPay
-                        ))
-        );
+    private String determinePgProvider(PaymentMethod paymentMethod) {
+        return switch (paymentMethod) {
+            case KAKAO_PAY -> "tosspayments.kakaopay";
+            case NAVER_PAY -> "tosspayments.naverpay";
+            case TOSS_PAY -> "tosspayments.tosspay";
+            default -> "tosspayments.card"; // 기본값
+        };
     }
 
-    // 2. 사후 검증: 결제 검증
-    public Mono<Boolean> validatePayment(String paymentId) {
-        return tokenService.getAccessToken().flatMap(token ->
-                webClient.get()
-                        .uri("/v2/payments/" + paymentId)
-                        .header("Authorization", "Bearer " + token)
+    /**
+     * 결제 승인 (검증)
+     */
+    @Transactional
+    public PaymentConfirmationResponse confirmPayment(PaymentConfirmationRequest request) {
+        log.error("{}, @@@@@@ {}", request.impUid(), request.merchantUid());
+        // 1. 포트원 서버로부터 실제 결제 정보를 조회합니다.
+        PortonePaymentData portonePaymentData = getPaymentInfoFromPortone(request.impUid())
+                .block();
+
+        if (portonePaymentData == null) {
+            throw new IllegalStateException("포트원에서 결제 정보를 조회할 수 없습니다.");
+        }
+
+        // 2. 우리 DB에서 결제 정보를 조회합니다.
+        Payment payment = paymentRepository.findById(request.merchantUid())
+                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다."));
+
+        // 3. 금액 위변조 검증: 포트원 서버에서 조회한 금액과 우리 DB에 저장된 금액을 비교합니다.
+        if (payment.getAmount().compareTo(portonePaymentData.amount()) != 0) {
+            // 금액이 일치하지 않으면, 해킹 시도일 수 있으므로 결제를 취소하고 예외를 발생시킵니다.
+            // TODO: 포트원 결제 취소 API 호출
+            throw new IllegalStateException("결제 금액이 일치하지 않습니다. 위변조 시도가 의심됩니다.");
+        }
+
+        // 4. 결제 상태 업데이트
+        payment.completePayment(request.impUid()); // 상태를 COMPLETED로 변경하고 paymentKey 저장
+
+        // 5. 후속 처리 (예: 주문 상태 변경, 이벤트 발행)
+        Order order = orderRepository.findById(payment.getOrderId()).orElseThrow();
+//        order.markAsPaid();
+
+        return PaymentConfirmationResponse.from(payment);
+    }
+
+    /**
+     * 포트원 서버에서 결제 정보 조회 (imp_uid 사용)
+     */
+    private Mono<PortonePaymentData> getPaymentInfoFromPortone(String impUid) {
+        return getAccessToken()
+                .flatMap(accessToken -> webClient.get()
+                        .uri("https://api.iamport.kr/payments/" + impUid)
+                        .header("Authorization", "Bearer " + accessToken)
                         .retrieve()
-                        .bodyToMono(Map.class)
-                        .flatMap(response -> {
-                            String status = (String) response.get("status");
-                            if (!"PAID".equalsIgnoreCase(status)) {
-                                log.warn("결제가 완료되지 않았습니다. 상태: {}", status);
-                                return Mono.just(false);
-                            }
+                        .bodyToMono(PortonePaymentResponseWrapper.class)
+                        .map(PortonePaymentResponseWrapper::response)
+                );
+    }
 
-                            Map<String, Object> amountInfo = (Map<String, Object>) response.get("amount");
-                            BigDecimal actualAmount = new BigDecimal(amountInfo.get("total").toString());
-                            String merchantUid = (String) response.get("merchant_uid");
-
-                            // TODO: DB에서 merchantUid로 주문 정보를 조회하여 저장된 금액(expectedAmount)을 가져와야 합니다.
-                            BigDecimal expectedAmount = new BigDecimal("1000"); // 예시 금액
-
-                            if (expectedAmount.compareTo(actualAmount) == 0) {
-                                log.info("금액 검증 성공. paymentId: {}", paymentId);
-                                // TODO: DB에 주문 상태를 '결제 완료'로 최종 업데이트
-                                return Mono.just(true);
-                            } else {
-                                log.warn("금액 위변조 시도 감지! paymentId: {}. Expected: {}, Actual: {}", paymentId, expectedAmount, actualAmount);
-                                // TODO: 금액이 다를 경우, 자동으로 결제 취소 API를 호출하는 로직이 여기에 들어가야 합니다.
-                                return Mono.just(false);
-                            }
-                        })
-        );
+    /**
+     * 포트원 엑세스 토큰 발급
+     */
+    private Mono<String> getAccessToken() {
+        return webClient.post()
+                .uri("https://api.iamport.kr/users/getToken")
+                .bodyValue(new PortoneTokenRequest(portOneProperties.getChannelKey(), portOneProperties.getSecretKey()))
+                .retrieve()
+                .bodyToMono(PortoneTokenResponse.class)
+                .map(response -> response.response().access_token());
     }
 }

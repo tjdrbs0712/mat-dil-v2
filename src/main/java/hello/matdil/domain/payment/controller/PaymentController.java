@@ -1,16 +1,17 @@
 package hello.matdil.domain.payment.controller;
 
-import hello.matdil.domain.payment.dto.PaymentRequestDto;
+import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
+import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
+import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
+import hello.matdil.domain.payment.dto.PaymentPreparationResponse;
 import hello.matdil.domain.payment.service.PaymentService;
+import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,22 +20,23 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    /**
+     * 결제 준비 API
+     */
     @PostMapping("/prepare")
-    public Mono<ResponseEntity<Map<String, Object>>> preparePayment() {
-        // 실제로는 인증된 사용자 정보와 주문 ID를 받아 처리
-        return paymentService.preparePayment("some-order-id")
-                .map(ResponseEntity::ok);
+    public ResponseEntity<SuccessResponse<PaymentPreparationResponse>> preparePayment(
+            @RequestBody PaymentPreparationRequest request) {
+        PaymentPreparationResponse response = paymentService.preparePayment(request);
+        return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
-    @PostMapping("/validate")
-    public Mono<ResponseEntity<String>> validatePayment(@RequestBody PaymentRequestDto request) {
-        return paymentService.validatePayment(request.paymentId())
-                .map(isValid -> {
-                    if (isValid) {
-                        return ResponseEntity.ok("결제 검증 성공");
-                    } else {
-                        return ResponseEntity.badRequest().body("결제 검증 실패");
-                    }
-                });
+    /**
+     * 결제 승인 API
+     */
+    @PostMapping("/confirm")
+    public ResponseEntity<SuccessResponse<PaymentConfirmationResponse>> confirmPayment(
+            @RequestBody PaymentConfirmationRequest request) {
+        PaymentConfirmationResponse response = paymentService.confirmPayment(request);
+        return ResponseEntity.ok(SuccessResponse.success(response));
     }
 }

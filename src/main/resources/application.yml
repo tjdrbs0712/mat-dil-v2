@@ -94,6 +94,7 @@ logging:
 #    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
 
 portone:
+  store-id: ${PORTONE_STORE_ID}
   channel-key: ${PORTONE_CHANNEL_KEY}
   client-key: ${PORTONE_CLIENT_KEY}
   secret-key: ${PORTONE_SECRET_KEY}
