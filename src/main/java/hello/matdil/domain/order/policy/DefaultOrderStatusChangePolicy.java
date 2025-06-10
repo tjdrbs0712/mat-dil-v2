@@ -29,9 +29,6 @@ public class DefaultOrderStatusChangePolicy implements OrderStatusChangePolicy {
                 if (role == UserRole.USER && !currentStatus.canBeCanceledByUser()) {
                     throw new OrderException(OrderErrorCode.NO_PERMISSION);
                 }
-                if (role == UserRole.OWNER && !currentStatus.canBeCanceledByOwner()) {
-                    throw new OrderException(OrderErrorCode.NO_PERMISSION);
-                }
             }
             default -> {
                 if (role == UserRole.USER) {

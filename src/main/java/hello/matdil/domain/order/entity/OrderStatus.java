@@ -27,9 +27,9 @@ public enum OrderStatus {
         CREATED.next = Set.of(CANCELED, DELETED);
         PAID.next = Set.of(ACCEPTED, CANCELED, DELETED);
         ACCEPTED.next = Set.of(COOKING, CANCELED, DELETED);
-        COOKING.next = Set.of(READY, DELETED);
-        READY.next = Set.of(DELIVERING, DELETED);
-        DELIVERING.next = Set.of(COMPLETED, DELETED);
+        COOKING.next = Set.of(READY, CANCELED, DELETED);
+        READY.next = Set.of(DELIVERING, CANCELED, DELETED);
+        DELIVERING.next = Set.of(COMPLETED, CANCELED, DELETED);
         COMPLETED.next = Set.of(DELETED);
         CANCELED.next = Set.of(DELETED);
         DELETED.next = Set.of();
@@ -41,10 +41,6 @@ public enum OrderStatus {
 
     public boolean canBeCanceledByUser() {
         return this == CREATED || this == PAID;
-    }
-
-    public boolean canBeCanceledByOwner() {
-        return this == CREATED || this == PAID ||this == ACCEPTED;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
