@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class MenuReader{
@@ -15,8 +17,13 @@ public class MenuReader{
     private final MenuRepository menuRepository;
 
     @Transactional(readOnly = true)
-    public Menu getMenuWithStoreValidation(Long menuId, Long storeId) {
-        return menuRepository.findByIdWithStore(menuId, storeId)
-                .orElseThrow(() -> new MenuException(MenuErrorCode.MENU_NOT_FOUND));
+    public List<Menu> getMenusWithStoreValidation(List<Long> menuIds, Long storeId) {
+        List<Menu> menus = menuRepository.findAllByStoreIdAndIdIn(storeId, menuIds);
+
+        if (menus.size() != menuIds.size()) {
+            throw new MenuException(MenuErrorCode.MENU_NOT_FOUND);
+        }
+
+        return menus;
     }
 }
