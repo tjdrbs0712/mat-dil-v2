@@ -114,6 +114,13 @@ public class OrderServiceImpl implements OrderService {
         orderCacheService.evict(order.getId());
     }
 
+    @Override
+    @Transactional
+    public void updateOrderStatusToPaid(Long orderId) {
+        Order order = orderReader.readById(orderId);
+        order.markAsPaid();
+    }
+
     private OrderResponseDto buildOrderResponse(Order order) {
         StoreSummaryResponseDto storeSummary = storeSummaryLoader
                 .loadWithCacheFallback(List.of(order.getStoreId()))

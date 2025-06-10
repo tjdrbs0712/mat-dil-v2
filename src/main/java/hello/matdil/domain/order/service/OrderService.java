@@ -4,6 +4,7 @@ import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.dto.OrderCursorResponseDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
+import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.user.entity.UserRole;
@@ -29,4 +30,6 @@ public interface OrderService {
     void changeStoreOwnerOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
 
     void changeUserOrderStatus(Long userId, UserRole role, Long orderId, OrderStatus newStatus);
+
+    void updateOrderStatusToPaid(Long orderId);
 }

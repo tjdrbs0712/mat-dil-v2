@@ -5,16 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class OrderEventProducer {
 
+    private static final String TOPIC_NAME = "order-topic";
+
     private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
 
     public void sendOrderCreatedEvent(Order order) {
-        kafkaTemplate.send("order-topic", UUID.randomUUID().toString(), OrderCreatedEvent.from(order));
+        String key = order.getId().toString();
+        kafkaTemplate.send(TOPIC_NAME, key, OrderCreatedEvent.from(order));
     }
 }
 

@@ -7,8 +7,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class UserOrderStatusConsumer {
 
     private final UserOrderStatusService userOrderStatusService;

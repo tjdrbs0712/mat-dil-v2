@@ -78,4 +78,7 @@ public class Order extends BaseTimeEntity {
         }
     }
 
+    public void markAsPaid() {
+        this.orderStatus = OrderStatus.PAID;
+    }
 }

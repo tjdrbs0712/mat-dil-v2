@@ -50,10 +50,22 @@ public class Payment extends BaseTimeEntity {
         this.status = PaymentStatus.READY;
     }
 
+    public static Payment create(Long orderId, PaymentMethod method, BigDecimal amount){
+        return Payment.builder()
+                .orderId(orderId)
+                .method(method)
+                .amount(amount)
+                .build();
+    }
+
     public void completePayment(String paymentKey) {
         this.paymentKey = paymentKey;
         this.status = PaymentStatus.COMPLETED;
         this.paidAt = LocalDateTime.now();
+    }
+
+    public boolean validateAmountCompare(BigDecimal amount){
+        return this.amount.compareTo(amount) != 0;
     }
 
     public void failPayment(String failReason) {

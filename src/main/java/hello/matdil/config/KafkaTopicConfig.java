@@ -28,7 +28,7 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic paymentTopic() {
-        return TopicBuilder.name("payment-topic")
+        return TopicBuilder.name("payment-completed-topic")
                 .partitions(5)
                 .replicas(1)
                 .build();
