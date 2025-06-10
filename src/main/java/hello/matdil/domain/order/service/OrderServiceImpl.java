@@ -40,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusChangePolicy policy;
 
     private final OrderEventProducer orderEventProducer;
+    private final OrderCacheService orderCacheService;
 
     @Override
     @Transactional
@@ -110,12 +111,14 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderReader.readWithUserPermission(orderId, userId, role);
         policy.validateChange(order.getOrderStatus(), newStatus, role);
         order.changeStatus(newStatus);
+        orderCacheService.evict(order.getId());
     }
 
     private OrderResponseDto buildOrderResponse(Order order) {
         StoreSummaryResponseDto storeSummary = storeSummaryLoader
                 .loadWithCacheFallback(List.of(order.getStoreId()))
                 .get(order.getStoreId());
+        orderCacheService.put(order, storeSummary);
         return OrderResponseDto.from(order, storeSummary);
     }
 

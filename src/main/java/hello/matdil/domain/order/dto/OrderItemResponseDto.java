@@ -1,24 +1,18 @@
 package hello.matdil.domain.order.dto;
 
 import hello.matdil.domain.order.entity.OrderItem;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
 
-@Getter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderItemResponseDto {
-    private Long menuId;
-    private int quantity;
-    private int price;
-
-    public static OrderItemResponseDto from(OrderItem item) {
-        return OrderItemResponseDto.builder()
-                .menuId(item.getMenuId())
-                .quantity(item.getQuantity())
-                .price(item.getPrice())
-                .build();
+public record OrderItemResponseDto(
+        Long menuId,
+        int quantity,
+        int price
+) {
+    // OrderItem 엔티티를 DTO로 변환하는 정적 팩토리 메서드
+    public static OrderItemResponseDto from(OrderItem orderItem) {
+        return new OrderItemResponseDto(
+                orderItem.getMenuId(),
+                orderItem.getQuantity(),
+                orderItem.getPrice()
+        );
     }
 }

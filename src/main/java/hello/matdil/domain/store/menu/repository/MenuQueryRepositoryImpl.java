@@ -89,4 +89,18 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
         return Optional.ofNullable(result);
     }
 
+    @Override
+    public List<Menu> findAllByStoreIdAndIdIn(Long storeId, List<Long> menuIds) {
+
+        QMenu menu = QMenu.menu;
+
+        return queryFactory
+                .selectFrom(menu)
+                .where(
+                        menu.store.id.eq(storeId),
+                        menu.id.in(menuIds)
+                )
+                .fetch();
+    }
+
 }

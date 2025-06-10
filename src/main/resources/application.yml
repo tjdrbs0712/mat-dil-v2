@@ -13,6 +13,10 @@ spring:
         show_sql: true
         format_sql: false
         use_sql_comments: false
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
 
 #  flyway:
 #    enabled: true
