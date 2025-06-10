@@ -10,12 +10,23 @@ import org.springframework.stereotype.Service;
 public class OrderEventProducer {
 
     private static final String TOPIC_NAME = "order-topic";
+    private static final String ORDER_READY = "order-ready-for-dispatch";
 
-    private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, OrderCreatedEvent> orderCreatedEventKafkaTemplate;
+    private final KafkaTemplate<String, OrderReadyForDispatchEvent> dispatchEventKafkaTemplate;
+
 
     public void sendOrderCreatedEvent(Order order) {
         String key = order.getId().toString();
-        kafkaTemplate.send(TOPIC_NAME, key, OrderCreatedEvent.from(order));
+        orderCreatedEventKafkaTemplate.send(TOPIC_NAME, key, OrderCreatedEvent.from(order));
     }
+
+    public void sendOrderReadyForDispatch(Order order) {
+        String key = order.getId().toString();
+        OrderReadyForDispatchEvent event = OrderReadyForDispatchEvent.from(order);
+        dispatchEventKafkaTemplate.send(ORDER_READY, key, event);
+    }
+
+
 }
 

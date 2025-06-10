@@ -1,5 +1,6 @@
 package hello.matdil.domain.order.entity;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.common.BaseTimeEntity;
 import hello.matdil.domain.order.exception.OrderErrorCode;
 import hello.matdil.domain.order.exception.OrderException;
@@ -34,6 +35,9 @@ public class Order extends BaseTimeEntity {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    @Embedded
+    private Address deliveryAddress;
+
     @Setter
     @Column(nullable = false)
     private int totalPrice;
@@ -46,17 +50,19 @@ public class Order extends BaseTimeEntity {
 
     @Builder
     public Order(Long userId,
-                  Long storeId,
-                  List<OrderItem> orderItems,
-                  OrderStatus orderStatus,
-                  String requestNote,
-                  LocalDateTime expectedDeliveryTime) {
+                 Long storeId,
+                 List<OrderItem> orderItems,
+                 OrderStatus orderStatus,
+                 String requestNote,
+                 LocalDateTime expectedDeliveryTime,
+                 Address deliveryAddress) {
         this.userId = userId;
         this.storeId = storeId;
         this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.requestNote = requestNote;
         this.expectedDeliveryTime = expectedDeliveryTime;
+        this.deliveryAddress = deliveryAddress;
     }
 
     public void validateAccessibleTo(Long userId, UserRole role) {
@@ -72,8 +78,8 @@ public class Order extends BaseTimeEntity {
         this.orderStatus = newStatus;
     }
 
-    public void validateIsCompleted(){
-        if(this.orderStatus != OrderStatus.COMPLETED){
+    public void validateIsCompleted() {
+        if (this.orderStatus != OrderStatus.COMPLETED) {
             throw new OrderException(OrderErrorCode.ORDER_NOT_COMPLETED);
         }
     }

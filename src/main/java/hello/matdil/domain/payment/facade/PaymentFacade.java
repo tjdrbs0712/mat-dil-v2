@@ -18,7 +18,6 @@ import hello.matdil.domain.payment.service.PaymentService;
 import hello.matdil.domain.payment.validator.PaymentValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service

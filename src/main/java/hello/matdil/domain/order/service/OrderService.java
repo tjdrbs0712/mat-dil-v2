@@ -1,10 +1,10 @@
 package hello.matdil.domain.order.service;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.dto.OrderCursorResponseDto;
 import hello.matdil.domain.order.dto.OrderResponseDto;
 import hello.matdil.domain.order.dto.OrderSummaryDto;
-import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.user.entity.UserRole;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface OrderService {
     OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime
-            , String requestNote, List<OrderItem> orderItems);
+            , String requestNote, List<OrderItem> orderItems, Address addressDto);
 
     SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(
             Long userId, OrderCursorRequestDto cursor);

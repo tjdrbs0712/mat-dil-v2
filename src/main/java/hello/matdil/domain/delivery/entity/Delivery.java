@@ -52,15 +52,20 @@ public class Delivery extends BaseTimeEntity {
 
 
     @Builder
-    public Delivery(Long orderId, Long riderId, Address address, BigDecimal deliveryFee, DeliveryStatus deliveryStatus, LocalDateTime assignedTime, LocalDateTime pickedUpAt, LocalDateTime deliveredAt) {
+    public Delivery(Long orderId, Address address, BigDecimal deliveryFee, DeliveryStatus deliveryStatus) {
         this.orderId = orderId;
-        this.riderId = riderId;
         this.address = address;
         this.deliveryFee = deliveryFee;
         this.deliveryStatus = deliveryStatus;
-        this.assignedTime = assignedTime;
-        this.pickedUpAt = pickedUpAt;
-        this.deliveredAt = deliveredAt;
+    }
+
+    public static Delivery create(Long orderId, Address address, BigDecimal deliveryFee, DeliveryStatus deliveryStatus){
+        return Delivery.builder()
+                .orderId(orderId)
+                .address(address)
+                .deliveryFee(deliveryFee)
+                .deliveryStatus(deliveryStatus)
+                .build();
     }
 
     public void assignRider(Long riderId) {

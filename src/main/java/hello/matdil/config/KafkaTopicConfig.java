@@ -27,8 +27,16 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic paymentTopic() {
+    public NewTopic paymentCompletedTopic() {
         return TopicBuilder.name("payment-completed-topic")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic orderReadyForDispatch() {
+        return TopicBuilder.name("order-ready-for-dispatch")
                 .partitions(5)
                 .replicas(1)
                 .build();

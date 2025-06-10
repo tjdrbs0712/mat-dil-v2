@@ -24,13 +24,13 @@ public class OrderFacade {
     private final StoreReader storeReader;
 
     public OrderResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
-        Store store = storeReader.readWithOpen(dto.getStoreId());
+        Store store = storeReader.readWithOpen(dto.storeId());
 
-        MenuValidator.validateNoDuplicateMenuIds(dto.getOrderItems());
-        List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.getOrderItems(), dto.getStoreId());
+        MenuValidator.validateNoDuplicateMenuIds(dto.orderItems());
+        List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.orderItems(), dto.storeId());
 
-        return orderService.createOrder(userId, store.getId(), dto.getExpectedDeliveryTime(),
-                dto.getRequestNote(), orderItems);
+        return orderService.createOrder(userId, store.getId(), dto.expectedDeliveryTime(),
+                dto.requestNote(), orderItems, dto.address().toEntity());
     }
 
     public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(

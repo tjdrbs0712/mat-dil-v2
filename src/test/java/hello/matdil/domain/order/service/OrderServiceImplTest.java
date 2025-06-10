@@ -84,10 +84,10 @@ class OrderServiceImplTest {
                 order.getOrderItems());
 
         // then
-        assertThat(result.getUserId()).isEqualTo(order.getUserId());
-        assertThat(result.getStoreId()).isEqualTo(order.getStoreId());
-        assertThat(result.getOrderItems()).hasSize(2);
-        assertThat(result.getTotalPrice()).isEqualTo(25000);
+        assertThat(result.userId()).isEqualTo(order.getUserId());
+        assertThat(result.storeId()).isEqualTo(order.getStoreId());
+        assertThat(result.orderItems()).hasSize(2);
+        assertThat(result.totalPrice()).isEqualTo(25000);
         verify(orderEventProducer).sendOrderCreatedEvent(order);
     }
 

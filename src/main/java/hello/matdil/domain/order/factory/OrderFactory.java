@@ -1,5 +1,6 @@
 package hello.matdil.domain.order.factory;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
@@ -15,7 +16,8 @@ public class OrderFactory {
                         Long storeId,
                         LocalDateTime expectedDeliveryTime,
                         String requestNote,
-                        List<OrderItem> orderItems) {
+                        List<OrderItem> orderItems,
+                        Address address) {
 
         Order order = Order.builder()
                 .userId(userId)
@@ -24,6 +26,7 @@ public class OrderFactory {
                 .expectedDeliveryTime(expectedDeliveryTime)
                 .requestNote(requestNote)
                 .orderItems(orderItems)
+                .deliveryAddress(address)
                 .build();
 
         for (OrderItem item : orderItems) {

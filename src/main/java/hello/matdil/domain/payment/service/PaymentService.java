@@ -1,17 +1,8 @@
 package hello.matdil.domain.payment.service;
 
-import hello.matdil.config.PortOneProperties;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
-import hello.matdil.domain.order.repository.OrderRepository;
-import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
-import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
-import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
-import hello.matdil.domain.payment.dto.PaymentPreparationResponse;
 import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
-import hello.matdil.domain.payment.dto.portone.PortonePaymentResponseWrapper;
-import hello.matdil.domain.payment.dto.portone.PortoneTokenRequest;
-import hello.matdil.domain.payment.dto.portone.PortoneTokenResponse;
 import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentMethod;
 import hello.matdil.domain.payment.entity.PaymentStatus;
@@ -25,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
