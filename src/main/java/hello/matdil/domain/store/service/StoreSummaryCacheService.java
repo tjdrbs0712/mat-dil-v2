@@ -1,7 +1,7 @@
 package hello.matdil.domain.store.service;
 
 import hello.matdil.domain.store.dto.StoreSummaryResponseDto;
-import hello.matdil.infrastructure.RedisCacheHelper;
+import hello.matdil.infrastructure.redis.RedisCacheHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

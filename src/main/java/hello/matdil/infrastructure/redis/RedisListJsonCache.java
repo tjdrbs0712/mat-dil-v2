@@ -1,4 +1,4 @@
-package hello.matdil.infrastructure;
+package hello.matdil.infrastructure.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

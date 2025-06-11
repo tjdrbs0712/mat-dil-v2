@@ -30,7 +30,7 @@ public class OrderFacade {
         List<OrderItem> orderItems = orderCreateProcessor.toOrderItems(dto.orderItems(), dto.storeId());
 
         return orderService.createOrder(userId, store.getId(), dto.expectedDeliveryTime(),
-                dto.requestNote(), orderItems, dto.address().toEntity());
+                dto.requestNote(), orderItems, dto.address());
     }
 
     public SliceResponse<OrderSummaryDto, OrderCursorResponseDto> getUserOrders(

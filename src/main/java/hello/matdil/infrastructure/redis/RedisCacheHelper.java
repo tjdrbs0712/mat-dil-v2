@@ -1,4 +1,4 @@
-package hello.matdil.infrastructure;
+package hello.matdil.infrastructure.redis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

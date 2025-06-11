@@ -75,6 +75,10 @@ spring:
       ack-mode: batch
       concurrency: 5
 
+kakao:
+  api:
+    key: ${KAKAO_REST_API}
+
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000

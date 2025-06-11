@@ -4,7 +4,7 @@ import hello.matdil.domain.favorite.dto.FavoriteCursorRequestDto;
 import hello.matdil.domain.favorite.dto.FavoriteStoreSummaryDto;
 import hello.matdil.domain.favorite.entity.FavoriteSortType;
 import hello.matdil.domain.favorite.repository.FavoriteRepository;
-import hello.matdil.infrastructure.RedisListJsonCache;
+import hello.matdil.infrastructure.redis.RedisListJsonCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

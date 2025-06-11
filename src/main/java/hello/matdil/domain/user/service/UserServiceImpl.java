@@ -1,5 +1,6 @@
 package hello.matdil.domain.user.service;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.user.dto.*;
 import hello.matdil.domain.user.entity.User;
 import hello.matdil.domain.user.entity.UserStatus;
@@ -67,9 +68,10 @@ public class UserServiceImpl implements UserService{
     //회원정보 수정
     @Override
     @Transactional
-    public UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto requestDto) {
+    public UserInfoResponseDto updateMyInfo(Long userId, UserInfoChangeRequestDto dto) {
         User user = userReader.getActiveUser(userId);
-        user.update(requestDto);
+        Address address = userFactory.update(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
+        user.update(dto, address);
         return UserInfoResponseDto.from(user);
     }
 

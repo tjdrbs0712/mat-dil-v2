@@ -43,7 +43,7 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic deliveryEventProducer() {
+    public NewTopic deliveryCreatedTopic() {
         return TopicBuilder.name("delivery-created-topic")
                 .partitions(5)
                 .replicas(1)

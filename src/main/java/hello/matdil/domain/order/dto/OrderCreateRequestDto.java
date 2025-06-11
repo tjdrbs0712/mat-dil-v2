@@ -29,9 +29,6 @@ public record OrderCreateRequestDto(
             @NotNull String city,
             @NotNull String street,
             @NotNull String detailAddress
-    ) {
-        public Address toEntity() {
-            return new Address(city, street, detailAddress);
-        }
-    }
+    ) { }
+
 }

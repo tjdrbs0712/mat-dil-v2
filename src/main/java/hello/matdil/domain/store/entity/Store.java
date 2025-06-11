@@ -132,10 +132,10 @@ public class Store extends BaseTimeEntity {
         this.status = newStatus;
     }
 
-    public void update(StoreUpdateRequestDto dto) {
+    public void update(StoreUpdateRequestDto dto, Address address) {
         this.name = dto.getName();
         this.phoneNumber = getPhoneNumber();
-        this.address = new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
+        this.address = address;
         this.openTime = dto.getOpenTime();
         this.closeTime = dto.getCloseTime();
         this.minOrderPrice = dto.getMinOrderPrice();

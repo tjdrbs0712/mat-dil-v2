@@ -1,10 +1,7 @@
 package hello.matdil.domain.order.service;
 
 import hello.matdil.domain.address.Address;
-import hello.matdil.domain.order.dto.OrderCursorRequestDto;
-import hello.matdil.domain.order.dto.OrderCursorResponseDto;
-import hello.matdil.domain.order.dto.OrderResponseDto;
-import hello.matdil.domain.order.dto.OrderSummaryDto;
+import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
@@ -46,7 +43,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
-                                        String requestNote, List<OrderItem> orderItems, Address address) {
+                                        String requestNote, List<OrderItem> orderItems,
+                                        OrderCreateRequestDto.AddressDto address) {
         Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems, address);
         Order savedOrder = orderRepository.save(order);
 
