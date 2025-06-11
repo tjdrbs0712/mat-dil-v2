@@ -16,7 +16,6 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-
 public class DeliverySearchFacade {
 
     private final DeliveryGeoService deliveryGeoService;
