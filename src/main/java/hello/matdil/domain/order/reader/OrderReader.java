@@ -49,7 +49,7 @@ public class OrderReader {
         return orderRepository.findOrdersByStoreIdWithCursor(storeId, cursor);
     }
 
-    private Order readById(Long orderId) {
+    public Order readById(Long orderId) {
         return orderRepository.findByIdWithNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
     }
@@ -59,4 +59,7 @@ public class OrderReader {
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
     }
 
+    public List<Order> findAllIn(List<Long> orderIds) {
+        return orderRepository.findAllIdWithNotDeleted(orderIds);
+    }
 }

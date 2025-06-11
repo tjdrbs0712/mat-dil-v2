@@ -2,7 +2,6 @@ package hello.matdil.domain.store.controller;
 
 import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
-import hello.matdil.auth.security.UserDetailsImpl;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.service.StoreService;
 import hello.matdil.global.response.SliceResponse;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,9 +24,9 @@ public class StoreController {
     // 가게 등록 (사장님, 관리자)
     @PostMapping
     public ResponseEntity<SuccessResponse<StoreResponseDto>> createStore(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @LoginUser AuthUser authUser,
             @RequestBody @Valid StoreCreateRequestDto requestDto) {
-        StoreResponseDto responseDto = storeService.createStore(userDetails.getUserId(), userDetails.getUserRole(), requestDto);
+        StoreResponseDto responseDto = storeService.createStore(authUser.getUserId(), authUser.getRole(), requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.success(responseDto));
     }
 

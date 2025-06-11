@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,24 +45,21 @@ class OrderFacadeTest {
         Long userId = 1L;
         Long storeId = 10L;
         Store store = mock(Store.class);
+        LocalDateTime localDateTime = LocalDateTime.now();
         OrderResponseDto responseDto = mock(OrderResponseDto.class);
         OrderItem orderItem = mock(OrderItem.class);
 
-        OrderItemRequestDto OrderItemRequestDto = new OrderItemRequestDto();
-        ReflectionTestUtils.setField(OrderItemRequestDto, "menuId", 1L);
-        ReflectionTestUtils.setField(OrderItemRequestDto, "quantity", 2);
+        OrderItemRequestDto orderItemRequestDto = new OrderItemRequestDto(1L, 1);
 
-        OrderCreateRequestDto requestDto = new OrderCreateRequestDto();
-        ReflectionTestUtils.setField(requestDto, "storeId", storeId);
-        ReflectionTestUtils.setField(requestDto, "expectedDeliveryTime", LocalDateTime.now().plusHours(1));
-        ReflectionTestUtils.setField(requestDto, "requestNote", "조심히 와주세요");
-        ReflectionTestUtils.setField(requestDto, "orderItems", List.of(OrderItemRequestDto));
+        OrderCreateRequestDto.AddressDto address = mock(OrderCreateRequestDto.AddressDto.class);
+        OrderCreateRequestDto requestDto = new OrderCreateRequestDto(
+                storeId, localDateTime, "주문", List.of(orderItemRequestDto), address);
 
         given(store.getId()).willReturn(storeId);
         given(storeReader.readWithOpen(storeId)).willReturn(store);
         given(orderCreateProcessor.toOrderItems(
-                requestDto.getOrderItems(), requestDto.getStoreId())).willReturn(List.of(orderItem));
-        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
+                requestDto.orderItems(), requestDto.storeId())).willReturn(List.of(orderItem));
+        given(orderService.createOrder(any(), any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
         OrderResponseDto result = orderFacade.createOrder(userId, requestDto);
@@ -71,8 +67,8 @@ class OrderFacadeTest {
         // then
         assertThat(result).isNotNull();
         verify(storeReader).readWithOpen(storeId);
-        verify(orderCreateProcessor).toOrderItems(requestDto.getOrderItems(), storeId);
-        verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
+        verify(orderCreateProcessor).toOrderItems(requestDto.orderItems(), storeId);
+        verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any(), any());
 
     }
 }

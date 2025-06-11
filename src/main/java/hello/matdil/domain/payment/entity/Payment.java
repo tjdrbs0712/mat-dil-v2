@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,21 +23,53 @@ public class Payment extends BaseTimeEntity {
     @Column(nullable = false)
     private Long orderId;
 
+    @Column(unique = true)
+    private String paymentKey;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod method;
 
     @Column(nullable = false)
-    private int amount;
+    private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean isPaid;
+    private PaymentStatus status;
+
+    private LocalDateTime paidAt;
+
+    private String failReason;
+
 
     @Builder
-    public Payment(Long orderId, PaymentMethod method, int amount, boolean isPaid) {
+    public Payment(Long orderId, PaymentMethod method, BigDecimal amount) {
         this.orderId = orderId;
         this.method = method;
         this.amount = amount;
-        this.isPaid = isPaid;
+        this.status = PaymentStatus.READY;
+    }
+
+    public static Payment create(Long orderId, PaymentMethod method, BigDecimal amount){
+        return Payment.builder()
+                .orderId(orderId)
+                .method(method)
+                .amount(amount)
+                .build();
+    }
+
+    public void completePayment(String paymentKey) {
+        this.paymentKey = paymentKey;
+        this.status = PaymentStatus.COMPLETED;
+        this.paidAt = LocalDateTime.now();
+    }
+
+    public boolean validateAmountCompare(BigDecimal amount){
+        return this.amount.compareTo(amount) != 0;
+    }
+
+    public void failPayment(String failReason) {
+        this.status = PaymentStatus.FAILED;
+        this.failReason = failReason;
     }
 }

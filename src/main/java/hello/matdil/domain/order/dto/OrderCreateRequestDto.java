@@ -1,25 +1,33 @@
 package hello.matdil.domain.order.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@NoArgsConstructor
-public class OrderCreateRequestDto {
 
-    @NotNull
-    private Long storeId;
+public record OrderCreateRequestDto(
+        @NotNull(message = "storeId는 필수입니다.")
+        Long storeId,
 
-    @NotNull
-    private LocalDateTime expectedDeliveryTime;
+        @NotNull(message = "배달 예상 시간은 필수입니다")
+        LocalDateTime expectedDeliveryTime,
 
-    private String requestNote;
+        String requestNote,
 
-    @NotEmpty
-    private List<OrderItemRequestDto> orderItems;
+        @NotEmpty(message = "메뉴는 필수입니다.")
+        List<OrderItemRequestDto> orderItems,
+
+        @Valid
+        @NotNull(message = "주소 정보는 필수입니다.")
+        AddressDto address
+) {
+    public record AddressDto(
+            @NotNull String city,
+            @NotNull String street,
+            @NotNull String detailAddress
+    ) { }
+
 }

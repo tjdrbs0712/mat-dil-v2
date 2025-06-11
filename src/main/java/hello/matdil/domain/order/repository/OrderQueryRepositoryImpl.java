@@ -30,6 +30,17 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository{
     }
 
     @Override
+    public List<Order> findAllIdWithNotDeleted(List<Long> orderIds) {
+        QOrder order = QOrder.order;
+
+        return queryFactory
+                .selectFrom(order)
+                .where(order.id.in(orderIds),
+                        order.orderStatus.ne(OrderStatus.DELETED))
+                .fetch();
+    }
+
+    @Override
     public List<Order> findOrdersByUserIdWithCursor(Long userId, OrderCursorRequestDto cursor) {
         QOrder order = QOrder.order;
 

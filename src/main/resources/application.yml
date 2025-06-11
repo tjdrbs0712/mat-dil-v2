@@ -13,6 +13,10 @@ spring:
         show_sql: true
         format_sql: false
         use_sql_comments: false
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
 
 #  flyway:
 #    enabled: true
@@ -71,6 +75,10 @@ spring:
       ack-mode: batch
       concurrency: 5
 
+kakao:
+  api:
+    key: ${KAKAO_REST_API}
+
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600000
@@ -92,3 +100,9 @@ logging:
     org.springframework.kafka.core.DefaultKafkaProducerFactory: DEBUG
 #    org.hibernate.SQL: debug             # SQL 출력
 #    org.hibernate.orm.jdbc.bind: trace   # 바인딩 파라미터 출력
+
+portone:
+  store-id: ${PORTONE_STORE_ID}
+  channel-key: ${PORTONE_CHANNEL_KEY}
+  client-key: ${PORTONE_CLIENT_KEY}
+  secret-key: ${PORTONE_SECRET_KEY}

@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface OrderQueryRepository {
     Optional<Order> findByIdWithNotDeleted(Long orderId);
 
+    List<Order> findAllIdWithNotDeleted(List<Long> orderIds);
+
     List<Order> findOrdersByUserIdWithCursor(Long userId, OrderCursorRequestDto cursor);
 
     List<Order> findOrdersByStoreIdWithCursor(Long storeId, OrderCursorRequestDto cursor);

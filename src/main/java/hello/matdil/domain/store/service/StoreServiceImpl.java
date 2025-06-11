@@ -1,5 +1,6 @@
 package hello.matdil.domain.store.service;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreSortType;
@@ -94,11 +95,10 @@ public class StoreServiceImpl implements StoreService{
     @Transactional
     public StoreResponseDto updateStore(Long userId, UserRole role, Long storeId, StoreUpdateRequestDto dto) {
         Store store = getStoreOrThrow(storeId);
-
         store.validateAccessibleTo(userId, role);
         store.validateBusinessHours(dto.getOpenTime(), dto.getCloseTime());
-
-        store.update(dto);
+        Address address = storeFactory.update(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
+        store.update(dto, address);
         cacheService.evict(storeId);
         return StoreResponseDto.from(store);
     }

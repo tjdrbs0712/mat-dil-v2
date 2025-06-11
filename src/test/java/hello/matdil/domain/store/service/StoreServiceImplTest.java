@@ -1,9 +1,11 @@
 package hello.matdil.domain.store.service;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.dto.*;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.exception.StoreErrorCode;
 import hello.matdil.domain.store.exception.StoreException;
+import hello.matdil.domain.store.factory.StoreFactory;
 import hello.matdil.domain.store.policy.StoreCreatePolicy;
 import hello.matdil.domain.store.reader.StoreSummaryLoader;
 import hello.matdil.domain.store.repository.StoreRepository;
@@ -48,6 +50,9 @@ class StoreServiceImplTest {
 
     @Mock
     private StoreSummaryCacheService cacheService;
+
+    @Mock
+    private StoreFactory storeFactory;
 
     private Store store;
 
@@ -107,7 +112,9 @@ class StoreServiceImplTest {
         // given
         store = TestData.setUpStore();
         StoreUpdateRequestDto dto = TestData.setStoreUpdateDto();
+        Address address = mock(Address.class);
         given(storeRepository.findById(anyLong())).willReturn(Optional.of(store));
+        given(storeFactory.update(any(), any(), any())).willReturn(address);
 
         // when
         StoreResponseDto result = storeService.updateStore(1L, UserRole.OWNER, 1L, dto);

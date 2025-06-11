@@ -13,7 +13,7 @@ public class MenuValidator {
     public static void validateNoDuplicateMenuIds(List<OrderItemRequestDto> items) {
         Set<Long> menuIds = new HashSet<>();
         for (OrderItemRequestDto item : items) {
-            if (!menuIds.add(item.getMenuId())) {
+            if (!menuIds.add(item.menuId())) {
                 throw new MenuException(MenuErrorCode.DUPLICATE_MENU_IN_ORDER);
             }
         }

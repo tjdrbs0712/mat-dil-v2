@@ -76,11 +76,9 @@ public class User extends BaseTimeEntity {
         return encoder.matches(rawPassword, this.password);
     }
 
-    public void update(UserInfoChangeRequestDto dto) {
-        if (dto.getName() != null) this.name = dto.getName();
-        if (dto.getCity() != null && dto.getStreet() != null && dto.getDetailAddress() != null) {
-            this.address = new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress());
-        }
+    public void update(UserInfoChangeRequestDto dto, Address address) {
+        this.name = dto.getName();
+        this.address = address;
     }
 
     public void changePassword(String newPassword) {

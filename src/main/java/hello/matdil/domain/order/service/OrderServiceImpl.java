@@ -1,9 +1,6 @@
 package hello.matdil.domain.order.service;
 
-import hello.matdil.domain.order.dto.OrderCursorRequestDto;
-import hello.matdil.domain.order.dto.OrderCursorResponseDto;
-import hello.matdil.domain.order.dto.OrderResponseDto;
-import hello.matdil.domain.order.dto.OrderSummaryDto;
+import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderItem;
 import hello.matdil.domain.order.entity.OrderStatus;
@@ -40,12 +37,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusChangePolicy policy;
 
     private final OrderEventProducer orderEventProducer;
+    private final OrderCacheService orderCacheService;
 
     @Override
     @Transactional
     public OrderResponseDto createOrder(Long userId, Long storeId, LocalDateTime expectedDeliveryTime,
-                                        String requestNote, List<OrderItem> orderItems) {
-        Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems);
+                                        String requestNote, List<OrderItem> orderItems,
+                                        OrderCreateRequestDto.AddressDto address) {
+        Order order = orderFactory.create(userId, storeId, expectedDeliveryTime, requestNote, orderItems, address);
         Order savedOrder = orderRepository.save(order);
 
         orderEventProducer.sendOrderCreatedEvent(savedOrder);
@@ -102,6 +101,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderReader.readWithStorePermission(orderId, userId, role);
         policy.validateChange(order.getOrderStatus(), newStatus, role);
         order.changeStatus(newStatus);
+        if (newStatus == OrderStatus.READY) {
+            orderEventProducer.sendOrderReadyForDispatch(order);
+        }
     }
 
     @Override
@@ -110,12 +112,21 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderReader.readWithUserPermission(orderId, userId, role);
         policy.validateChange(order.getOrderStatus(), newStatus, role);
         order.changeStatus(newStatus);
+        orderCacheService.evict(order.getId());
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatusToPaid(Long orderId) {
+        Order order = orderReader.readById(orderId);
+        order.markAsPaid();
     }
 
     private OrderResponseDto buildOrderResponse(Order order) {
         StoreSummaryResponseDto storeSummary = storeSummaryLoader
                 .loadWithCacheFallback(List.of(order.getStoreId()))
                 .get(order.getStoreId());
+        orderCacheService.put(order, storeSummary);
         return OrderResponseDto.from(order, storeSummary);
     }
 

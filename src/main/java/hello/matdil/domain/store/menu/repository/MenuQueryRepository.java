@@ -11,4 +11,5 @@ public interface MenuQueryRepository {
     List<Menu> findMenusByCursor(Long userId, UserRole role, Long storeId, MenuCursorRequestDto cursor);
     Optional<Menu> findByIdWithStoreFetchJoinNotDeleted(Long menuId, Long storeId);
     Optional<Menu> findByIdWithStore(Long menuId, Long storeId);
+    List<Menu> findAllByStoreIdAndIdIn(Long storeId, List<Long> menuIds);
 }

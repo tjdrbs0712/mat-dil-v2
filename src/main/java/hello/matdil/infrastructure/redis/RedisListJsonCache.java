@@ -1,8 +1,9 @@
-package hello.matdil.infrastructure;
+package hello.matdil.infrastructure.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class RedisListJsonCache {
 
+    @Qualifier("objectRedisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 

@@ -44,7 +44,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        Address address = new Address("서울", "강남", "101호");
+        Address address = new Address("서울", "강남", "101호", 0, 0);
         activeUser = User.builder()
                 .email(email)
                 .password(encodedPassword)

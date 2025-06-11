@@ -46,7 +46,7 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
 
     private BooleanExpression buildVisibilityFilter(Long userId, UserRole role, QMenu menu) {
         return switch (role) {
-            case USER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT);
+            case USER, RIDER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT);
 
             case OWNER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT)
                     .or(
@@ -87,6 +87,20 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    public List<Menu> findAllByStoreIdAndIdIn(Long storeId, List<Long> menuIds) {
+
+        QMenu menu = QMenu.menu;
+
+        return queryFactory
+                .selectFrom(menu)
+                .where(
+                        menu.store.id.eq(storeId),
+                        menu.id.in(menuIds)
+                )
+                .fetch();
     }
 
 }

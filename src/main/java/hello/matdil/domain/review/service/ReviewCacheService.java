@@ -4,7 +4,7 @@ import hello.matdil.domain.review.dto.ReviewCursorRequestDto;
 import hello.matdil.domain.review.dto.ReviewResponseDto;
 import hello.matdil.domain.review.entity.ReviewSortType;
 import hello.matdil.domain.review.repository.ReviewRepository;
-import hello.matdil.infrastructure.RedisListJsonCache;
+import hello.matdil.infrastructure.redis.RedisListJsonCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -7,6 +7,7 @@ import hello.matdil.domain.store.exception.StoreException;
 import hello.matdil.domain.store.repository.StoreRepository;
 import hello.matdil.domain.store.service.StoreSummaryCacheService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class StoreSummaryLoader {
 
     private final StoreSummaryCacheService cacheService;

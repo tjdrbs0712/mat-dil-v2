@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>포트원 V2 SDK 테스트</title>
+</head>
+<body>
+<h1>PortOne V2 SDK 테스트</h1>
+<button onclick="pay()">결제 테스트</button>
+
+<script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+<script>
+    async function pay() {
+        const PortOne = window.PortOne;
+        if (!PortOne) {
+            alert("❌ PortOne SDK 로딩 실패");
+            return;
+        }
+
+        try {
+            const response = await PortOne.requestPayment({
+                storeId: "store-xxxxxx", // 포트원 관리자 페이지에서 발급받은 storeId
+                channelKey: "test_ck_lpP2YxJ4K877JAdv7KX8RGZwXLOb", // 실제 채널 키
+                paymentId: "payment-1234",
+                orderName: "테스트 상품",
+                totalAmount: 1000,
+                currency: "KRW",
+                payMethod: "CARD", // 또는 "KAKAO_PAY", "NAVER_PAY" 등
+                customer: {
+                    fullName: "홍길동"
+                }
+            });
+
+            console.log("✅ 결제 성공", response);
+        } catch (error) {
+            console.error("❌ 결제 실패", error);
+            alert("결제 실패: " + error.message);
+        }
+    }
+</script>
+</body>
+</html>
