@@ -1,9 +1,6 @@
 package hello.matdil.domain.order.service;
 
-import hello.matdil.domain.order.dto.OrderCursorRequestDto;
-import hello.matdil.domain.order.dto.OrderCursorResponseDto;
-import hello.matdil.domain.order.dto.OrderResponseDto;
-import hello.matdil.domain.order.dto.OrderSummaryDto;
+import hello.matdil.domain.order.dto.*;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.event.OrderEventProducer;
@@ -43,6 +40,9 @@ class OrderServiceImplTest {
     private OrderRepository orderRepository;
 
     @Mock
+    private OrderCacheService cacheService;
+
+    @Mock
     private OrderFactory orderFactory;
 
     @Mock
@@ -62,6 +62,7 @@ class OrderServiceImplTest {
         // given
         Store store = TestData.setUpStore();
         Order order = TestData.setOrder();
+        OrderCreateRequestDto.AddressDto addressDto = new OrderCreateRequestDto.AddressDto("서울시", "강남구", "101호");
         StoreSummaryResponseDto responseDto = StoreSummaryResponseDto.from(store);
 
         given(orderFactory.create(
@@ -69,7 +70,7 @@ class OrderServiceImplTest {
                 order.getStoreId(),
                 order.getExpectedDeliveryTime(),
                 order.getRequestNote(),
-                order.getOrderItems()))
+                order.getOrderItems(), addressDto))
                 .willReturn(order);
         given(orderRepository.save(order)).willReturn(order);
         given(storeSummaryLoader.loadWithCacheFallback(
@@ -81,7 +82,8 @@ class OrderServiceImplTest {
                 order.getStoreId(),
                 order.getExpectedDeliveryTime(),
                 order.getRequestNote(),
-                order.getOrderItems());
+                order.getOrderItems(),
+                addressDto);
 
         // then
         assertThat(result.userId()).isEqualTo(order.getUserId());

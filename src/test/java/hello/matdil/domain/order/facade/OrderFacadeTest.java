@@ -59,7 +59,7 @@ class OrderFacadeTest {
         given(storeReader.readWithOpen(storeId)).willReturn(store);
         given(orderCreateProcessor.toOrderItems(
                 requestDto.orderItems(), requestDto.storeId())).willReturn(List.of(orderItem));
-        given(orderService.createOrder(any(), any(), any(), any(), any())).willReturn(responseDto);
+        given(orderService.createOrder(any(), any(), any(), any(), any(), any())).willReturn(responseDto);
 
         // when
         OrderResponseDto result = orderFacade.createOrder(userId, requestDto);
@@ -68,7 +68,7 @@ class OrderFacadeTest {
         assertThat(result).isNotNull();
         verify(storeReader).readWithOpen(storeId);
         verify(orderCreateProcessor).toOrderItems(requestDto.orderItems(), storeId);
-        verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any());
+        verify(orderService).createOrder(eq(userId), eq(storeId), any(), any(), any(), any());
 
     }
 }

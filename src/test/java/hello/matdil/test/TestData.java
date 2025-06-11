@@ -27,7 +27,7 @@ public class TestData {
                 .name("김밥천국")
                 .phoneNumber("010-1234-5678")
                 .ownerId(1L)
-                .address(new Address("서울시", "강남구", "101호"))
+                .address(new Address("서울시", "강남구", "101호", 0, 0))
                 .openTime(LocalTime.of(9, 0))
                 .closeTime(LocalTime.of(22, 0))
                 .minOrderPrice(10000)

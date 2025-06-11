@@ -63,7 +63,7 @@ class UserServiceImplTest {
                 .password("encoded")
                 .name(dto.getName())
                 .phoneNumber(dto.getPhoneNumber())
-                .address(new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress()))
+                .address(new Address(dto.getCity(), dto.getStreet(), dto.getDetailAddress(), 0, 0))
                 .role(UserRole.USER)
                 .build();
 
