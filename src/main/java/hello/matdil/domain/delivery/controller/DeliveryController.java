@@ -1,7 +1,7 @@
 package hello.matdil.domain.delivery.controller;
 
 import hello.matdil.domain.delivery.dto.DeliverySearchResponseDto;
-import hello.matdil.domain.delivery.service.DeliverySearchService;
+import hello.matdil.domain.delivery.facade.DeliverySearchFacade;
 import hello.matdil.domain.delivery.service.DeliveryService;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
-    private final DeliverySearchService deliverySearchService;
+    private final DeliverySearchFacade deliverySearchFacade;
 
     @GetMapping
     public ResponseEntity<SuccessResponse<List<DeliverySearchResponseDto>>> findNearbyDeliveries(
@@ -29,7 +29,7 @@ public class DeliveryController {
             @RequestParam("lon") double longitude,
             @RequestParam(value = "radius", defaultValue = "3.0") double radiusKm
     ) {
-        List<DeliverySearchResponseDto> response = deliverySearchService.findNearbyDeliveries(
+        List<DeliverySearchResponseDto> response = deliverySearchFacade.getDeliveries(
                 latitude, longitude, radiusKm
         );
 
