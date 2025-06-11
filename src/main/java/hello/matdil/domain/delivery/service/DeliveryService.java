@@ -2,6 +2,8 @@ package hello.matdil.domain.delivery.service;
 
 import hello.matdil.domain.delivery.entity.Delivery;
 import hello.matdil.domain.delivery.entity.DeliveryStatus;
+import hello.matdil.domain.delivery.event.DeliveryCreatedEvent;
+import hello.matdil.domain.delivery.event.DeliveryEventProducer;
 import hello.matdil.domain.delivery.repository.DeliveryRepository;
 import hello.matdil.domain.order.event.OrderReadyForDispatchEvent;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryEventProducer deliveryEventProducer;
 
     @KafkaListener(topics = "order-ready-for-dispatch", groupId = "delivery-service-group")
     @Transactional
@@ -33,8 +36,9 @@ public class DeliveryService {
         );
 
         Delivery savedDelivery = deliveryRepository.save(newDelivery);
+        deliveryEventProducer.sendDeliveryCreatedEvent(DeliveryCreatedEvent.from(savedDelivery));
 
-        //배달 생성 이벤트 발행 (라이더 배차 시스템 연동)
+
     }
 
 }

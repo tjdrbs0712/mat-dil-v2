@@ -22,6 +22,12 @@ public class Address {
     @Column(name = "address_detail_address", nullable = false)
     private String detailAddress;
 
+    @Column(name = "address_latitude", nullable = false)
+    private double latitude;
+
+    @Column(name = "address_longitude", nullable = false)
+    private double longitude;
+
     public Address(String city, String street, String detailAddress) {
         this.city = city;
         this.street = street;
