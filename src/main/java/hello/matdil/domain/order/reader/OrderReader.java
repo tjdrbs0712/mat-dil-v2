@@ -59,4 +59,7 @@ public class OrderReader {
                 .orElseThrow(() -> new StoreException(StoreErrorCode.STORE_NOT_FOUND));
     }
 
+    public List<Order> findAllIn(List<Long> orderIds) {
+        return orderRepository.findAllIdWithNotDeleted(orderIds);
+    }
 }

@@ -16,6 +16,7 @@ public class StoreExistenceValidatorStrategy {
     public StoreExistenceValidatorStrategy(StoreValidator storeValidator) {
         this.validatorMap = Map.of(
                 UserRole.USER, storeValidator::validateUserExists,
+                UserRole.RIDER, storeValidator::validateUserExists,
                 UserRole.OWNER, storeValidator::validateUserExists,
                 UserRole.ADMIN, storeValidator::validateAdminExists
         );

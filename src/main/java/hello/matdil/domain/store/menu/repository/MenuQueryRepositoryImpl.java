@@ -46,7 +46,7 @@ public class MenuQueryRepositoryImpl implements MenuQueryRepository{
 
     private BooleanExpression buildVisibilityFilter(Long userId, UserRole role, QMenu menu) {
         return switch (role) {
-            case USER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT);
+            case USER, RIDER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT);
 
             case OWNER -> menu.menuStatus.in(MenuStatus.AVAILABLE, MenuStatus.SOLD_OUT)
                     .or(

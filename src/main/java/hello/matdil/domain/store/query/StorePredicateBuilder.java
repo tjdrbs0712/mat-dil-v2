@@ -25,7 +25,7 @@ public class StorePredicateBuilder {
 
     public static BooleanExpression buildVisibilityFilter(Long userId, UserRole role, QStore store) {
         return switch (role) {
-            case USER -> store.status.notIn(StoreStatus.INACTIVE, StoreStatus.DELETED);
+            case USER, RIDER -> store.status.notIn(StoreStatus.INACTIVE, StoreStatus.DELETED);
             case OWNER -> store.status.ne(StoreStatus.DELETED)
                     .and(
                             store.status.ne(StoreStatus.INACTIVE)

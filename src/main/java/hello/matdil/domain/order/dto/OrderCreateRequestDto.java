@@ -1,6 +1,5 @@
 package hello.matdil.domain.order.dto;
 
-import hello.matdil.domain.address.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

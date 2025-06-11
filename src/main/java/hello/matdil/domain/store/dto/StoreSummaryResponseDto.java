@@ -1,5 +1,6 @@
 package hello.matdil.domain.store.dto;
 
+import hello.matdil.domain.address.Address;
 import hello.matdil.domain.store.entity.Store;
 import hello.matdil.domain.store.entity.StoreStatus;
 import lombok.*;
@@ -15,7 +16,7 @@ public class StoreSummaryResponseDto {
     private String name;
     private String phoneNumber;
     private String imageUrl;
-    private String address; // ex) "서울시 강남구 테헤란로 123"
+    private Address address;
     private double rating;
     private int reviewCount;
     private int deliveryTimeEstimate;
@@ -29,7 +30,7 @@ public class StoreSummaryResponseDto {
                 .name(store.getName())
                 .phoneNumber(store.getPhoneNumber())
                 .imageUrl(store.getImageUrl())
-                .address(store.getAddress().toString())
+                .address(store.getAddress())
                 .rating(store.getRating())
                 .reviewCount(store.getReviewCount())
                 .deliveryTimeEstimate(store.getDeliveryTimeEstimate())
