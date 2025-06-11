@@ -14,7 +14,7 @@ import java.util.List;
 public class DeliveryGeoService {
 
     private final RedisGeoHelper geoHelper;
-    private static final String DELIVERY_GEO_KEY = "deliveries:ready";
+    public static final String DELIVERY_GEO_KEY = "deliveries:ready";
     private static final int SEARCH_LIMIT = 50;
 
     /**

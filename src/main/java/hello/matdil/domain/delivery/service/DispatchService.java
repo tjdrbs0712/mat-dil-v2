@@ -7,11 +7,12 @@ import org.springframework.data.geo.Point;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import static hello.matdil.domain.delivery.service.DeliveryGeoService.DELIVERY_GEO_KEY;
+
 @Service
 @RequiredArgsConstructor
 public class DispatchService {
     private final RedisGeoHelper geoHelper;
-    private static final String DELIVERY_GEO_KEY = "deliveries:ready";
 
     @KafkaListener(topics = "delivery-created-topic", groupId = "delivery-service-group")
     public void addDeliveryToGeoIndex(DeliveryCreatedEvent event) {

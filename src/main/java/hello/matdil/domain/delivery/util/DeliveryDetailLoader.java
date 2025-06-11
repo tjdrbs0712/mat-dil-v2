@@ -26,33 +26,24 @@ public class DeliveryDetailLoader {
     private final OrderReader orderReader;
     private final StoreSummaryLoader storeSummaryLoader;
 
-    /**
-     * 배달 ID 목록을 받아, 상세 정보를 조합하여 DTO 맵을 반환합니다.
-     */
     public Map<Long, DeliverySearchResponseDto> loadByDeliveryIds(List<Long> deliveryIds) {
-        // 1. Cache-Aside 패턴으로 Delivery 상세 정보 조회
         Map<Long, DeliveryCacheDto> deliveriesMap = loadDeliveryDetails(deliveryIds);
 
-        // 2. Delivery 정보에서 orderId 목록 추출
         List<Long> orderIds = deliveriesMap.values().stream()
                 .map(DeliveryCacheDto::orderId).distinct().toList();
 
-        // 3. Order 정보 조회
         Map<Long, Order> ordersMap = orderReader.findAllIn(orderIds).stream()
                 .collect(Collectors.toMap(Order::getId, Function.identity()));
 
-        // 4. Order 정보에서 storeId 목록 추출
         List<Long> storeIds = ordersMap.values().stream()
                 .map(Order::getStoreId).distinct().toList();
 
-        // 5. StoreSummaryLoader를 사용하여 Store 정보 조회
         Map<Long, StoreSummaryResponseDto> storeSummariesMap = storeSummaryLoader.loadWithCacheFallback(storeIds);
 
-        // 6. 모든 정보를 조합하여 최종 DTO 맵 생성
         return deliveryIds.stream()
                 .collect(Collectors.toMap(
-                        Function.identity(), // key는 deliveryId
-                        deliveryId -> { // value는 조합된 DTO
+                        Function.identity(),
+                        deliveryId -> {
                             DeliveryCacheDto deliveryCache = deliveriesMap.get(deliveryId);
                             if (deliveryCache == null) return null;
 
