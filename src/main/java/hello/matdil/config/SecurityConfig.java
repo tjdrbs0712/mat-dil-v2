@@ -61,16 +61,6 @@ public class SecurityConfig {
                                 , "/api/stores/**",
                                 "/api/v2/stores/*/reviews")
                         .permitAll()
-                        .requestMatchers(
-//                                "/payment-test.html"
-                                "api/v2/payments/confirm"
-                                ,"/api/v2/payments/prepare"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/payment-test.html", "/favicon.ico",
-                                "/js/**", "/css/**", "/images/**",
-                                "/test.html"
-                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
