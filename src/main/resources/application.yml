@@ -106,3 +106,5 @@ portone:
   channel-key: ${PORTONE_CHANNEL_KEY}
   client-key: ${PORTONE_CLIENT_KEY}
   secret-key: ${PORTONE_SECRET_KEY}
+  api-key: ${PORTONE_API_KEY}
+  api-secret: ${PORTONE_API_SECRET}

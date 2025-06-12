@@ -1,12 +1,11 @@
 package hello.matdil.domain.payment.facade;
 
-import hello.matdil.config.PortOneProperties;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
 import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
 import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
-import hello.matdil.domain.payment.dto.PaymentPreparationResponse;
+import hello.matdil.domain.payment.dto.PaymentPreparationV1Response;
 import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
 import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentStatus;
@@ -28,17 +27,16 @@ public class PaymentFacade {
     private final PaymentValidator paymentValidator;
     private final PaymentService paymentService;
     private final PgProviderSelector pgProviderSelector;
-    private final PortOneProperties portOneProperties;
     private final PortoneClient portoneClient;
     private final PaymentEventProducer paymentEventProducer;
 
 
-    public PaymentPreparationResponse preparePayment(Long userId, UserRole role, PaymentPreparationRequest request) {
+    public PaymentPreparationV1Response preparePayment(Long userId, UserRole role, PaymentPreparationRequest request) {
         Order order = orderReader.readWithUserPermission(request.orderId(), userId, role);
         paymentValidator.existsByIdAndStatusComplete(order.getId(), PaymentStatus.COMPLETED);
         Payment payment = paymentService.createPendingPayment(order, request.getMethod());
         String pgProvider = pgProviderSelector.determinePgProvider(request.getMethod());
-        return PaymentPreparationResponse.from(payment, pgProvider, portOneProperties);
+        return PaymentPreparationV1Response.from(payment, pgProvider);
     }
 
     public PaymentConfirmationResponse confirmPayment(Long userId, PaymentConfirmationRequest request) {

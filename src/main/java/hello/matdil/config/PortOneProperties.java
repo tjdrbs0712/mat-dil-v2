@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class PortOneProperties {
-    private String storeId;
-    private String channelKey;
-    private String clientKey;
-    private String secretKey;
+    private String apiKey;
+    private String apiSecret;
 }
