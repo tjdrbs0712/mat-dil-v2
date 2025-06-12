@@ -1,7 +1,8 @@
 package hello.matdil.domain.delivery.entity;
 
 public enum DeliveryStatus {
-    READY,          // 배달 준비됨
+    READY,          // 배달 대기
+    ACCEPTED,       // 배달 수락
     PICKED_UP,      // 배달원이 가게에서 픽업함
     IN_TRANSIT,     // 배달 중
     DELIVERED,      // 배달 완료

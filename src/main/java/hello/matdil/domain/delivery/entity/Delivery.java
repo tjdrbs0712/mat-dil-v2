@@ -2,6 +2,8 @@ package hello.matdil.domain.delivery.entity;
 
 import hello.matdil.domain.address.Address;
 import hello.matdil.domain.common.BaseTimeEntity;
+import hello.matdil.domain.delivery.exception.DeliveryErrorCode;
+import hello.matdil.domain.delivery.exception.DeliveryException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -70,11 +72,23 @@ public class Delivery extends BaseTimeEntity {
 
     public void assignRider(Long riderId) {
         this.riderId = riderId;
+        this.deliveryStatus = DeliveryStatus.ACCEPTED;
         this.assignedTime = LocalDateTime.now();
     }
 
     public void markAsPickedUp() {
         this.deliveryStatus = DeliveryStatus.PICKED_UP;
         this.pickedUpAt = LocalDateTime.now();
+    }
+
+    public void markAsDelivered(){
+        this.deliveryStatus = DeliveryStatus.DELIVERED;
+        this.deliveredAt = LocalDateTime.now();
+    }
+
+    public void validateForAssignment() {
+        if (this.deliveryStatus != DeliveryStatus.READY) {
+            throw new DeliveryException(DeliveryErrorCode.DELIVERY_NOT_AVAILABLE);
+        }
     }
 }

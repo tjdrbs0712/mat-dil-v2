@@ -1,16 +1,16 @@
 package hello.matdil.domain.delivery.controller;
 
+import hello.matdil.auth.annotation.LoginUser;
+import hello.matdil.auth.model.AuthUser;
+import hello.matdil.domain.delivery.dto.DeliveryAssignmentResponseDto;
 import hello.matdil.domain.delivery.dto.DeliverySearchResponseDto;
+import hello.matdil.domain.delivery.facade.DeliveryFacade;
 import hello.matdil.domain.delivery.facade.DeliverySearchFacade;
-import hello.matdil.domain.delivery.service.DeliveryService;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @PreAuthorize("hasRole('RIDER')")
 public class DeliveryController {
 
-    private final DeliveryService deliveryService;
+    private final DeliveryFacade deliveryFacade;
     private final DeliverySearchFacade deliverySearchFacade;
 
     @GetMapping
@@ -33,6 +33,15 @@ public class DeliveryController {
                 latitude, longitude, radiusKm
         );
 
+        return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @PostMapping("/{deliveryId}/assignment")
+    public ResponseEntity<SuccessResponse<DeliveryAssignmentResponseDto>> assignDelivery(
+            @LoginUser AuthUser authUser,
+            @PathVariable Long deliveryId
+    ) {
+        DeliveryAssignmentResponseDto response = deliveryFacade.assignDeliveryToRider(deliveryId, authUser.getUserId());
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 
