@@ -1,6 +1,8 @@
 package hello.matdil.domain.payment.entity;
 
 import hello.matdil.domain.common.BaseTimeEntity;
+import hello.matdil.domain.payment.exception.PaymentErrorCode;
+import hello.matdil.domain.payment.exception.PaymentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +21,10 @@ public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private Long userId;
+
 
     @Column(nullable = false)
     private Long orderId;
@@ -43,15 +49,17 @@ public class Payment extends BaseTimeEntity {
 
 
     @Builder
-    public Payment(Long orderId, PaymentMethod method, BigDecimal amount) {
+    public Payment(Long userId, Long orderId, PaymentMethod method, BigDecimal amount) {
+        this.userId = userId;
         this.orderId = orderId;
         this.method = method;
         this.amount = amount;
         this.status = PaymentStatus.READY;
     }
 
-    public static Payment create(Long orderId, PaymentMethod method, BigDecimal amount){
+    public static Payment create(Long userId, Long orderId, PaymentMethod method, BigDecimal amount) {
         return Payment.builder()
+                .userId(userId)
                 .orderId(orderId)
                 .method(method)
                 .amount(amount)
@@ -64,12 +72,19 @@ public class Payment extends BaseTimeEntity {
         this.paidAt = LocalDateTime.now();
     }
 
-    public boolean validateAmountCompare(BigDecimal amount){
+    public boolean validateAmountCompare(BigDecimal amount) {
         return this.amount.compareTo(amount) != 0;
     }
 
     public void failPayment(String failReason) {
         this.status = PaymentStatus.FAILED;
         this.failReason = failReason;
+    }
+
+    public void markAsCanceled() {
+        if (this.status == PaymentStatus.CANCELLED) {
+            throw new PaymentException(PaymentErrorCode.ALREADY_CANCELLED);
+        }
+        this.status = PaymentStatus.CANCELLED;
     }
 }
