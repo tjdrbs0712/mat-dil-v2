@@ -1,7 +1,6 @@
 package hello.matdil.domain.payment.service;
 
 import hello.matdil.domain.order.entity.Order;
-import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
 import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentMethod;
@@ -9,7 +8,6 @@ import hello.matdil.domain.payment.exception.PaymentErrorCode;
 import hello.matdil.domain.payment.exception.PaymentException;
 import hello.matdil.domain.payment.portone.PortoneClient;
 import hello.matdil.domain.payment.repository.PaymentRepository;
-import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PortoneClient portoneClient;
-    private final OrderReader orderReader;
 
     @Transactional
     public Payment createPendingPayment(Order order, PaymentMethod paymentMethod) {
