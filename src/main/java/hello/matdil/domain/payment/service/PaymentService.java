@@ -39,10 +39,8 @@ public class PaymentService {
 
     @Transactional
     public Payment verifyAndCompletePayment(Long userId, Long merchantUid, PortonePaymentData portoneData) {
-        Payment payment = paymentRepository.findById(merchantUid)
+        Payment payment = paymentRepository.findByIdAndUserId(merchantUid, userId)
                 .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
-
-        orderReader.readWithUserPermission(payment.getOrderId(), userId, UserRole.USER);
 
         if (payment.validateAmountCompare(portoneData.amount())) {
             portoneClient.cancelPayment(portoneData.impUid(), "결제 금액이 다릅니다.").block();
