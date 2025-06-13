@@ -2,10 +2,7 @@ package hello.matdil.domain.payment.facade;
 
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.reader.OrderReader;
-import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
-import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
-import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
-import hello.matdil.domain.payment.dto.PaymentPreparationV1Response;
+import hello.matdil.domain.payment.dto.*;
 import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
 import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentStatus;
@@ -44,5 +41,12 @@ public class PaymentFacade {
         Payment completedPayment = paymentService.verifyAndCompletePayment(userId, request.merchantUid(), portonePaymentData);
         paymentEventProducer.sendPaymentCompletedEvent(PaymentCompletedEvent.from(completedPayment));
         return PaymentConfirmationResponse.from(completedPayment);
+    }
+
+    public void cancelPayment(Long userId, PaymentCancelRequestDto request) {
+        Payment payment = paymentValidator.getUserIdAndPaymentKeyAndStatus(
+                userId, request.impUid(), PaymentStatus.COMPLETED);
+        portoneClient.cancelPayment(request.impUid(), request.reason()).block();
+        paymentService.markAsCanceled(payment);
     }
 }

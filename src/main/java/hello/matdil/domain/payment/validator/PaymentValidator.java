@@ -1,5 +1,6 @@
 package hello.matdil.domain.payment.validator;
 
+import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentStatus;
 import hello.matdil.domain.payment.exception.PaymentErrorCode;
 import hello.matdil.domain.payment.exception.PaymentException;
@@ -13,10 +14,15 @@ public class PaymentValidator {
 
     private final PaymentRepository paymentRepository;
 
-    public void existsByIdAndStatusComplete(Long orderId, PaymentStatus status){
+    public void existsByIdAndStatusComplete(Long orderId, PaymentStatus status) {
         if (paymentRepository.existsByOrderIdAndStatus(orderId, status)) {
             throw new PaymentException(PaymentErrorCode.ALREADY_COMPLETED);
         }
+    }
+
+    public Payment getUserIdAndPaymentKeyAndStatus(Long userId, String paymentKey, PaymentStatus status) {
+        return paymentRepository.findByUserIdAndPaymentKeyAndStatus(userId, paymentKey, status)
+                .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
     }
 
 }

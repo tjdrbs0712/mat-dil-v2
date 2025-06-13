@@ -2,10 +2,7 @@ package hello.matdil.domain.payment.controller;
 
 import hello.matdil.auth.annotation.LoginUser;
 import hello.matdil.auth.model.AuthUser;
-import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
-import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
-import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
-import hello.matdil.domain.payment.dto.PaymentPreparationV1Response;
+import hello.matdil.domain.payment.dto.*;
 import hello.matdil.domain.payment.facade.PaymentFacade;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +39,14 @@ public class PaymentController {
             @RequestBody PaymentConfirmationRequest request) {
         PaymentConfirmationResponse response = paymentFacade.confirmPayment(authUser.getUserId(), request);
         return ResponseEntity.ok(SuccessResponse.success(response));
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<SuccessResponse<String>> cancelPayment(
+            @LoginUser AuthUser authUser,
+            @RequestBody PaymentCancelRequestDto request
+    ) {
+        paymentFacade.cancelPayment(authUser.getUserId(), request);
+        return ResponseEntity.ok(SuccessResponse.success("결제가 취소되었습니다."));
     }
 }

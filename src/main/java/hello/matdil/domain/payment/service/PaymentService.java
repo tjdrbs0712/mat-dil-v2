@@ -5,12 +5,10 @@ import hello.matdil.domain.order.reader.OrderReader;
 import hello.matdil.domain.payment.dto.portone.PortonePaymentData;
 import hello.matdil.domain.payment.entity.Payment;
 import hello.matdil.domain.payment.entity.PaymentMethod;
-import hello.matdil.domain.payment.entity.PaymentStatus;
 import hello.matdil.domain.payment.exception.PaymentErrorCode;
 import hello.matdil.domain.payment.exception.PaymentException;
 import hello.matdil.domain.payment.portone.PortoneClient;
 import hello.matdil.domain.payment.repository.PaymentRepository;
-import hello.matdil.domain.payment.validator.PaymentValidator;
 import hello.matdil.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +23,17 @@ import java.math.BigDecimal;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final PaymentValidator paymentValidator;
     private final PortoneClient portoneClient;
     private final OrderReader orderReader;
 
     @Transactional
     public Payment createPendingPayment(Order order, PaymentMethod paymentMethod) {
-        paymentValidator.existsByIdAndStatusComplete(order.getId(), PaymentStatus.COMPLETED);
-        Payment payment = Payment.create(order.getId(), paymentMethod, BigDecimal.valueOf(order.getTotalPrice()));
+        Payment payment = Payment.create(
+                order.getUserId(),
+                order.getId(),
+                paymentMethod,
+                BigDecimal.valueOf(order.getTotalPrice()));
+
         return paymentRepository.save(payment);
     }
 
@@ -44,11 +45,16 @@ public class PaymentService {
         orderReader.readWithUserPermission(payment.getOrderId(), userId, UserRole.USER);
 
         if (payment.validateAmountCompare(portoneData.amount())) {
-            portoneClient.cancelPayment(portoneData.impUid());
+            portoneClient.cancelPayment(portoneData.impUid(), "결제 금액이 다릅니다.").block();
             throw new PaymentException(PaymentErrorCode.INVALID_AMOUNT);
         }
         payment.completePayment(portoneData.impUid());
 
         return payment;
+    }
+
+    @Transactional
+    public void markAsCanceled(Payment payment) {
+        payment.markAsCanceled();
     }
 }

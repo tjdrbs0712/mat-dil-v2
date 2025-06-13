@@ -12,6 +12,9 @@ public enum PaymentErrorCode implements ErrorCode {
     INVALID_AMOUNT(400, "INVALID_AMOUNT", "결제 금액이 일치하지 않습니다. 위변조 시도가 의심됩니다."),
     ALREADY_COMPLETED(400, "ALREADY_COMPLETED", "이미 결제 완료된 주문입니다."),
     PORTONE_NOT_FOUND(502, "PORTONE_NOT_FOUND", "포트원에서 결제 정보를 조회할 수 없습니다."),
+    ALREADY_CANCELLED(400, "ALREADY_CANCELLED", "이미 결제 쥐소된 주문입니다."),
+
+
     ;
 
     private final int httpStatusCode;

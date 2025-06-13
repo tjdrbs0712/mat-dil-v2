@@ -8,9 +8,13 @@ import hello.matdil.domain.payment.dto.portone.PortoneTokenResponse;
 import hello.matdil.domain.payment.exception.PaymentErrorCode;
 import hello.matdil.domain.payment.exception.PaymentException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -47,8 +51,19 @@ public class PortoneClient {
                 .map(response -> response.response().access_token());
     }
 
-    public void cancelPayment(String impUid) {
-
+    public Mono<Void> cancelPayment(String impUid, String reason) {
+        return getAccessToken()
+                .flatMap(token -> webClient.post()
+                        .uri("https://api.iamport.kr/payments/cancel")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Map.of(
+                                "imp_uid", impUid,
+                                "reason", reason
+                        ))
+                        .retrieve()
+                        .bodyToMono(Void.class)
+                );
     }
 
 }
