@@ -49,6 +49,12 @@ public class OrderReader {
         return orderRepository.findOrdersByStoreIdWithCursor(storeId, cursor);
     }
 
+    @Transactional(readOnly = true)
+    public Order readWithItems(Long orderId) {
+        return orderRepository.findByIdWithItems(orderId)
+                .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
+    }
+
     public Order readById(Long orderId) {
         return orderRepository.findByIdWithNotDeleted(orderId)
                 .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));

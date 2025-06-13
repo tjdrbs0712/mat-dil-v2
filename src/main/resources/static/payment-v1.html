@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>포트원 V1 + 실제 로그인 연동</title>
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+</head>
+<body>
+
+<h1>실제 로그인 및 결제 테스트</h1>
+
+<div id="login-section" style="border: 1px solid #007bff; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+  <h3>1. 로그인 (먼저 수행)</h3>
+  <div>
+    <label for="email" style="width:70px; display: inline-block;">이메일:</label>
+    <input type="email" id="email" placeholder="user@example.com" style="width: 200px;">
+  </div>
+  <div style="margin-top: 5px;">
+    <label for="password" style="width:70px; display: inline-block;">비밀번호:</label>
+    <input type="password" id="password" placeholder="비밀번호" style="width: 200px;">
+  </div>
+  <div style="margin-top: 10px;">
+    <button id="loginButton">로그인</button>
+    <button id="logoutButton" style="display:none; background-color: #dc3545; color: white;">로그아웃</button>
+  </div>
+  <div id="login-status" style="margin-top: 10px; color: green; font-weight: bold;"></div>
+</div>
+
+
+<div id="payment-section" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
+  <h3>2. 결제 진행</h3>
+  <div>
+    <label for="orderId">주문 ID:</label>
+    <input type="text" id="orderId" value="test_order_real_123">
+    <label for="amount">결제 금액:</label>
+    <input type="text" id="amount" value="1500">
+  </div>
+  <br>
+  <p>결제 수단을 선택하세요.</p>
+  <button id="kakaoBtn">카카오페이</button>
+  <button id="naverBtn">네이버페이</button>
+  <button id="tossBtn">토스페이</button>
+  <div id="status-message" style="margin-top: 20px; font-weight: bold;"></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const IMP = window.IMP;
+    IMP.init("imp41738038");
+
+    const loginStatus = document.getElementById("login-status");
+    const statusMessage = document.getElementById("status-message");
+    const loginButton = document.getElementById("loginButton");
+    const logoutButton = document.getElementById("logoutButton");
+
+    loginButton.addEventListener("click", handleLogin);
+    logoutButton.addEventListener("click", handleLogout);
+    document.getElementById("kakaoBtn").addEventListener("click", () => handlePaymentRequest("KAKAO_PAY"));
+    document.getElementById("naverBtn").addEventListener("click", () => handlePaymentRequest("NAVER_PAY"));
+    document.getElementById("tossBtn").addEventListener("click", () => handlePaymentRequest("TOSS_PAY"));
+
+    if (localStorage.getItem("accessToken")) {
+      updateLoginUI(true);
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("이메일과 비밀번호를 입력해주세요.");
+        return;
+      }
+
+      try {
+        loginStatus.textContent = "로그인 시도 중...";
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "로그인 실패");
+
+        const { accessToken, refreshToken } = result.data;
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        alert("로그인 성공!");
+        updateLoginUI(true);
+      } catch (err) {
+        loginStatus.textContent = "로그인 실패: " + err.message;
+        alert(err.message);
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      alert("로그아웃 되었습니다.");
+      updateLoginUI(false);
+    }
+
+    function updateLoginUI(isLoggedIn) {
+      if (isLoggedIn) {
+        loginStatus.textContent = "로그인 상태입니다.";
+        loginButton.style.display = "none";
+        logoutButton.style.display = "inline-block";
+      } else {
+        loginStatus.textContent = "";
+        loginButton.style.display = "inline-block";
+        logoutButton.style.display = "none";
+      }
+    }
+
+    async function preparePayment(orderId, amount, method) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) throw new Error("로그인이 필요합니다.");
+
+      const response = await fetch("/api/v2/payments/prepare", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + accessToken
+        },
+        body: JSON.stringify({
+          orderId: parseInt(orderId),
+          method: method
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "결제 준비 실패");
+      }
+
+      return (await response.json()).data;
+    }
+
+    async function handlePaymentRequest(pgProvider) {
+      statusMessage.textContent = "결제 준비 중입니다...";
+      const orderId = document.getElementById("orderId").value;
+      const amount = parseInt(document.getElementById("amount").value);
+
+      if (!orderId || isNaN(amount)) {
+        alert("주문 ID와 금액을 정확히 입력해주세요.");
+        statusMessage.textContent = "";
+        return;
+      }
+
+      try {
+        const paymentData = await preparePayment(orderId, amount, pgProvider);
+        if (amount !== paymentData.amount) {
+          throw new Error(`금액 불일치! 클라이언트: ${amount}, 서버: ${paymentData.amount}`);
+        }
+        requestClientPayment(paymentData);
+      } catch (err) {
+        alert(err.message);
+        statusMessage.textContent = "오류: " + err.message;
+      }
+    }
+
+    function requestClientPayment(paymentData) {
+      statusMessage.textContent = "결제창을 호출합니다...";
+      IMP.request_pay({
+        pg: "html5_inicis",
+        pay_method: "card",
+        merchant_uid: paymentData.merchant_uid,
+        name: `주문: ${paymentData.merchant_uid}`,
+        amount: paymentData.amount,
+        buyer_name: "실제유저",
+        // m_redirect_url: "/payment/result"
+      }, async (rsp) => {
+        if (rsp.success) {
+          statusMessage.textContent = "결제 성공, 검증 중...";
+          try {
+            await verifyPayment(rsp);
+            alert("결제 완료!");
+            statusMessage.textContent = `완료: 주문번호 ${rsp.merchant_uid}`;
+          } catch (err) {
+            alert(err.message);
+            statusMessage.textContent = "검증 오류: " + err.message;
+          }
+        } else {
+          alert("결제 실패: " + rsp.error_msg);
+          statusMessage.textContent = "실패: " + rsp.error_msg;
+        }
+      });
+    }
+
+    async function verifyPayment(rsp) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) throw new Error("검증 실패: 인증 토큰 없음");
+
+      const response = await fetch("/api/v2/payments/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + accessToken
+        },
+        body: JSON.stringify({
+          imp_uid: rsp.imp_uid,
+          merchant_uid: rsp.merchant_uid
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "서버 검증 실패");
+      }
+    }
+  });
+</script>
+</body>
+</html>

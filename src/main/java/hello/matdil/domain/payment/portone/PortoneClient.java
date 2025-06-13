@@ -41,7 +41,7 @@ public class PortoneClient {
     private Mono<String> getAccessToken() {
         return webClient.post()
                 .uri("https://api.iamport.kr/users/getToken")
-                .bodyValue(new PortoneTokenRequest(portOneProperties.getChannelKey(), portOneProperties.getSecretKey()))
+                .bodyValue(new PortoneTokenRequest(portOneProperties.getApiKey(), portOneProperties.getApiSecret()))
                 .retrieve()
                 .bodyToMono(PortoneTokenResponse.class)
                 .map(response -> response.response().access_token());

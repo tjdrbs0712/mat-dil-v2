@@ -27,14 +27,18 @@ public class OrderItem {
     private Long menuId;
 
     @Column(nullable = false)
+    private String menuName;
+
+    @Column(nullable = false)
     private int quantity;
 
     @Column(nullable = false)
     private int price;
 
     @Builder
-    public OrderItem(Long menuId, int quantity, int price){
+    public OrderItem(Long menuId, String menuName, int quantity, int price){
         this.menuId = menuId;
+        this.menuName = menuName;
         this.quantity = quantity;
         this.price = price;
     }
@@ -46,6 +50,7 @@ public class OrderItem {
 
         return OrderItem.builder()
                 .menuId(menu.getId())
+                .menuName(menu.getName())
                 .quantity(quantity)
                 .price(menu.getPrice() * quantity)
                 .build();

@@ -14,4 +14,6 @@ public interface OrderQueryRepository {
     List<Order> findOrdersByUserIdWithCursor(Long userId, OrderCursorRequestDto cursor);
 
     List<Order> findOrdersByStoreIdWithCursor(Long storeId, OrderCursorRequestDto cursor);
+
+    Optional<Order> findByIdWithItems(Long orderId);
 }

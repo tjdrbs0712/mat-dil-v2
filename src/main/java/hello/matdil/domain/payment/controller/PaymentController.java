@@ -5,7 +5,7 @@ import hello.matdil.auth.model.AuthUser;
 import hello.matdil.domain.payment.dto.PaymentConfirmationRequest;
 import hello.matdil.domain.payment.dto.PaymentConfirmationResponse;
 import hello.matdil.domain.payment.dto.PaymentPreparationRequest;
-import hello.matdil.domain.payment.dto.PaymentPreparationResponse;
+import hello.matdil.domain.payment.dto.PaymentPreparationV1Response;
 import hello.matdil.domain.payment.facade.PaymentFacade;
 import hello.matdil.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +26,10 @@ public class PaymentController {
      * 결제 준비 API
      */
     @PostMapping("/prepare")
-    public ResponseEntity<SuccessResponse<PaymentPreparationResponse>> preparePayment(
+    public ResponseEntity<SuccessResponse<PaymentPreparationV1Response>> preparePayment(
             @LoginUser AuthUser authUser,
             @RequestBody PaymentPreparationRequest request) {
-        PaymentPreparationResponse response = paymentFacade.preparePayment(authUser.getUserId(), authUser.getRole(), request);
+        PaymentPreparationV1Response response = paymentFacade.preparePayment(authUser.getUserId(), authUser.getRole(), request);
         return ResponseEntity.ok(SuccessResponse.success(response));
     }
 

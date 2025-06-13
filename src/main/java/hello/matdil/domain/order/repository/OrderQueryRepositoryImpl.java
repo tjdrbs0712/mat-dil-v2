@@ -6,6 +6,7 @@ import hello.matdil.domain.order.dto.OrderCursorRequestDto;
 import hello.matdil.domain.order.entity.Order;
 import hello.matdil.domain.order.entity.OrderStatus;
 import hello.matdil.domain.order.entity.QOrder;
+import hello.matdil.domain.order.entity.QOrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -74,5 +75,20 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository{
                 .orderBy(order.createdAt.desc(), order.id.desc())
                 .limit(cursor.pageSize() + 1)
                 .fetch();
+    }
+
+    @Override
+    public Optional<Order> findByIdWithItems(Long orderId) {
+
+        QOrder order = QOrder.order;
+        QOrderItem orderItem= QOrderItem.orderItem;
+
+        Order result = queryFactory
+                .selectFrom(order)
+                .join(order.orderItems, orderItem).fetchJoin()
+                .where(order.id.eq(orderId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }

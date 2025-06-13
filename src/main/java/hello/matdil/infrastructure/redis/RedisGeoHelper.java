@@ -1,6 +1,5 @@
 package hello.matdil.infrastructure.redis;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Slf4j
-//@RequiredArgsConstructor
 public class RedisGeoHelper {
 
     @Qualifier("geoRedisTemplate")

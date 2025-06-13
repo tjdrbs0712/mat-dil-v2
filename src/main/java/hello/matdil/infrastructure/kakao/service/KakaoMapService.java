@@ -13,7 +13,6 @@ public class KakaoMapService {
     private final WebClient webClient;
     private final String kakaoApiKey;
 
-    // 생성자를 통해 WebClient 와 API 키 주입
     public KakaoMapService(WebClient.Builder webClientBuilder, @Value("${kakao.api.key}") String kakaoApiKey) {
         this.webClient = webClientBuilder
                 .baseUrl("https://dapi.kakao.com") // 카카오 API 기본 URL
@@ -31,7 +30,6 @@ public class KakaoMapService {
                 .retrieve() // 응답 받아오기
                 .bodyToMono(KakaoAddressResponse.class) // 응답 바디를 DTO로 변환
                 .handle((response, sink) -> {
-                    // 검색 결과가 없는 경우 예외 처리
                     if (response.getDocuments() == null || response.getDocuments().isEmpty()) {
                         sink.error(new IllegalArgumentException("주소에 해당하는 좌표를 찾을 수 없습니다: " + addressString));
                         return;
